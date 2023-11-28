@@ -4,6 +4,11 @@ import { FIREBASE_AUTH } from '../FirebaseConfig';
 import { connectToDynamoDB } from '../api/aws';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
 import * as Location from 'expo-location';
+import { useCallback } from 'react';
+import { registerRootComponent } from 'expo';
+import { useFonts } from 'expo-font';
+import colors from '../assets/colors/colors';
+import * as SplashScreen from 'expo-splash-screen';
 
 const Login = () => {
     // states for handling login
@@ -89,8 +94,27 @@ const Login = () => {
         }
     }
 
+    const [fontsLoaded, fontError] = useFonts({
+        'Inter-Bold': require('../assets/fonts/Inter-Bold.ttf'),
+        'Roboto-Regular': require('../assets/fonts/Roboto-Regular.ttf'),
+        'Roboto-Bold': require('../assets/fonts/Roboto-Bold.ttf'),
+        'Roboto-Light': require('../assets/fonts/Roboto-Light.ttf'),
+        'Nunito-Medium': require('../assets/fonts/NunitoSans_10pt-Medium.ttf'),
+      });
+    
+      const onLayoutRootView = useCallback(async () => {
+        if (fontsLoaded || fontError) {
+          await SplashScreen.hideAsync();
+        }
+      }, [fontsLoaded, fontError]);
+    
+      if (!fontsLoaded && !fontError) {
+        return null;
+      } 
+
     return (
-        <View style={styles.container}>
+        <View style={styles.container} onLayout={onLayoutRootView}>
+            <Text style={{ textAlign: 'center', fontSize: 36, fontWeight: 'bold', marginBottom: 24, fontFamily: 'Inter-Bold' }}>Login</Text>
             <KeyboardAvoidingView behavior='padding'>
                 <TextInput value = {email} style={styles.input} autoCapitalize="none" placeholder='Email' onChangeText={(text) => setEmail(text)}></TextInput>
                 <TextInput value = {password} secureTextEntry = {true} style={styles.input} placeholder="Password" autoCapitalize="none" onChangeText={(text) => setPassword(text)}></TextInput>
