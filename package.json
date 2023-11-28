@@ -1,7 +1,7 @@
 {
   "name": "testproject",
   "version": "1.0.0",
-  "main": "./src/App.tsx",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -31,7 +31,13 @@
     "react-native-web": "~0.19.6",
     "expo-asset": "~8.10.1",
     "expo-font": "~11.4.0",
-    "expo-splash-screen": "~0.20.5"
+    "expo-splash-screen": "~0.20.5",
+    "expo-router": "^2.0.0",
+    "expo-linking": "~5.0.2",
+    "expo-constants": "~14.4.2",
+    "react-native-gesture-handler": "~2.12.0",
+    "expo-linear-gradient": "~12.3.0",
+    "expo-image": "~1.3.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
