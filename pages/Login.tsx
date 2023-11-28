@@ -1,16 +1,51 @@
 import { View, Text, StyleSheet, TextInput, ActivityIndicator, Button, KeyboardAvoidingView } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FIREBASE_AUTH } from '../FirebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { connectToDynamoDB } from '../api/aws';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'firebase/auth'
+import * as Location from 'expo-location';
 
 const Login = () => {
+    // states for handling login
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const [location, setLocation] = useState<Location.LocationObject>();
     const auth = FIREBASE_AUTH;
 
+    useEffect(() => {
+        (async () => {
+          
+          let { status } = await Location.requestForegroundPermissionsAsync();
+          if (status !== 'granted') {
+            console.log('Permission to access location was denied');
+            return;
+          }
+    
+          let location = await Location.getCurrentPositionAsync({});
+          setLocation(location);
+          console.log(location.coords)
+        })();
+      }, []);
 
-    const signIn = async () => {
+    // do things based on whether user is signed in
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const uid = user.uid;
+        console.log("User is signed in with user id: "  + uid)
+        connectToDynamoDB()
+        // ...
+        } else {
+        // User is signed out
+        console.log("User is signed out. ;)")
+        // ...
+        }
+    });
+
+
+    const logIn = async () => {
         setLoading(true);
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
@@ -40,6 +75,20 @@ const Login = () => {
         }
     }
 
+    const logOut = async() => {
+        setLoading(true);
+        try {
+            const response = await signOut(auth);
+            console.log(response);
+            alert('Success!');
+        } catch (error: any) {
+            console.log(error);
+            alert('Log out Failed: ' + error.message);
+        } finally {
+            setLoading(false);
+        }
+    }
+
     return (
         <View style={styles.container}>
             <KeyboardAvoidingView behavior='padding'>
@@ -48,8 +97,9 @@ const Login = () => {
 
                 { loading  ? <ActivityIndicator size="large" color = "#0000ff" />
                 : <>
-                    <Button title="Login" onPress={() => signIn()} />
+                    <Button title="Login" onPress={() => logIn()} />
                     <Button title="Create Account" onPress={() => signUp()} />
+                    <Button title="Log Out" onPress={() => logOut()} />
                 </>}
             </KeyboardAvoidingView>
         </View>
