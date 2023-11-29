@@ -11,6 +11,7 @@ app.use(cors({
 // We use express to define our various API endpoints and
 // provide their handlers that we implemented in routes.js
 app.get('/user/:uid', routes.user);
+app.get('/newuser', routes.createuser);
 
 app.get('/', (req, res) => {
     res.send('Rendezvous Server made with Express');

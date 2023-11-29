@@ -31,9 +31,26 @@ const user = async function(req, res) {
 }
 
 const createuser = async function(req, res) {
-    
+    const uid = req.query.uid;
+    const first_name = req.query.first_name ?? '';
+    const last_name = req.query.last_name ?? '';
+    const about_me = req.query.about_me ?? '';
+    const pronouns = req.query.pronouns ?? '';
+    const gender = req.query.gender ?? '';
+
+    connection.query(`
+        INSERT INTO PROFILES (id, first_name, last_name, about_me, pronouns, gender)
+        VALUES (${uid}, ${first_name}, ${last_name}, ${about_me}, ${pronouns}, ${gender})
+    `, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! New user created with id: " + uid);
+        }
+    });
 }
 
 module.exports = {
     user,
+    createuser
 }
