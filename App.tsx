@@ -10,6 +10,7 @@ import { useCallback } from "react";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View, Text, Pressable, TouchableOpacity } from "react-native";
+import { AppLoading } from "expo";
 
 // SplashScreen.preventAutoHideAsync();
 
@@ -31,12 +32,12 @@ const App = () => {
   }, [fontsLoaded]);
 
   if (!fontsLoaded && !error) {
+    // return <AppLoading/>;
     return null;
   }
 
   return (
     <>
-    {/* <View onLayout={onLayoutRootView}> */}
       <NavigationContainer >
         {hideSplashScreen ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -59,7 +60,6 @@ const App = () => {
           </Stack.Navigator>
         ) : null}
       </NavigationContainer>
-      {/* </View> */}
     </>
   );
 };
