@@ -156,7 +156,7 @@ const ProfilePage = () => {
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
-  const mask = 'MM-DD-YYYY';
+  const mask = 'MM/DD/YYYY';
   // const isValid = this.datetimeField.isValid()
 
   return (

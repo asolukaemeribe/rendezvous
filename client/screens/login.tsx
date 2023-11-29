@@ -30,6 +30,8 @@ import { Asset, useAssets } from "expo-asset";
 import { useEffect, useState } from "react";
 import colors from "../assets/global_styles/color";
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import Feather from "react-native-vector-icons/Feather";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 const Login = () => {
@@ -62,7 +64,7 @@ const Login = () => {
       // https://firebase.google.com/docs/reference/js/auth.user
       const uid = user.uid;
       setUserID(uid);
-      navigation.navigate("ProfilePage", userID);
+      // navigation.navigate("ProfilePage", userID);
       console.log("User is signed in with user id: " + uid);
       //connectToDynamoDB();
       // ...
@@ -152,6 +154,13 @@ const Login = () => {
           </View>
         </View>
         <View style={styles.loginWrapper}>
+          <View style={styles.loginInputWrapper}>
+            <View style={styles.inputIconCircle}>
+              <Feather name="user" 
+              size={28} 
+              color={colors.black} 
+              style={styles.inputIcon}/>
+            </View>
             <TextInput
               value={email}
               style={[styles.loginInput, styles.loginInputUsername]}
@@ -160,6 +169,14 @@ const Login = () => {
               placeholderTextColor={colors.white_55}
               onChangeText={(text) => setEmail(text)}
             ></TextInput>
+          </View>
+          <View style={styles.loginInputWrapper}>
+            <View style={styles.inputIconCircle}>
+              <MaterialCommunityIcons name="lock-outline" 
+                size={28} 
+                color={colors.black} 
+                style={styles.inputIcon}/>
+            </View>
             <TextInput
               value={password}
               secureTextEntry={true}
@@ -169,6 +186,7 @@ const Login = () => {
               autoCapitalize="none"
               onChangeText={(text) => setPassword(text)}
             ></TextInput>
+          </View>
             <View style={styles.loginForgotPasswordWrapper}>
               <Text style={styles.loginForgotPassword}>
                 Forgot Password/Username?
@@ -230,7 +248,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontSize: 45,
     fontWeight: "bold",
-    fontFamily: "Nunito-Medium",
+    // fontFamily: FontFamily.robotoBold,
     color: colors.white,
   },
   loginWrapper: {
@@ -241,6 +259,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderWidth: 1,
     borderRadius: 10,
+    borderTopLeftRadius: 50,
+    borderBottomLeftRadius: 50,
     padding: 10,
     borderColor: colors.white_55,
     backgroundColor: colors.white_20,
@@ -259,7 +279,7 @@ const styles = StyleSheet.create({
   loginForgotPassword: {
     marginBottom: 32,
     color: colors.white,
-    fontFamily: "Roboto-Regular",
+    fontFamily: FontFamily.robotoMedium,
   },
   loginButton: {
     backgroundColor: colors.blue,
@@ -273,7 +293,7 @@ const styles = StyleSheet.create({
     // gap: 10
   },
   loginButtonText: {
-    fontFamily: "Roboto-Bold",
+    fontFamily: FontFamily.robotoBold,
     fontSize: 24,
     color: colors.white,
   },
@@ -287,7 +307,7 @@ const styles = StyleSheet.create({
   },
   signUpWrapperTextContainer: {
     textAlign: "center",
-    fontFamily: "Roboto-Regular",
+    fontFamily: FontFamily.robotoMedium,
     fontSize: 14,
     fontWeight: "600"
   },
@@ -304,6 +324,25 @@ const styles = StyleSheet.create({
   keyboardView: {
     flexGrow: 1,
   },
+  loginInputWrapper: {
+    // flexDirection: "row",
+  },
+  inputIconCircle: {
+    position: "absolute",
+    left: -10,
+    // marginLeft: -10,
+    height: 50,
+    width: 50,
+    borderRadius: 50,
+    backgroundColor: colors.white,
+    zIndex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inputIcon:
+  {
+    color: colors.black
+  }
 });
 
 export default Login;
