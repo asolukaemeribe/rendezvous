@@ -6,13 +6,13 @@ import {
   TouchableOpacity,
   View,
   TextInput,
+  KeyboardAvoidingView
 } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { FontFamily, Color, Border, Padding, FontSize } from "../GlobalStyles";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { connectToDynamoDB } from "../api/aws";
 import {
@@ -28,8 +28,11 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { Asset, useAssets } from "expo-asset";
 import { useEffect, useState } from "react";
+import colors from "../assets/global_styles/color";
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-const IPhone13141 = () => {
+
+const Login = () => {
   // states for handling login
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -69,14 +72,6 @@ const IPhone13141 = () => {
       // ...
     }
   });
-
-  // const logInTemp = async () => {
-  //   navigation.navigate("IPhone13145");
-  // };
-
-  // const signUpTemp = async () => {
-  //   router.replace("/IPhone13144");
-  // };
 
   const logIn = async () => {
     setLoading(true);
@@ -130,241 +125,185 @@ const IPhone13141 = () => {
 
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
+  const insets = useSafeAreaInsets();
+
   return (
     <LinearGradient
-      style={styles.iphone13141}
+      style={styles.gradientContainer}
       locations={[0, 1]}
-      colors={["#ff0000", "#db17a4"]}
-    >
-      <TouchableOpacity
-        style={styles.dontHaveAnAccountSignUpWrapper}
-        activeOpacity={0.2}
-        onPress={() => navigation.navigate("IPhone13144")}
+      colors={[colors.red, colors.pink]}
       >
-        <Text style={[styles.dontHaveAnContainer, styles.loginTypo]}>
-          <Text style={styles.dontHaveAn}>{`Don't have an account? `}</Text>
-          <Text style={styles.signUpHere}>Sign up here</Text>
-        </Text>
-      </TouchableOpacity>
-      <Image
-        style={[styles.image2Icon, styles.iconPosition]}
-        contentFit="cover"
-        source={require("../assets/image-2.png")}
-      />
-      <Pressable
-        style={[styles.loginWrapper, styles.frameIcon1Layout]}
-        onPress={() => logIn()}
-      >
-        <Text style={[styles.login, styles.loginTypo]}>Login</Text>
-      </Pressable>
-      <Image
-        style={[styles.frameIcon, styles.framePosition1]}
-        contentFit="cover"
-        source={require("../assets/frame.png")}
-      />
-      <View style={[styles.frame, styles.framePosition]}>
-        <TextInput
-          style={[styles.usernameWrapper, styles.wrapperLayout]}
-          placeholder="Username"
-          placeholderTextColor={Color.colorGray_100}
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-        ></TextInput>
+        {/* <KeyboardAvoidingView behavior="padding" style={styles.keyboardView}> */}
+        <View
+          style={[
+            styles.logoWrapper,
+            { paddingTop: insets.top * 0.5 },
+            { paddingBottom: insets.bottom * 0.5},
+          ]}
+        >
+          <Image
+            style={styles.logo}
+            // style={[styles.image2Icon, styles.iconPosition]}
+            contentFit="cover"
+            source={require("../assets/images/logo_2x.png")}
+          />
+          <View style={styles.logoTextWrapper}>
+            <Text style={styles.logoText}>rendezvous</Text>
+          </View>
+        </View>
+        <View style={styles.loginWrapper}>
+            <TextInput
+              value={email}
+              style={[styles.loginInput, styles.loginInputUsername]}
+              autoCapitalize="none"
+              placeholder="Username"
+              placeholderTextColor={colors.white_55}
+              onChangeText={(text) => setEmail(text)}
+            ></TextInput>
+            <TextInput
+              value={password}
+              secureTextEntry={true}
+              style={[styles.loginInput, styles.loginInputPassword]}
+              placeholder="Password"
+              placeholderTextColor={colors.white_55}
+              autoCapitalize="none"
+              onChangeText={(text) => setPassword(text)}
+            ></TextInput>
+            <View style={styles.loginForgotPasswordWrapper}>
+              <Text style={styles.loginForgotPassword}>
+                Forgot Password/Username?
+              </Text>
+            </View>
+            {/*TODO: replace with logIn() once design finished*/}
+            <Pressable style={styles.loginButton} onPress={() => logIn()}>
+              <Text style={styles.loginButtonText}>Login</Text>
+            </Pressable>
+            <Pressable style={styles.signUpWrapper} onPress={() => navigation.navigate("CreateAccount")}>
+              <Text style={styles.signUpWrapperTextContainer}>
+                <Text style={styles.signUpWrapperTextFirst}>
+                  Don't have an account?{" "}
+                </Text>
+                <Text style={styles.signUpWrapperTextSecond}>Sign up here</Text>
+                {/* <Link style={styles.signUpWrapperTextSecond} href="/accountCreation">Sign up here</Link> */}
+              </Text>
+            </Pressable>
+        </View>
         <Image
-          style={[styles.frameIcon1, styles.frameIcon1Layout]}
-          contentFit="cover"
-          source={require("../assets/group-5.png")}
-        />
-      </View>
-      <View style={[styles.frame1, styles.framePosition1]}>
-        <Text style={[styles.forgotPasswordusername, styles.usernameTypo]}>
-          Forgot password/username?
-        </Text>
-      </View>
-      <View style={[styles.frame2, styles.framePosition]}>
-        <TextInput
-          style={[styles.passwordWrapper, styles.wrapperLayout]}
-          placeholder="Password"
-          placeholderTextColor={Color.colorGray_100}
-          secureTextEntry={true}
-          value={password} 
-          onChangeText={(text) => setPassword(text)}
-        ></TextInput>
-        <Image
-          style={[styles.frameIcon1, styles.frameIcon1Layout]}
-          contentFit="cover"
-          source={require("../assets/group-6.png")}
-        />
-      </View>
-    </LinearGradient>
+          style={styles.cityImage}
+          source={require("../assets/images/city-background.png")}
+        ></Image>
+        {/* </KeyboardAvoidingView> */}
+      </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  loginTypo: {
-    textAlign: "left",
-    fontFamily: FontFamily.robotoBold,
-    fontWeight: "600",
-    lineHeight: 20,
-  },
-  iconPosition: {
-    left: 0,
-    overflow: "hidden",
-  },
-  frameIcon1Layout: {
-    height: 45,
-    position: "absolute",
-  },
-  framePosition1: {
-    left: "50%",
-    top: "50%",
-    position: "absolute",
-  },
-  framePosition: {
-    marginLeft: -130,
-    height: 45,
-    left: "50%",
-    top: "50%",
-    position: "absolute",
-  },
-  wrapperLayout: {
-    borderWidth: 0.5,
-    borderColor: Color.colorWhite,
-    borderStyle: "solid",
-    backgroundColor: Color.colorGray_200,
-    marginTop: -22.5,
-    height: 45,
-    width: 249,
-    borderRadius: Border.br_3xs,
-    padding: Padding.p_3xs,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    left: "50%",
-    top: "50%",
-    position: "absolute",
-  },
-  usernameTypo: {
-    fontFamily: FontFamily.robotoMedium,
-    fontWeight: "500",
-    textAlign: "left",
-    lineHeight: 20,
-  },
-  dontHaveAn: {
-    color: Color.colorWhite,
-  },
-  signUpHere: {
-    color: Color.colorBlue,
-  },
-  dontHaveAnContainer: {
-    width: 240,
-    height: "100%",
-    fontSize: 15.25,
-  },
-  dontHaveAnAccountSignUpWrapper: {
-    marginTop: 226,
-    marginLeft: -110,
-    padding: Padding.p_3xs,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    left: "50%",
-    top: "50%",
-    height: 200,
-    // width: ,
-    // width: "100%",
-    // height: "100%",
-    position: "absolute",
-  },
-  image2Icon: {
-    right: -12,
-    bottom: -70,
-    maxWidth: "100%",
-    height: 257,
-    position: "absolute",
-    left: 0,
-  },
-  login: {
-    fontSize: FontSize.size_5xl * 0.8,
-    color: Color.colorWhite,
-  },
-  loginWrapper: {
-    marginTop: 150,
-    backgroundColor: Color.colorBlue,
-    width: 249,
-    borderRadius: Border.br_3xs,
-    height: 55,
-    marginLeft: -118,
-    padding: Padding.p_3xs,
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    left: "50%",
-    top: "50%",
-  },
-  frameIcon: {
-    marginTop: -351,
-    marginLeft: -116,
-    width: 240,
-    height: 293,
-  },
-  username: {
-    fontSize: FontSize.size_sm,
-    color: Color.colorGray_100,
-  },
-  usernameWrapper: {
-    marginLeft: -118,
-    borderWidth: 0.5,
-    borderColor: Color.colorWhite,
-    borderStyle: "solid",
-    backgroundColor: Color.colorGray_200,
-    marginTop: -22.5,
-    textAlign: "center",
-    color: Color.colorWhite,
-  },
-  frameIcon1: {
-    top: 0,
-    width: 45,
-    left: 0,
-    overflow: "hidden",
-  },
-  frame: {
-    marginTop: -19,
-    width: 260,
-  },
-  forgotPasswordusername: {
-    marginTop: -10,
-    marginLeft: -29,
-    color: Color.colorWhite,
-    fontSize: FontSize.size_xs,
-    left: "50%",
-    top: "50%",
-    position: "absolute",
-  },
-  frame1: {
-    marginTop: 110,
-    marginLeft: -123,
-    width: 252,
-    height: 20,
-    overflow: "hidden",
-  },
-  passwordWrapper: {
-    marginLeft: -118.5,
-    textAlign: "center",
-    color: Color.colorWhite,
-  },
-  frame2: {
-    marginTop: 49,
-    width: 261,
-    overflow: "hidden",
-  },
-  iphone13141: {
+  gradientContainer: {
     flex: 1,
     width: "100%",
     height: 844,
     backgroundColor: "transparent",
     overflow: "hidden",
   },
+  container: {
+    flex: 1,
+    // backgroundColor: colors.red,
+  },
+  background: {
+    // flex: 1,
+  },
+  logoWrapper: {
+    marginBottom: 5,
+    marginTop: 50,
+    justifyContent: "center",
+  },
+  logo: {
+    alignSelf: "center",
+    marginBottom: 15.09,
+    width: 238,
+    aspectRatio: 1,
+  },
+  logoTextWrapper: {
+
+  },
+  logoText: {
+    textAlign: "center",
+    fontSize: 45,
+    fontWeight: "bold",
+    fontFamily: "Nunito-Medium",
+    color: colors.white,
+  },
+  loginWrapper: {
+    // flex: 1,
+    marginHorizontal: 74,
+  },
+  loginInput: {
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
+    padding: 10,
+    borderColor: colors.white_55,
+    backgroundColor: colors.white_20,
+    textAlign: "center",
+    color: colors.white_55,
+  },
+  loginInputUsername: {
+    marginBottom: 23,
+  },
+  loginInputPassword: {
+    marginBottom: 12,
+  },
+  loginForgotPasswordWrapper: {
+    alignItems: "flex-end",
+  },
+  loginForgotPassword: {
+    marginBottom: 32,
+    color: colors.white,
+    fontFamily: "Roboto-Regular",
+  },
+  loginButton: {
+    backgroundColor: colors.blue,
+    // width: '100%',
+    height: 45,
+    borderRadius: 10,
+    padding: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 37,
+    // gap: 10
+  },
+  loginButtonText: {
+    fontFamily: "Roboto-Bold",
+    fontSize: 24,
+    color: colors.white,
+  },
+  signUpWrapper: {
+    padding: 10,
+    width: "100%",
+    // height: 50,
+    // backgroundColor: colors.white_20, // can leave this out later
+    zIndex: 1,
+    marginBottom: 37
+  },
+  signUpWrapperTextContainer: {
+    textAlign: "center",
+    fontFamily: "Roboto-Regular",
+    fontSize: 14,
+    fontWeight: "600"
+  },
+  signUpWrapperTextFirst: {
+    color: colors.white,
+  },
+  signUpWrapperTextSecond: {
+    color: colors.blue,
+  },
+  cityImage: {
+    height: 115,
+    width: "100%",
+  },
+  keyboardView: {
+    flexGrow: 1,
+  },
 });
 
-export default IPhone13141;
+export default Login;

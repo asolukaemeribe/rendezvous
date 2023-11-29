@@ -3,8 +3,8 @@ import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import IPhone13145 from "./screens/profilePreference";
-import IPhone13144 from "./screens/createAccount";
-import IPhone13141 from "./screens/login";
+import CreateAccount from "./screens/createAccount";
+import Login from "./screens/login";
 import ProfilePage from "./screens/profilePage";
 import ProfileCreation from "./screens/profileCreation";
 import * as SplashScreen from 'expo-splash-screen';
@@ -44,20 +44,20 @@ const App = () => {
         {hideSplashScreen ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
-              name="IPhone13141"
-              component={IPhone13141}
+              name="Login"
+              component={Login}
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="IPhone13144"
-              component={IPhone13144}
+              name="CreateAccount"
+              component={CreateAccount}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name="IPhone13145"
               component={IPhone13145}
               options={{ headerShown: false }}
-            />
+            /> */}
             <Stack.Screen
               name="ProfileCreation"
               component={ProfileCreation}

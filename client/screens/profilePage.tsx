@@ -49,7 +49,7 @@ const ProfilePage = () => {
     // ---- Firebase Sign Out ---- 
     signOut(auth).then(() => {
       // Sign-out successful.
-          navigation.navigate("IPhone13141");
+          navigation.navigate("Login");
           console.log("Signed out successfully")
       }).catch((error) => {
       // An error happened.

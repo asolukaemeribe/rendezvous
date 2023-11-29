@@ -22,7 +22,7 @@ import {
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 
 
-const IPhone13144 = () => {
+const CreateAccount = () => {
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -53,16 +53,16 @@ const IPhone13144 = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   return (
-    <KeyboardAvoidingView style={styles.iphone13144} behavior="padding">
+    <KeyboardAvoidingView style={styles.createAccountContainer} behavior="padding">
     <LinearGradient
-      style={styles.iphone13144}
+      style={styles.createAccountContainer}
       locations={[0, 1]}
       colors={["#ff0000", "#db17a4"]}
     >
       <TouchableOpacity
         style={styles.vector}
         activeOpacity={0.2}
-        onPress={() => navigation.navigate("IPhone13141")}
+        onPress={() => navigation.navigate("Login")}
       >
         <Image
           style={styles.icon}
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     left: "50%",
     top: "50%",
   },
-  iphone13144: {
+  createAccountContainer: {
     flex: 1,
     height: 844,
     backgroundColor: "transparent",
@@ -277,4 +277,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default IPhone13144;
+export default CreateAccount;
