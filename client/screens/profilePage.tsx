@@ -7,7 +7,7 @@ import {
   View,
   TextInput,
   Image,
-  FlatList
+  FlatList,
 } from "react-native";
 // import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -15,27 +15,53 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { Padding, FontFamily, Color, FontSize, Border } from "../GlobalStyles";
 import { StatusBar } from "expo-status-bar";
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import profilePreferenceData from "../assets/data/profilePreferenceData";
-
+import Octicons from "react-native-vector-icons/Octicons";
+import padding from "../assets/global_styles/padding";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 
 const ProfilePage = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
+  const auth = FIREBASE_AUTH;
+
+  const logOut = async () => {
+    // ---- Firebase Sign Out ---- 
+    signOut(auth).then(() => {
+      // Sign-out successful.
+          navigation.navigate("IPhone13141");
+          console.log("Signed out successfully")
+      }).catch((error) => {
+      // An error happened.
+      });
+  }
 
   return (
     <View style={styles.profilePageView}>
-      <StatusBar style="auto"/>
+      <StatusBar style="auto" />
       <LinearGradient
         style={styles.profilePageGradient}
         locations={[0, 0.9]}
         colors={["#ff0000", "#db17a4"]}
       >
-        <View style={[styles.safeAreaPadding, {marginTop: insets.top}]}></View>
+        <View
+          style={[styles.safeAreaPadding, { marginTop: insets.top }]}
+        ></View>
         {/* TODO: replace this with a proper navigation bar */}
         <View style={styles.topNavigationBarWrapper}>
+          <Pressable onPress={() => logOut()}>
+            <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
+          </Pressable>
           <Text style={styles.profilePageLogo}>Rendezvous</Text>
+          <View style={{width: 29}}></View>
         </View>
         <View style={styles.profilePhotoWrapper}>
           <Image
@@ -50,36 +76,57 @@ const ProfilePage = () => {
             </View>
             <View style={styles.profileDataAgeSchoolWrapper}>
               <Text style={styles.profileDataAge}>21 {" | "}</Text>
-              <Text style={styles.profileDataSchool}>University of Pennsylvania</Text>
+              <Text style={styles.profileDataSchool}>
+                University of Pennsylvania
+              </Text>
             </View>
           </View>
           <View style={styles.profileDataImageWrapper}>
-            <Image style={styles.profileDataImage} source={require("../assets/images/maleSymbol.png")}/>
+            <Image
+              style={styles.profileDataImage}
+              source={require("../assets/images/maleSymbol.png")}
+            />
           </View>
         </View>
         <View style={styles.profilePreferencesWrapper}>
           <View style={styles.profilePreferencesDescriptionWrapper}>
-            <Image style={styles.profileDataImage} source={require("../assets/images/handWave.png")}/>
-            <Text style={styles.profilePreferencesDescriptionText}>If you love Computer Science, then you will love me!</Text>
+            <Image
+              style={styles.profileDataImage}
+              source={require("../assets/images/handWave.png")}
+            />
+            <Text style={styles.profilePreferencesDescriptionText}>
+              If you love Computer Science, then you will love me!
+            </Text>
           </View>
           <View style={styles.profilePreferencesLookingForWrapper}>
-            <Image style={styles.profileDataImage} source={require("../assets/images/search.png")}/>
-            <Text style={styles.profilePreferencesLookingForText}>Looking for long term</Text>
+            <Image
+              style={styles.profileDataImage}
+              source={require("../assets/images/search.png")}
+            />
+            <Text style={styles.profilePreferencesLookingForText}>
+              Looking for long term
+            </Text>
           </View>
           <View style={styles.profilePreferencesInterestsWrapper}>
             <View style={styles.profilePreferencesInterestsTitleWrapper}>
-              <Text style={styles.profilePreferencesInterestsTitleText}>Interests</Text>
+              <Text style={styles.profilePreferencesInterestsTitleText}>
+                Interests
+              </Text>
             </View>
             <View style={styles.profilePreferencesInterestsListWrapper}>
               {/* <ProfileTypesList profilePreferenceData={profilePreferenceData} />; */}
-              <Text style={styles.profilePreferencesInterestsListItem}>Teaching</Text>
-              <Text style={styles.profilePreferencesInterestsListItem}>Technology</Text>
-              <Text style={styles.profilePreferencesInterestsListItem}>Fun</Text>
+              <Text style={styles.profilePreferencesInterestsListItem}>
+                Teaching
+              </Text>
+              <Text style={styles.profilePreferencesInterestsListItem}>
+                Technology
+              </Text>
+              <Text style={styles.profilePreferencesInterestsListItem}>
+                Fun
+              </Text>
             </View>
           </View>
         </View>
-        
-      
       </LinearGradient>
     </View>
   );
@@ -100,26 +147,35 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     width: "100%",
   },
-  safeAreaPadding: {
-  },
+  safeAreaPadding: {},
   profilePageLogo: {
     fontFamily: FontFamily.robotoBold,
     fontSize: 23,
     color: Color.colorWhite,
-    textAlign: "center",
+    // textAlign: "center",
+    // alignSelf: "center",
   },
   topNavigationBarWrapper: {
     // height: 44,
     // width: "100%",
     // backgroundColor: Color.colorTransparent,
-    // justifyContent: "center",
+    justifyContent: "space-between",
+    flexDirection: "row",
+    alignItems: "center",
     // alignItems: "center",
-    marginBottom: 10
+    paddingHorizontal: padding.sm,
+    marginBottom: 10,
+  },
+  topNavigationBarSignOut: {
+    // position: "absolute",
+    // left: 17,
+    // top: 17,
+    alignSelf: "flex-start",
   },
   profilePhotoWrapper: {
     // borderWidth: 1,
     // borderColor: '#000000',
-    height: 375
+    height: 375,
   },
   profilePhoto: {
     // height: "100%"
@@ -138,32 +194,26 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10
+    marginBottom: 10,
   },
-  profileDataTextWrapper: {
-
-  },
+  profileDataTextWrapper: {},
   profileDataName: {
     color: Color.colorWhite,
     fontSize: 27,
   },
-  profileDataAgeSchoolWrapper : {
-    flexDirection: "row"
+  profileDataAgeSchoolWrapper: {
+    flexDirection: "row",
   },
   profileDataAge: {
     color: Color.colorWhite,
-    fontSize: 22
+    fontSize: 22,
   },
   profileDataSchool: {
     color: Color.colorWhite,
-    fontSize: 22
+    fontSize: 22,
   },
-  profileDataImageWrapper: {
-
-  },
-  profileDataImage: {
-
-  },
+  profileDataImageWrapper: {},
+  profileDataImage: {},
   profilePreferencesWrapper: {
     height: 375,
   },
@@ -173,12 +223,12 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     flexDirection: "row",
     alignItems: "center",
-  },  
+  },
   profilePreferencesDescriptionText: {
     color: Color.colorWhite,
     fontSize: 18,
     marginLeft: 10,
-    flexShrink: 1
+    flexShrink: 1,
   },
   profilePreferencesLookingForWrapper: {
     height: 57,
@@ -191,8 +241,7 @@ const styles = StyleSheet.create({
     color: Color.colorWhite,
     fontSize: 18,
     marginLeft: 10,
-    flexShrink: 1
-
+    flexShrink: 1,
   },
   profilePreferencesInterestsWrapper: {
     paddingHorizontal: 17,
@@ -205,22 +254,18 @@ const styles = StyleSheet.create({
   profilePreferencesInterestsTitleText: {
     color: Color.colorWhite,
     fontSize: 20,
-    fontFamily: FontFamily.robotoBold
+    fontFamily: FontFamily.robotoBold,
   },
   profilePreferencesInterestsListWrapper: {
     paddingHorizontal: 8,
     flexDirection: "column",
   },
-  profilePreferencesInterestsList: {
-
-  },
+  profilePreferencesInterestsList: {},
   profilePreferencesInterestsListItem: {
     color: Color.colorWhite,
     fontSize: 18,
-    marginBottom: 2
+    marginBottom: 2,
   },
-
-
 });
 
 export default ProfilePage;

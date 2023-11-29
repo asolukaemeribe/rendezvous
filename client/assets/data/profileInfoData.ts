@@ -34,7 +34,7 @@ const profileInfoData = [
       'Male': false,
       'Female': false,
       'Non-Binary': false,
-      'Other': ''
+      // 'Other': ''
     },
     completed: false
   },

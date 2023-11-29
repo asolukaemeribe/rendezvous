@@ -80,7 +80,7 @@ const IPhone13141 = () => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
-      navigation.navigate("IPhone13145");
+      navigation.navigate("ProfilePage");
       // router.replace("/profileCreation");
       // alert('Logged In!');
     } catch (error: any) {
@@ -254,18 +254,23 @@ const styles = StyleSheet.create({
     color: Color.colorBlue,
   },
   dontHaveAnContainer: {
-    width: 226,
-    fontSize: FontSize.size_xs,
+    width: 240,
+    height: "100%",
+    fontSize: 15.25,
   },
   dontHaveAnAccountSignUpWrapper: {
     marginTop: 226,
-    marginLeft: -100,
+    marginLeft: -110,
     padding: Padding.p_3xs,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
     left: "50%",
     top: "50%",
+    height: 200,
+    // width: ,
+    // width: "100%",
+    // height: "100%",
     position: "absolute",
   },
   image2Icon: {

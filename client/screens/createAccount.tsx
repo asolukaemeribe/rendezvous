@@ -5,18 +5,55 @@ import {
   TouchableOpacity,
   Text,
   View,
-  TextInput
+  TextInput,
+  KeyboardAvoidingView
 } from "react-native";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { Padding, FontFamily, Color, FontSize, Border } from "../GlobalStyles";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
+import { FIREBASE_AUTH } from "../FirebaseConfig";
+
 
 const IPhone13144 = () => {
+
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const auth = FIREBASE_AUTH;
+
+  const signUp = async () => {
+    setLoading(true);
+    try {
+      console.log("(" + email + ")");
+      console.log(password);
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(response);
+      navigation.navigate("ProfileCreation");
+      // alert("Success!");
+    } catch (error: any) {
+      console.log(error);
+      alert("Sign Up Failed: " + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   return (
+    <KeyboardAvoidingView style={styles.iphone13144} behavior="padding">
     <LinearGradient
       style={styles.iphone13144}
       locations={[0, 1]}
@@ -36,7 +73,7 @@ const IPhone13144 = () => {
       <Text style={styles.createNewAccount}>Create New Account</Text>
       <Pressable
         style={[styles.signUpWrapper, styles.signWrapperFlexBox]}
-        onPress={() => navigation.navigate("IPhone13145")}
+        onPress={() => signUp()}
       >
         <Text style={[styles.signUp, styles.signUpTypo]}>Sign Up</Text>
       </Pressable>
@@ -52,7 +89,9 @@ const IPhone13144 = () => {
       </View>
       <View style={[styles.frame1, styles.framePosition]}>
       <TextInput style={[styles.usernameWrapper, styles.signWrapperFlexBox]}     
-                placeholder="Password" placeholderTextColor={Color.colorGray_100}>
+                placeholder="Password" placeholderTextColor={Color.colorGray_100}
+                secureTextEntry={true}
+                onChangeText={(text) => setPassword(text) }>
         </TextInput>
         <Image
           style={styles.frameChild}
@@ -62,7 +101,8 @@ const IPhone13144 = () => {
       </View>
       <View style={[styles.frame2, styles.framePosition]}>
       <TextInput style={[styles.usernameWrapper, styles.signWrapperFlexBox]}     
-                placeholder="Email" placeholderTextColor={Color.colorGray_100}>
+                placeholder="Email" placeholderTextColor={Color.colorGray_100}
+                onChangeText={(text) => setEmail(text)}>
         </TextInput>
         <Image
           style={styles.frameChild}
@@ -94,6 +134,7 @@ const IPhone13144 = () => {
         </Text>
       </View>
     </LinearGradient>
+    </KeyboardAvoidingView>
   );
 };
 

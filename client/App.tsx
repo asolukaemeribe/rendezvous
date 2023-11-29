@@ -6,6 +6,7 @@ import IPhone13145 from "./screens/profilePreference";
 import IPhone13144 from "./screens/createAccount";
 import IPhone13141 from "./screens/login";
 import ProfilePage from "./screens/profilePage";
+import ProfileCreation from "./screens/profileCreation";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from "react";
 
@@ -43,11 +44,6 @@ const App = () => {
         {hideSplashScreen ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
-              name="ProfilePage"
-              component={ProfilePage}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
               name="IPhone13141"
               component={IPhone13141}
               options={{ headerShown: false }}
@@ -60,9 +56,18 @@ const App = () => {
             <Stack.Screen
               name="IPhone13145"
               component={IPhone13145}
-              // options={{ headerShown: false }}
+              options={{ headerShown: false }}
             />
-
+            <Stack.Screen
+              name="ProfileCreation"
+              component={ProfileCreation}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ProfilePage"
+              component={ProfilePage}
+              options={{ headerShown: false }}
+            />
           </Stack.Navigator>
         ) : null}
       </NavigationContainer>
