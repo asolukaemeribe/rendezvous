@@ -43,6 +43,7 @@ const App = () => {
       <NavigationContainer >
         {hideSplashScreen ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
+
             <Stack.Screen
               name="IPhone13141"
               component={IPhone13141}

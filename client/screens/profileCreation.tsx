@@ -36,7 +36,7 @@ const ProfilePage = () => {
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
 
-  const [date, setDate] = React.useState(new Date(2000, 1, 1));
+  const [date, setDate] = React.useState(new Date(null));
   const [dateStr, setDateStr] = React.useState("");
 
   // Code for date picker
@@ -124,14 +124,15 @@ const ProfilePage = () => {
     console.log("gender: " + getSelected(genderTypesArray));
     console.log("orientation: " + getSelected(orientationTypesArray));
     console.log("birthday: " + dateStr);
+    console.log("age: ");
 
     // Date (non-string) I'll figure out later but also maybe no need
-    console.log(date);
+    console.log(date.toString());
     navigation.navigate("ProfilePage");
   }
   // TODO: Don't allow user to navigate back to home page from here
 
-  const mask = "MM/DD/YYYY";
+  const mask = "MM-DD-YYYY";
   // const isValid = this.datetimeField.isValid()
 
   return (
@@ -259,7 +260,11 @@ const ProfilePage = () => {
                 blurOnSubmit={true}
                 onChangeText={(formatted, extracted) => {
                   setDateStr(formatted);
-                  setDate(new Date(extracted));
+                  console.log(formatted);
+                  let timestamp = Date.parse(formatted);
+                  console.log(timestamp);
+                  setDate(new Date(timestamp));
+                  console.log("date to string " + date.toString() + date + new Date(formatted.toString()))
                 }}
                 type="datetime"
                 options={{ format: mask }}

@@ -26,12 +26,24 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
+import colors from "../assets/global_styles/color";
 
 const ProfilePage = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
+
+  const profileData = {
+    first_name: "Boon",
+    last_name: "Loo",
+    about_me: "If you love Computer Science, then you will love me!",
+    pronouns: "he/him",
+    gender: "Male",
+    age: "21",
+    school: "University of Pennsylvania",
+    looking_for: "Looking for long term"
+  };
 
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 
@@ -71,22 +83,23 @@ const ProfilePage = () => {
         </View>
         <View style={styles.profileDataWrapper}>
           <View style={styles.profileDataTextWrapper}>
-            <View>
-              <Text style={styles.profileDataName}>Boon Loo</Text>
+            <View style={styles.profileDataNamePronounWrapper}>
+              <Text style={styles.profileDataName}>{profileData.first_name} {profileData.last_name} </Text>
+              <Text style={styles.profilePronounsText}> {profileData.pronouns} </Text>
             </View>
             <View style={styles.profileDataAgeSchoolWrapper}>
-              <Text style={styles.profileDataAge}>21 {" | "}</Text>
+              <Text style={styles.profileDataAge}>{profileData.age}{" | "}</Text>
               <Text style={styles.profileDataSchool}>
-                University of Pennsylvania
+                {profileData.school}
               </Text>
             </View>
           </View>
-          <View style={styles.profileDataImageWrapper}>
+          {/* <View style={styles.profileDataImageWrapper}>
             <Image
               style={styles.profileDataImage}
               source={require("../assets/images/maleSymbol.png")}
             />
-          </View>
+          </View> */}
         </View>
         <View style={styles.profilePreferencesWrapper}>
           <View style={styles.profilePreferencesDescriptionWrapper}>
@@ -95,7 +108,7 @@ const ProfilePage = () => {
               source={require("../assets/images/handWave.png")}
             />
             <Text style={styles.profilePreferencesDescriptionText}>
-              If you love Computer Science, then you will love me!
+              {profileData.about_me}
             </Text>
           </View>
           <View style={styles.profilePreferencesLookingForWrapper}>
@@ -104,7 +117,7 @@ const ProfilePage = () => {
               source={require("../assets/images/search.png")}
             />
             <Text style={styles.profilePreferencesLookingForText}>
-              Looking for long term
+              {profileData.looking_for}
             </Text>
           </View>
           <View style={styles.profilePreferencesInterestsWrapper}>
@@ -116,13 +129,13 @@ const ProfilePage = () => {
             <View style={styles.profilePreferencesInterestsListWrapper}>
               {/* <ProfileTypesList profilePreferenceData={profilePreferenceData} />; */}
               <Text style={styles.profilePreferencesInterestsListItem}>
-                Teaching
+                • Teaching
               </Text>
               <Text style={styles.profilePreferencesInterestsListItem}>
-                Technology
+                • Technology
               </Text>
               <Text style={styles.profilePreferencesInterestsListItem}>
-                Fun
+                • Fun
               </Text>
             </View>
           </View>
@@ -266,6 +279,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginBottom: 2,
   },
+  profileDataNamePronounWrapper: {
+    flexDirection: "row",
+    alignItems: "baseline"
+  },
+  profilePronounsText: {
+    color: colors.white_75,
+    fontSize: 18,
+  }
 });
 
 export default ProfilePage;
