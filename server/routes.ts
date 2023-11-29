@@ -37,10 +37,14 @@ const createuser = async function(req, res) {
     const about_me = req.query.about_me ?? '';
     const pronouns = req.query.pronouns ?? '';
     const gender = req.query.gender ?? '';
+    const orientation = req.query.orientation ?? '';
+    const birthday = req.query.birthday ?? '';
+
+    console.log("server side bday: " + birthday)
 
     connection.query(`
-        INSERT INTO PROFILES (id, first_name, last_name, about_me, pronouns, gender)
-        VALUES (${uid}, ${first_name}, ${last_name}, ${about_me}, ${pronouns}, ${gender})
+        INSERT INTO PROFILES (id, first_name, last_name, about_me, pronouns, gender, orientation, birthday)
+        VALUES ('${uid}', '${first_name}', '${last_name}', '${about_me}', '${pronouns}', '${gender}', '${orientation}','${birthday}')
     `, (err, data) => {
         if (err) {
             console.log(err);
