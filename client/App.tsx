@@ -43,13 +43,6 @@ const App = () => {
       <NavigationContainer >
         {hideSplashScreen ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-
-            <Stack.Screen
-              name="ProfileCreation"
-              component={ProfileCreation}
-              options={{ headerShown: false }}
-            />
-          
             <Stack.Screen
               name="IPhone13141"
               component={IPhone13141}
@@ -65,11 +58,11 @@ const App = () => {
               component={IPhone13145}
               options={{ headerShown: false }}
             />
-            {/*<Stack.Screen
+            <Stack.Screen
               name="ProfileCreation"
               component={ProfileCreation}
               options={{ headerShown: false }}
-            />*/}
+            />
             <Stack.Screen
               name="ProfilePage"
               component={ProfilePage}
