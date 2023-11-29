@@ -35,6 +35,7 @@ const IPhone13141 = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState<Location.LocationObject>();
+  const [userID, setUserID] = useState(null);
   const auth = FIREBASE_AUTH;
 
   useEffect(() => {
@@ -57,8 +58,10 @@ const IPhone13141 = () => {
       // User is signed in, see docs for a list of available properties
       // https://firebase.google.com/docs/reference/js/auth.user
       const uid = user.uid;
+      setUserID(uid);
+      navigation.navigate("ProfilePage", userID);
       console.log("User is signed in with user id: " + uid);
-      connectToDynamoDB();
+      //connectToDynamoDB();
       // ...
     } else {
       // User is signed out
@@ -80,7 +83,7 @@ const IPhone13141 = () => {
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
-      navigation.navigate("ProfilePage");
+      navigation.navigate("ProfilePage", userID);
       // router.replace("/profileCreation");
       // alert('Logged In!');
     } catch (error: any) {

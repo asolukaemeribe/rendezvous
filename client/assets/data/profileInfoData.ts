@@ -42,9 +42,8 @@ const profileInfoData = [
     id: 'profile-info-data-5',
     category: 'Sexual Orientation',
     types: {
-      'Straight': false,
-      'Gay': false,
-      'Lesbian': false,
+      'Heterosexual': false,
+      'Homosexual': false,
       'Bisexual': false,
       'Asexual': false,
       'Demisexual': false,

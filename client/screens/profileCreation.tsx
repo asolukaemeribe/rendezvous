@@ -26,6 +26,7 @@ import profileInfoData from "../assets/data/profileInfoData";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { TextInputMask } from "react-native-masked-text";
 import dayjs from "dayjs";
+const config = require('../config.json');
 
 const ProfilePage = () => {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -133,6 +134,20 @@ const ProfilePage = () => {
     console.log("birthday: " + dateStr);
     console.log("age: " + getAge());
 
+    const userID = "userID6"
+
+    fetch(`http://${config.server_host}:${config.server_port}/newuser?uid=${userID}` + 
+    `&first_name=${firstName}` +
+    `&last_name=${lastName}` + 
+    `&about_me=${aboutMe}` + 
+    `&pronouns=${pronouns}` + 
+    `&gender=${getSelected(genderTypesArray)}` + 
+    `&orientation=${getSelected(orientationTypesArray)}` +
+    `&birthday=${dateStr}` +
+    `&age=${getAge()}`)
+      .then(res => {console.log("success! check database")})
+
+
     // Date (non-string) I'll figure out later but also maybe no need
     console.log(date.toString());
     navigation.navigate("ProfilePage");
@@ -141,7 +156,7 @@ const ProfilePage = () => {
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
-  const mask = 'MM/DD/YYYY';
+  const mask = 'MM-DD-YYYY';
   // const isValid = this.datetimeField.isValid()
 
   return (

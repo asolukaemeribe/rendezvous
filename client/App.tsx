@@ -45,6 +45,12 @@ const App = () => {
           <Stack.Navigator screenOptions={{ headerShown: false }}>
 
             <Stack.Screen
+              name="ProfileCreation"
+              component={ProfileCreation}
+              options={{ headerShown: false }}
+            />
+          
+            <Stack.Screen
               name="IPhone13141"
               component={IPhone13141}
               options={{ headerShown: false }}
@@ -59,11 +65,11 @@ const App = () => {
               component={IPhone13145}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
+            {/*<Stack.Screen
               name="ProfileCreation"
               component={ProfileCreation}
               options={{ headerShown: false }}
-            />
+            />*/}
             <Stack.Screen
               name="ProfilePage"
               component={ProfilePage}
