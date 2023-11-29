@@ -113,7 +113,8 @@ const ProfilePage = () => {
   };
 
   const getSelected = (array) => {
-    return array.find((item) => item.isSelected).id;
+    const selected = array.find((item) => item.isSelected);
+    return selected ? selected.id : "";
   }
 
   const getAge = () => {
