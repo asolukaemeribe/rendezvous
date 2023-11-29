@@ -35,6 +35,9 @@ Thumbs.db
 *.swo
 *.swn
 
+# AWS config
+aws.config.js
+
 # Expo OTA update
 .expo/
 .expo-shared/
