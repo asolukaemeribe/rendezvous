@@ -409,6 +409,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginRight: 10,
     padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
   },
   listButtonItemUnselected: {
     backgroundColor: colors.white_55,
@@ -419,7 +421,7 @@ const styles = StyleSheet.create({
     borderColor: colors.black,
   },
   listButtonItemText: {
-    fontSize: 12,
+    fontSize: 11,
     textAlign: "center",
     color: colors.white,
   },
