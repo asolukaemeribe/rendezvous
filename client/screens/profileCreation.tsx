@@ -28,8 +28,8 @@ import { TextInputMask } from "react-native-masked-text";
 import dayjs from "dayjs";
 const config = require('../config.json');
 
-const ProfilePage = () => {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+const ProfilePage = ({ route, navigation }) => {
+  //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
 
@@ -135,7 +135,7 @@ const ProfilePage = () => {
     console.log("birthday: " + dateStr);
     console.log("age: " + getAge());
 
-    const userID = "userID6"
+    const { userID } = route.params;
 
     fetch(`http://${config.server_host}:${config.server_port}/newuser?uid=${userID}` + 
     `&first_name=${firstName}` +
@@ -151,7 +151,7 @@ const ProfilePage = () => {
 
     // Date (non-string) I'll figure out later but also maybe no need
     console.log(date.toString());
-    navigation.navigate("ProfilePage");
+    navigation.navigate("ProfilePage", {userID: userID});
   }
   // TODO: Don't allow user to navigate back to home page from here
 

@@ -27,14 +27,15 @@ import {
   signOut,
 } from "firebase/auth";
 import colors from "../assets/global_styles/color";
+import { useEffect, useState } from "react";
+const config = require('../config.json');
 
-const ProfilePage = () => {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+const ProfilePage = ({ route, navigation }) => {
+  //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-
-  const profileData = {
+  const [profileData, setProfileData] = useState({
     first_name: "Boon",
     last_name: "Loo",
     about_me: "If you love Computer Science, then you will love me!",
@@ -43,7 +44,47 @@ const ProfilePage = () => {
     age: "21",
     school: "University of Pennsylvania",
     looking_for: "Looking for long term"
-  };
+  })
+
+  /*const profileData = {
+    first_name: "Boon",
+    last_name: "Loo",
+    about_me: "If you love Computer Science, then you will love me!",
+    pronouns: "he/him",
+    gender: "Male",
+    age: "21",
+    school: "University of Pennsylvania",
+    looking_for: "Looking for long term"
+  };*/
+
+  useEffect(() => {
+
+    const { userID } = route.params;
+    console.log("PROFILE PAGE UID: " + userID)
+
+    fetch(`http://${config.server_host}:${config.server_port}/user/${userID}`)
+    .then(res => res.json())
+    .then(resJson => {
+      console.log("resJson first name: " + resJson.first_name)
+      /*profileData.first_name = resJson.first_name;
+      profileData.last_name = resJson.last_name;
+      profileData.about_me = resJson.about_me;
+      profileData.pronouns = resJson.pronouns;
+      profileData.gender = resJson.gender;*/
+      //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
+      setProfileData({
+        first_name: resJson.first_name,
+        last_name: resJson.last_name,
+        about_me: resJson.about_me,
+        pronouns: resJson.pronouns,
+        gender: resJson.gender,
+        age: "21",
+        school: "University of Pennsylvania",
+        looking_for: "Looking for long term"
+      })
+    });
+  }, []);
+
 
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 

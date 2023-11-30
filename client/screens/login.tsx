@@ -11,7 +11,7 @@ import {
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation, ParamListBase } from "@react-navigation/native";
+import { useNavigation, ParamListBase, useRoute } from "@react-navigation/native";
 import { FontFamily, Color, Border, Padding, FontSize } from "../GlobalStyles";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { connectToDynamoDB } from "../api/aws";
@@ -40,8 +40,8 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState<Location.LocationObject>();
-  const [userID, setUserID] = useState(null);
   const auth = FIREBASE_AUTH;
+  const route = useRoute()
 
   useEffect(() => {
     (async () => {
@@ -55,32 +55,45 @@ const Login = () => {
       setLocation(location);
       console.log(location.coords);
     })();
+
+    const user = auth.currentUser;
+    if (user) {
+      const uid = user.uid;
+      console.log("Application has started. User is signed in so navigating to profile page of user with uid: " + uid)
+      navigation.navigate("ProfilePage", {userID: uid});
+    } else {
+      console.log("Application has started; no user is signed in.")
+    }
+
   }, []);
 
   // do things based on whether user is signed in
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      // User is signed in, see docs for a list of available properties
-      // https://firebase.google.com/docs/reference/js/auth.user
-      const uid = user.uid;
-      setUserID(uid);
-      // navigation.navigate("ProfilePage", userID);
-      console.log("User is signed in with user id: " + uid);
-      //connectToDynamoDB();
-      // ...
-    } else {
-      // User is signed out
-      console.log("User is signed out. ;)");
-      // ...
+  /*onAuthStateChanged(auth, (user) => {
+    console.log("NAVIGATING AS CURRENT ROUTE NAME IS: "+ route.name)
+    if (route.name == "Login") {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/auth.user
+        const uid = user.uid;
+        navigation.navigate("ProfilePage", {userID: uid});
+        console.log("User is signed in with user id: " + uid);
+        //connectToDynamoDB();
+        // ...
+      } else {
+        // User is signed out
+        console.log("User is signed out. ;)");
+        // ...
+      }
     }
-  });
+  });*/
 
   const logIn = async () => {
     setLoading(true);
     try {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
-      navigation.navigate("ProfilePage", userID);
+      const user = auth.currentUser;
+      navigation.navigate("ProfilePage", {userID: user.uid});
       // router.replace("/profileCreation");
       // alert('Logged In!');
     } catch (error: any) {
@@ -165,7 +178,7 @@ const Login = () => {
               value={email}
               style={[styles.loginInput, styles.loginInputUsername]}
               autoCapitalize="none"
-              placeholder="Username"
+              placeholder="email"
               placeholderTextColor={colors.white_55}
               onChangeText={(text) => setEmail(text)}
             ></TextInput>

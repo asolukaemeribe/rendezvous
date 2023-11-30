@@ -22,7 +22,7 @@ import {
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 
 
-const CreateAccount = () => {
+const CreateAccount = ({ navigation }) => {
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -40,7 +40,16 @@ const CreateAccount = () => {
         password
       );
       console.log(response);
-      navigation.navigate("ProfileCreation");
+      const user = auth.currentUser;
+      if (user) {
+        const uid = user.uid;
+        navigation.navigate("ProfileCreation", {userID: uid});
+      } else {
+        // user is not signed in for some reason
+        console.log("user is not signed in")
+      }
+
+      
       // alert("Success!");
     } catch (error: any) {
       console.log(error);
@@ -50,7 +59,7 @@ const CreateAccount = () => {
     }
   };
 
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+  //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   return (
     <KeyboardAvoidingView style={styles.createAccountContainer} behavior="padding">
@@ -62,7 +71,7 @@ const CreateAccount = () => {
       <TouchableOpacity
         style={styles.vector}
         activeOpacity={0.2}
-        onPress={() => navigation.navigate("Login")}
+      onPress={() => /*navigation.navigate("Login")*/{}}
       >
         <Image
           style={styles.icon}
