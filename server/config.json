@@ -1,9 +1,14 @@
 {
-  "rds_host": "user-schema.citg8wo1jqa1.us-east-1.rds.amazonaws.com",
-  "rds_port": "3306",
-  "rds_user": "admin",
-  "rds_password": "password",
-  "rds_db": "users",
+  "mysql_host": "user-schema.citg8wo1jqa1.us-east-1.rds.amazonaws.com",
+  "mysql_port": "3306",
+  "mysql_user": "admin",
+  "mysql_password": "password",
+  "mysql_db": "users",
+  "psql_host": "user-location.citg8wo1jqa1.us-east-1.rds.amazonaws.com",
+  "psql_port": "5432",
+  "psql_user": "administrator",
+  "psql_password": "florida1",
+  "psql_db": "users",
   "server_host": "localhost",
   "server_port": "8080"
 }
