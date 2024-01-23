@@ -12,6 +12,9 @@ app.use(cors({
 // provide their handlers that we implemented in routes.js
 app.get('/user/:uid', routes.user);
 app.get('/newuser', routes.createuser);
+app.get('/newuserlocation', routes.createuserlocation);
+app.get('/getusersinradius', routes.getusersinradius);
+app.get('/updateuserlocation', routes.updateuserlocation)
 
 app.get('/', (req, res) => {
     res.send('Rendezvous Server made with Express');

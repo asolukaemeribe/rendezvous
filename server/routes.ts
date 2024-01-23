@@ -117,5 +117,8 @@ const updateuserlocation = async function(req, res) {
 
 module.exports = {
     user,
-    createuser
+    createuser,
+    createuserlocation,
+    getusersinradius,
+    updateuserlocation
 }
