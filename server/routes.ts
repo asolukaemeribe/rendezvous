@@ -25,6 +25,7 @@ const pql_db = pgp({
 
 
 // mysql user-schema Routes
+// gets infornation about user with inputted userID
 const user = async function(req, res) {
     const userID = req.params.uid
 
@@ -42,6 +43,7 @@ const user = async function(req, res) {
     });
 }
 
+// creates user with the inputter parameters
 const createuser = async function(req, res) {
     const uid = req.query.uid;
     const first_name = req.query.first_name ?? '';
@@ -67,6 +69,8 @@ const createuser = async function(req, res) {
 }
 
 // pql user-location Routes
+
+// inserts user into table with a certain latitude and longitude
 const createuserlocation = async function(req, res) {
     const uid = req.query.uid
     const lat = req.query.lat
@@ -78,6 +82,7 @@ const createuserlocation = async function(req, res) {
     })
 }
 
+// gets all users in a certain radius (in meters) from the inputted latitude and longitude
 const getusersinradius = async function(req, res) {
     const uid = req.query.uid
     const lat = req.query.lat
@@ -96,6 +101,7 @@ const getusersinradius = async function(req, res) {
     })
 }
 
+// updates user location of user with the inputted userID to the inputted latitude and longitude
 const updateuserlocation = async function(req, res) {
     const uid = req.query.uid
     const lat = req.query.lat
