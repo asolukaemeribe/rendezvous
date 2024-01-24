@@ -69,6 +69,39 @@ const createuser = async function(req, res) {
     });
 }
 
+// updates user profile pic
+const updateuserprofilepic = async function(req, res) {
+    const uid = req.query.uid;
+    const uri = req.query.uri ?? '';
+    console.log('uid:' + uid)
+    console.log('uri: ' + uri)
+    connection.query(`UPDATE PROFILES
+    SET image = '${uri}'
+    WHERE id = '${uid}'`,
+    (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! User image was updated with uid: " + uid);
+        }
+    });
+}
+
+const getnameageimage = async function(req, res) {
+    const uid = req.query.uid
+    //need to add age here
+    connection.query(`SELECT first_name, last_name, image
+    FROM PROFILES
+    WHERE id = '${uid}'`, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data[0]);
+        }
+    });
+}
+
 // pql user-location Routes
 
 // inserts user into table with a certain latitude and longitude
@@ -116,31 +149,6 @@ const updateuserlocation = async function(req, res) {
     })
 }
 
-// updates user profile pic
-const updateuserprofilepic = async function(req, res) {
-    const uid = req.query.uid
-    const uri = req.query.uri
-    console.log('uid:' + uid)
-    console.log('uri: ' + uri)
-    connection.query(`UPDATE PROFILES
-    SET image = '${uri}'
-    WHERE id = '${uid}'`)
-    .catch((error) => {
-        console.log('ERROR:', error)
-    })
-}
-
-const getNameAgeImage = async function(req, res) {
-    const uid = req.query.uid
-    //need to add age here
-    connection.query(`SELECT first_name, last_name, image
-    FROM PROFILES
-    WHERE id = '${uid}'`)
-    .catch((error) => {
-        console.log('ERROR:', error)
-    })
-}
-
 module.exports = {
     user,
     createuser,
@@ -148,5 +156,5 @@ module.exports = {
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,
-    getNameAgeImage
+    getnameageimage
 }
