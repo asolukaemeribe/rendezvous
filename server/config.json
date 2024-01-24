@@ -8,7 +8,7 @@
   "psql_port": "5432",
   "psql_user": "administrator",
   "psql_password": "florida1",
-  "psql_db": "users",
+  "psql_db": "postgres",
   "server_host": "localhost",
   "server_port": "8080"
 }
