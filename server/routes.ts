@@ -120,15 +120,16 @@ const createuserlocation = async function(req, res) {
 const getusersinradius = async function(req, res) {
     const uid = req.query.uid
     const lat = req.query.lat
-    const long = req.query.lat
+    const long = req.query.long
     const rad = req.query.rad
 
     pql_db.any(`SELECT *
     FROM users
     WHERE ST_DWithin(location, 'POINT(${long} ${lat})', ${rad})
-        AND id != '${uid}'`)
+    AND id != '${uid}'`)
     .then(data => {
-        res.json(data); // print new user id;
+        res.json(data); 
+        console.log('these are the users: ' + data) // print users in radius
     })
     .catch((error) => {
         console.log('ERROR:', error)
@@ -144,6 +145,7 @@ const updateuserlocation = async function(req, res) {
     pql_db.none(`UPDATE users
     SET location = ST_GeomFromText('POINT(${long} ${lat})', 4326)
     WHERE id = '${uid}'`)
+    .then(console.log("success! User location updated"))
     .catch((error) => {
         console.log('ERROR:', error)
     })
@@ -156,5 +158,5 @@ module.exports = {
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,
-    getnameageimage
+    getnameageimage,
 }
