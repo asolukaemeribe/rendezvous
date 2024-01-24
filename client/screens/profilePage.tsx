@@ -78,7 +78,7 @@ const ProfilePage = ({ route, navigation }) => {
         about_me: resJson.about_me,
         pronouns: resJson.pronouns,
         gender: resJson.gender,
-        age: "21",
+        age: resJson.age,
         school: "University of Pennsylvania",
         looking_for: "Looking for long term"
       })
