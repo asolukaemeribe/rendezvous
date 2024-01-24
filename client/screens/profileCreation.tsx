@@ -151,7 +151,8 @@ const ProfilePage = ({ route, navigation }) => {
 
     // Date (non-string) I'll figure out later but also maybe no need
     console.log(date.toString());
-    navigation.navigate("ProfilePage", {userID: userID});
+    navigation.navigate("PictureSelection", {userID: userID})
+    //navigation.navigate("ProfilePage", {userID: userID});
   }
   // TODO: Don't allow user to navigate back to home page from here
 

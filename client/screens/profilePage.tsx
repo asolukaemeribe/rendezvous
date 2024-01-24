@@ -42,6 +42,7 @@ const ProfilePage = ({ route, navigation }) => {
     pronouns: "he/him",
     gender: "Male",
     age: "21",
+    image: "",
     school: "University of Pennsylvania",
     looking_for: "Looking for long term"
   })
@@ -78,6 +79,7 @@ const ProfilePage = ({ route, navigation }) => {
         about_me: resJson.about_me,
         pronouns: resJson.pronouns,
         gender: resJson.gender,
+        image: resJson.image,
         age: "21",
         school: "University of Pennsylvania",
         looking_for: "Looking for long term"
@@ -146,7 +148,8 @@ const ProfilePage = ({ route, navigation }) => {
           <View style={styles.profilePreferencesDescriptionWrapper}>
             <Image
               style={styles.profileDataImage}
-              source={require("../assets/images/handWave.png")}
+              //source={require("../assets/images/handWave.png")}
+              source = {{uri: profileData.image}}
             />
             <Text style={styles.profilePreferencesDescriptionText}>
               {profileData.about_me}

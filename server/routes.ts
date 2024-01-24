@@ -115,10 +115,37 @@ const updateuserlocation = async function(req, res) {
     })
 }
 
+// updates user profile pic
+const updateuserprofilepic = async function(req, res) {
+    const uid = req.query.uid
+    const uri = req.query.uri
+    console.log('uid:' + uid)
+    console.log('uri: ' + uri)
+    pql_db.none(`UPDATE PROFILES
+    SET image = '${uri}'
+    WHERE id = '${uid}'`)
+    .catch((error) => {
+        console.log('ERROR:', error)
+    })
+}
+
+const getNameAgeImage = async function(req, res) {
+    const uid = req.query.uid
+    //need to add age here
+    pql_db.none(`SELECT first_name, last_name, image
+    FROM PROFILES
+    WHERE id = '${uid}'`)
+    .catch((error) => {
+        console.log('ERROR:', error)
+    })
+}
+
 module.exports = {
     user,
     createuser,
     createuserlocation,
     getusersinradius,
-    updateuserlocation
+    updateuserlocation,
+    updateuserprofilepic,
+    getNameAgeImage
 }

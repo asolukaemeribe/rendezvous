@@ -7,6 +7,7 @@ import CreateAccount from "./screens/createAccount";
 import Login from "./screens/login";
 import ProfilePage from "./screens/profilePage";
 import ProfileCreation from "./screens/profileCreation";
+import PictureSelection from "./screens/pictureSelection";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from "react";
 
@@ -61,6 +62,11 @@ const App = () => {
             <Stack.Screen
               name="ProfileCreation"
               component={ProfileCreation}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PictureSelection"
+              component={PictureSelection}
               options={{ headerShown: false }}
             />
             <Stack.Screen

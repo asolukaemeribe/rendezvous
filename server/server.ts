@@ -15,6 +15,8 @@ app.get('/newuser', routes.createuser);
 app.get('/newuserlocation', routes.createuserlocation);
 app.get('/getusersinradius', routes.getusersinradius);
 app.get('/updateuserlocation', routes.updateuserlocation)
+app.get('/updateimage/:uid', routes.updateuserprofilepic);
+app.get('/getimage/:uid', routes.getNameAgeImage);
 
 app.get('/', (req, res) => {
     res.send('Rendezvous Server made with Express');
