@@ -8,6 +8,7 @@ import Login from "./screens/login";
 import ProfilePage from "./screens/profilePage";
 import ProfileCreation from "./screens/profileCreation";
 import PictureSelection from "./screens/pictureSelection";
+import PeopleNearby from "./screens/peopleNearby";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from "react";
 
@@ -54,11 +55,6 @@ const App = () => {
               component={CreateAccount}
               options={{ headerShown: false }}
             />
-            {/* <Stack.Screen
-              name="IPhone13145"
-              component={IPhone13145}
-              options={{ headerShown: false }}
-            /> */}
             <Stack.Screen
               name="ProfileCreation"
               component={ProfileCreation}
@@ -67,6 +63,11 @@ const App = () => {
             <Stack.Screen
               name="PictureSelection"
               component={PictureSelection}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PeopleNearby"
+              component={PeopleNearby}
               options={{ headerShown: false }}
             />
             <Stack.Screen

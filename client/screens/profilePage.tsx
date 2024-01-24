@@ -10,6 +10,7 @@ import {
   FlatList,
 } from "react-native";
 // import { Image } from "expo-image";
+import Feather from "react-native-vector-icons/Feather";
 import { LinearGradient } from "expo-linear-gradient";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase } from "@react-navigation/native";
@@ -31,7 +32,7 @@ import { useEffect, useState } from "react";
 const config = require('../config.json');
 
 const ProfilePage = ({ route, navigation }) => {
-  //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+  // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
@@ -112,8 +113,11 @@ const ProfilePage = ({ route, navigation }) => {
         ></View>
         {/* TODO: replace this with a proper navigation bar */}
         <View style={styles.topNavigationBarWrapper}>
-          <Pressable onPress={() => logOut()}>
+          {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
+          </Pressable> */}
+          <Pressable onPress ={() => navigation.navigate("PeopleNearby")}>
+            <Feather name="chevron-left" size={32} color="white" />
           </Pressable>
           <Text style={styles.profilePageLogo}>Rendezvous</Text>
           <View style={{width: 29}}></View>
