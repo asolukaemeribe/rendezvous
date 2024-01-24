@@ -32,6 +32,7 @@ import colors from "../assets/global_styles/color";
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+const config = require('../config.json');
 
 
 const Login = () => {
@@ -93,6 +94,12 @@ const Login = () => {
       const response = await signInWithEmailAndPassword(auth, email, password);
       console.log(response);
       const user = auth.currentUser;
+
+      // update location in postgresql db
+      fetch(`http://${config.server_host}:${config.server_port}/updateuserlocation?uid=${user.uid}` +
+      `&lat=${location.coords.latitude}&long=${location.coords.longitude}`)
+        .then(res => {console.log("success! check database. Location should be updated.")})
+
       navigation.navigate("ProfilePage", {userID: user.uid});
       // router.replace("/profileCreation");
       // alert('Logged In!');

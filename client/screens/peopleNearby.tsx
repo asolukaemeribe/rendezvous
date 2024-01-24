@@ -35,6 +35,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { useEffect, useState } from "react";
 
 const config = require('../config.json');
 
@@ -43,23 +44,6 @@ const PeopleNearby = ({ route, navigation }) => {
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-
-  const [aboutMe, setAboutMe] = React.useState("");
-  const [pronouns, setPronouns] = React.useState("");
-  const [firstName, setFirstName] = React.useState("");
-  const [lastName, setLastName] = React.useState("");
-
-  const [date, setDate] = React.useState(dayjs());
-  const [dateStr, setDateStr] = React.useState("");
-
-  const [genderTypesArray, setGenderTypesArray] = React.useState(
-    Object.entries(
-      profileInfoData.find((item) => item.category === "Gender").types
-    ).map(([key, value]) => ({
-      id: key,
-      isSelected: value,
-    }))
-  );
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -71,6 +55,25 @@ const PeopleNearby = ({ route, navigation }) => {
         isSelected: value,
       }))
     );
+
+    const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
+
+    useEffect(() => {
+        const { userID, lat, long, rad } = route.params;
+        console.log("POT MATCHES PAGE UID: " + userID)
+        console.log("POT MATCHES PAGE LAT: " + lat)
+        console.log("POT MATCHES PAGE LONG: " + long)
+        console.log("POT MATCHES PAGE RAD: " + rad)
+    
+        fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
+        .then(res => res.json())
+        .then(resJson => {
+          console.log("POT MATCHES PAGE resJson: ")
+          console.log(resJson)
+          setNearbyUsersData(resJson);  
+        });
+    }, []);
+
 
   const renderButtonItem = (item) => {
     // const handleButtonPress = () => {
@@ -94,19 +97,23 @@ const PeopleNearby = ({ route, navigation }) => {
     //   });
     // };
 
+    const handleButtonPress = () => {
+      navigation.push("ProfilePage", {userID: item.id})
+    }
+
     return (
       <Pressable
         style={[
           styles.nearbyUsersListItem,
         ]}
-        // onPress={() => handleButtonPress()}
+        onPress={() => handleButtonPress()}
       >
           <ImageBackground
             style={styles.nearbyUsersListPhoto}
             imageStyle={styles.nearbyUsersListPhotoImageStyle}
-            source={require("../assets/images/profilePhotoLow.png")}
+            source={require("../assets/images/imageNotFound.png")}
           > 
-            <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}, {item.age}</Text>
+            <Text style={styles.nearbyUsersListItemText}>{item.id}{/*{item.first_name} {item.last_name}, {item.age}*/}</Text>
           </ImageBackground>
       </Pressable>
     );
@@ -117,44 +124,6 @@ const PeopleNearby = ({ route, navigation }) => {
     return selected ? selected.id : "";
   }
 
-  const getAge = () => {
-    let now = dayjs();
-    const age = now.diff(date, 'year');
-    return age;
-  }
-
-  // ------ For Matt ------ //
-  const createProfile = () => {
-    console.log("Create Profile");
-    console.log("first_name: " + firstName);
-    console.log("last_name: " + lastName);
-    console.log("about_me: " + aboutMe);
-    console.log("pronouns: " + pronouns);
-    console.log("gender: " + getSelected(genderTypesArray));
-    console.log("orientation: " + getSelected(orientationTypesArray));
-    console.log("birthday: " + dateStr);
-    console.log("age: " + getAge());
-
-    const { userID } = route.params;
-
-    fetch(`http://${config.server_host}:${config.server_port}/newuser?uid=${userID}` + 
-    `&first_name=${firstName}` +
-    `&last_name=${lastName}` + 
-    `&about_me=${aboutMe}` + 
-    `&pronouns=${pronouns}` + 
-    `&gender=${getSelected(genderTypesArray)}` + 
-    `&orientation=${getSelected(orientationTypesArray)}` +
-    `&birthday=${dateStr}` +
-    `&age=${getAge()}`)
-      .then(res => {console.log("success! check database")})
-
-
-    // Date (non-string) I'll figure out later but also maybe no need
-    console.log(date.toString());
-    navigation.navigate("ProfilePage", {userID: userID});
-  }
-
-  
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 
     signOut(auth).then(() => {
@@ -166,73 +135,6 @@ const PeopleNearby = ({ route, navigation }) => {
       });
   }
   // TODO: Don't allow user to navigate back to home page from here
-
-  // use this list for profiles
-  const profilesList = [
-    {
-      id: "boonloo1",
-      first_name: "Boon",
-      last_name: "Loo",
-      pronouns: "he/him",
-      age: "21"
-    },
-    {
-      id: "boonloo2",
-      first_name: "Boon",
-      last_name: "Looo",
-      pronouns: "he/him",
-      age: "22"
-    },
-    {
-      id: "boonloo3",
-      first_name: "Boon",
-      last_name: "Loooo",
-      pronouns: "he/him",
-      age: "23"
-    },
-    {
-      id: "boonloo4",
-      first_name: "Boon",
-      last_name: "Looooo",
-      pronouns: "he/him",
-      age: "24"
-    },
-    {
-      id: "boonloo5",
-      first_name: "Boon",
-      last_name: "Loooooo",
-      pronouns: "he/him",
-      age: "25"
-    },
-    {
-      id: "boonloo6",
-      first_name: "Boon",
-      last_name: "Looooooo",
-      pronouns: "he/him",
-      age: "26"
-    },
-    {
-      id: "boonloo7",
-      first_name: "Boon",
-      last_name: "Loooooooo",
-      pronouns: "he/him",
-      age: "27"
-    },
-    {
-      id: "boonloo8",
-      first_name: "Boon",
-      last_name: "Looooooooo",
-      pronouns: "he/him",
-      age: "28"
-    },
-    {
-      id: "boonloo9",
-      first_name: "Boon",
-      last_name: "Loooooooooo",
-      pronouns: "he/him",
-      age: "29"
-    },
-  ];
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
@@ -272,7 +174,7 @@ const PeopleNearby = ({ route, navigation }) => {
             </View> */}
           <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
                 <FlatList
-                  data={profilesList}
+                  data={nearbyUsersData}
                   renderItem={({ item }) =>
                     renderButtonItem(item)
                   }
@@ -380,7 +282,7 @@ const styles = StyleSheet.create({
     // padding: 10
   },
   nearbyUsersListItemText: {
-    fontSize: 20,
+    fontSize: 15,
     fontFamily: FontFamily.interBold,
     fontWeight: "900",
     color: colors.white,

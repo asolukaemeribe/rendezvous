@@ -15,6 +15,7 @@ import { useCallback } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View, Text, Pressable, TouchableOpacity } from "react-native";
 import { AppLoading } from "expo";
+import ViewPotentialMatchesPage from "./screens/viewPotentialMatchesPage";
 
 // SplashScreen.preventAutoHideAsync();
 
@@ -73,6 +74,11 @@ const App = () => {
             <Stack.Screen
               name="ProfilePage"
               component={ProfilePage}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ViewPotentialMatchesPage"
+              component={ViewPotentialMatchesPage}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Location from "expo-location";
 import {
   Pressable,
   StyleSheet,
@@ -47,6 +48,7 @@ const ProfilePage = ({ route, navigation }) => {
     school: "University of Pennsylvania",
     looking_for: "Looking for long term"
   })
+  const [location, setLocation] = useState<Location.LocationObject>();
 
   /*const profileData = {
     first_name: "Boon",
@@ -60,6 +62,13 @@ const ProfilePage = ({ route, navigation }) => {
   };*/
 
   useEffect(() => {
+    // get location
+    (async () => {
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      console.log("LOCATION proflePage: ");
+      console.log(location.coords)
+    })();
 
     const { userID } = route.params;
     console.log("PROFILE PAGE UID: " + userID)
@@ -100,6 +109,24 @@ const ProfilePage = ({ route, navigation }) => {
       });
   }
 
+  const viewPotentialMatches = async () => {
+    const { userID } = route.params;
+    console.log("should navigate to viewPotentialMatches Page now")
+    navigation.navigate("ViewPotentialMatchesPage", {userID: userID,
+      lat: location.coords.latitude,
+      long: location.coords.longitude,
+      rad: 16094}) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
+  }
+
+  const viewPeopleNearby = async () => {
+    const { userID } = route.params;
+    console.log("should navigate to peopleNearby Page now")
+    navigation.navigate("PeopleNearby", {userID: userID,
+      lat: location.coords.latitude,
+      long: location.coords.longitude,
+      rad: 16094}) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
+  }
+
   return (
     <View style={styles.profilePageView}>
       <StatusBar style="auto" />
@@ -116,16 +143,19 @@ const ProfilePage = ({ route, navigation }) => {
           {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
           </Pressable> */}
-          <Pressable onPress ={() => navigation.navigate("PeopleNearby")}>
+          <Pressable onPress ={() => viewPeopleNearby()}>
             <Feather name="chevron-left" size={32} color="white" />
           </Pressable>
+          {/*<Pressable onPress={() => viewPotentialMatches()}>
+            <Octicons style={styles.topNavigationBarSignOut} name="arrow-right" size={24} color="white" />
+          </Pressable>*/}
           <Text style={styles.profilePageLogo}>Rendezvous</Text>
           <View style={{width: 29}}></View>
         </View>
         <View style={styles.profilePhotoWrapper}>
           <Image
             style={styles.profilePhoto}
-            source={require("../assets/images/profilePhotoLow.png")}
+            source={require("../assets/images/defaultProfilePic.png")}
           />
         </View>
         <View style={styles.profileDataWrapper}>

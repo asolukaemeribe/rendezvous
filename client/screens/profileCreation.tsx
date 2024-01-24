@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Location from "expo-location";
 import {
   Pressable,
   StyleSheet,
@@ -26,6 +27,7 @@ import profileInfoData from "../assets/data/profileInfoData";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { TextInputMask } from "react-native-masked-text";
 import dayjs from "dayjs";
+import { useEffect } from "react";
 const config = require('../config.json');
 
 const ProfilePage = ({ route, navigation }) => {
@@ -40,6 +42,7 @@ const ProfilePage = ({ route, navigation }) => {
 
   const [date, setDate] = React.useState(dayjs());
   const [dateStr, setDateStr] = React.useState("");
+  const [location, setLocation] = React.useState<Location.LocationObject>();
 
   // Code for date picker
   // const [showDatePicker, setShowDatePicker] = React.useState(false);
@@ -137,6 +140,7 @@ const ProfilePage = ({ route, navigation }) => {
 
     const { userID } = route.params;
 
+    // add profile data to mysql database
     fetch(`http://${config.server_host}:${config.server_port}/newuser?uid=${userID}` + 
     `&first_name=${firstName}` +
     `&last_name=${lastName}` + 
@@ -148,6 +152,10 @@ const ProfilePage = ({ route, navigation }) => {
     `&age=${getAge()}`)
       .then(res => {console.log("success! check database")})
 
+    // add location data to postgresql database
+    fetch(`http://${config.server_host}:${config.server_port}/newuserlocation?uid=${userID}` +
+    `&lat=${location.coords.latitude}&long=${location.coords.longitude}`)
+      .then(res => {console.log("success! check database. Location should be added.")})
 
     // Date (non-string) I'll figure out later but also maybe no need
     console.log(date.toString());
@@ -160,6 +168,16 @@ const ProfilePage = ({ route, navigation }) => {
   dayjs.extend(customParseFormat);
   const mask = 'MM/DD/YYYY';
   // const isValid = this.datetimeField.isValid()
+
+  useEffect(() => {
+    // get location
+    (async () => {
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      console.log("LOCATION proflePage: ");
+      console.log(location.coords)
+    })();
+  }, []);
 
   return (
     <KeyboardAvoidingView behavior="padding" style={styles.keyboardView}>
