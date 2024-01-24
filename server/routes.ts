@@ -122,7 +122,7 @@ const updateuserprofilepic = async function(req, res) {
     const uri = req.query.uri
     console.log('uid:' + uid)
     console.log('uri: ' + uri)
-    pql_db.none(`UPDATE PROFILES
+    connection.query(`UPDATE PROFILES
     SET image = '${uri}'
     WHERE id = '${uid}'`)
     .catch((error) => {
@@ -133,7 +133,7 @@ const updateuserprofilepic = async function(req, res) {
 const getNameAgeImage = async function(req, res) {
     const uid = req.query.uid
     //need to add age here
-    pql_db.none(`SELECT first_name, last_name, image
+    connection.query(`SELECT first_name, last_name, image
     FROM PROFILES
     WHERE id = '${uid}'`)
     .catch((error) => {
