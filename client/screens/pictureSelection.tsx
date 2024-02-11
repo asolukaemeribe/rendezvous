@@ -1,13 +1,71 @@
 import * as React from "react";
 
-import { Button, Image, View, Platform, StyleSheet, Pressable, Text } from 'react-native';
+import { Button, Image, View, StyleSheet, Pressable, Text } from 'react-native';
 import { LinearGradient } from "expo-linear-gradient";
 import * as ImagePicker from 'expo-image-picker';
 import colors from "../assets/global_styles/color";
 const config = require('../config.json');
+import { Auth } from "firebase/auth";
+import AWS from 'aws-sdk';
+// import {  } from "module";
+// import { Amplify } from "";
+
+import { RNS3 } from 'react-native-aws3';
+
+
 
 const PictureSelection = ({ route, navigation }) => {
   const [image, setImage] = React.useState(null);
+
+  const uploadToS3 = async (result) => {
+    //const s3 = new AWS.S3();
+    // const key = `images/${Date.now()}-${Math.floor(Math.random() * 10000)}.jpg`;
+    // AWS.config.update({
+    //     accessKeyId: 'AKIAQZZTHZFDIMFX7CUZ',
+    //     secretAccessKey: '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',
+    //     region: 'us-east-1',
+    //     maxRetries: 3,
+    //     httpOptions: {timeout: 30000, connectTimeout: 5000},
+    //   });
+
+    
+    
+    // const params = {
+    //   //keyPrefix: "uploads/",
+    //   bucket: "rendezvousfiles",
+    //   region: "us-east-1",
+    //   accessKey: "AKIAQZZTHZFDIMFX7CUZ",
+    //   secretKey: "a+0QJspoF+imywCYy3+j8q0/luImE2F57nxfa2nE",
+    //   successActionStatus: 201
+    // }
+
+    const filePath = result.assets[0].uri.replace('file://', '');
+    const { userID } = route.params;
+    const file = {
+        uri: filePath,
+        name: userID + ".png",
+        type: result.assets[0].type
+    };
+
+    const options = {
+        //keyPrefix: 'uploads/', // Replace with your S3 bucket path
+        bucket: 'rendezvousfiles',
+        region: 'us-east-1',
+        accessKey: 'AKIAQZZTHZFDIMFX7CUZ',
+        secretKey: 'a+0QJspoF+imywCYy3+j8q0/luImE2F57nxfa2nE',
+        successActionStatus: 201,
+    };
+
+    try {
+        const response = await RNS3.put(file, options);
+        console.log('AWS S3 Response:', response);
+      //const data = await s3.upload(params).promise();
+      //console.log('Image uploaded successfully:', data.Location);
+      // You can now use data.Location to store the image URL or perform other operations
+    } catch (error) {
+        console.error('Error uploading image:', error);
+    }
+  };
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -20,16 +78,18 @@ const PictureSelection = ({ route, navigation }) => {
     console.log(result);
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      setImage(result);
+      
     }
   };
 
 const addProfilePicture = () => {
     const { userID } = route.params;
     console.log(image);
-    fetch(`http://${config.server_host}:${config.server_port}/updateimage?uid=${userID}` + 
-    `&uri=${image}`)
-      .then(res => {console.log("picture updated")})
+    uploadToS3(image);
+    // fetch(`http://${config.server_host}:${config.server_port}/updateimage?uid=${userID}` + 
+    // `&uri=${image}`)
+    //   .then(res => {console.log("picture updated")})
 
     navigation.navigate("ProfilePage", {userID: userID})
 }
@@ -41,7 +101,7 @@ const addProfilePicture = () => {
     colors={[colors.red, colors.pink]}
     >
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+        {image && <Image source={{ uri: image.assets[0].uri }} style={{ width: 200, height: 200 }} />}
         <Button title="Choose Profile Picture" onPress={pickImage} />
         </View>
         <Pressable style={styles.continueButton} onPress={() => addProfilePicture()}>
