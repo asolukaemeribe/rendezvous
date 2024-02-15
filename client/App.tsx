@@ -9,12 +9,13 @@ import ProfilePage from "./screens/profilePage";
 import ProfileCreation from "./screens/profileCreation";
 import PictureSelection from "./screens/pictureSelection";
 import PeopleNearby from "./screens/peopleNearby";
+import UserInterestsPage from "./screens/userInterests";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from "react";
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View, Text, Pressable, TouchableOpacity } from "react-native";
-import { AppLoading } from "expo";
+//import { AppLoading } from "expo";
 import ViewPotentialMatchesPage from "./screens/viewPotentialMatchesPage";
 
 // SplashScreen.preventAutoHideAsync();
@@ -62,11 +63,6 @@ const App = () => {
               options={{ headerShown: false }}
             />
             <Stack.Screen
-              name="PictureSelection"
-              component={PictureSelection}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
               name="PeopleNearby"
               component={PeopleNearby}
               options={{ headerShown: false }}
@@ -79,6 +75,16 @@ const App = () => {
             <Stack.Screen
               name="ViewPotentialMatchesPage"
               component={ViewPotentialMatchesPage}
+              options={{ headerShown: false }}
+            /> 
+            <Stack.Screen
+              name="SelectInterestsPage"
+              component={UserInterestsPage}
+              options={{ headerShown: false}}
+            />
+            <Stack.Screen
+              name="PictureSelection"
+              component={PictureSelection}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

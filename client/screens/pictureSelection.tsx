@@ -77,7 +77,7 @@ const PictureSelection = ({ route, navigation }) => {
 
     console.log(result);
 
-    if (!result.canceled) {
+    if (image) {
       setImage(result);
       
     }
@@ -87,10 +87,6 @@ const addProfilePicture = () => {
     const { userID } = route.params;
     console.log(image);
     uploadToS3(image);
-    // fetch(`http://${config.server_host}:${config.server_port}/updateimage?uid=${userID}` + 
-    // `&uri=${image}`)
-    //   .then(res => {console.log("picture updated")})
-
     navigation.navigate("ProfilePage", {userID: userID})
 }
 

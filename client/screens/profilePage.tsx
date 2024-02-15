@@ -146,9 +146,9 @@ const ProfilePage = ({ route, navigation }) => {
           <Pressable onPress ={() => viewPeopleNearby()}>
             <Feather name="chevron-left" size={32} color="white" />
           </Pressable>
-          {/*<Pressable onPress={() => viewPotentialMatches()}>
+          <Pressable onPress={() => viewPotentialMatches()}>
             <Octicons style={styles.topNavigationBarSignOut} name="arrow-right" size={24} color="white" />
-          </Pressable>*/}
+          </Pressable>
           <Text style={styles.profilePageLogo}>Rendezvous</Text>
           <View style={{width: 29}}></View>
         </View>
