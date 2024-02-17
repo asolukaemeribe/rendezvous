@@ -17,6 +17,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View, Text, Pressable, TouchableOpacity } from "react-native";
 //import { AppLoading } from "expo";
 import ViewPotentialMatchesPage from "./screens/viewPotentialMatchesPage";
+import AddUserInfo from "./screens/addUserInfo";
+import DatePreferencesPage from "./screens/datePreferences";
 
 // SplashScreen.preventAutoHideAsync();
 
@@ -85,6 +87,16 @@ const App = () => {
             <Stack.Screen
               name="PictureSelection"
               component={PictureSelection}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="AddUserInfoPage"
+              component={AddUserInfo}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="DatePreferencesPage"
+              component={DatePreferencesPage}
               options={{ headerShown: false }}
             />
           </Stack.Navigator>

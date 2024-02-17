@@ -269,6 +269,7 @@ const ProfilePage = ({ route, navigation }) => {
             </View>
             <View style={styles.buttonsListWrapper}>
               <FlatList
+                //numColumns={4}
                 data={orientationTypesArray}
                 renderItem={({ item }) =>
                   renderButtonItem(

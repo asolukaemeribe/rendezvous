@@ -126,19 +126,6 @@ const UserInterestsPage = ({ route, navigation }) => {
         }
       };
 
-    //   const renderItem = (item) => {
-    //     const isSelected = selectedItems.includes(item);
-    //     return (
-    //       <CheckBox
-    //         key={item}
-    //         title={item}
-    //         checked={isSelected}
-    //         onClick={() => handleSelectItem(item)}
-    //         containerStyle={{ backgroundColor: 'transparent', borderWidth: 0 }}
-    //       />
-    //     );
-    //   };
-
       const renderItem = ({ item }) => {
         const isSelected = selectedItems.includes(item);
         return (
@@ -156,7 +143,7 @@ const UserInterestsPage = ({ route, navigation }) => {
       };
 
       const addInterests = () => {
-        navigation.navigate("PictureSelection", {userID: userID})
+        navigation.navigate("AddUserInfoPage", {userID: userID})
       }
     
 
@@ -211,12 +198,8 @@ const styles = StyleSheet.create({
       width: "100%",
     },
     buttonsListWrapper: {
-    //   paddingTop: padding.xl,
       paddingLeft: padding.xl,
       paddingRight: padding.xs,
-    //   paddingBottom: 100,
-      //justifyContent: "center",
-    //   marginBottom: 10,
     },
     listButtonItem: {
       height: 40,
