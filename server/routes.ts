@@ -120,16 +120,15 @@ const createuserlocation = async function(req, res) {
 const getusersinradius = async function(req, res) {
     const uid = req.query.uid
     const lat = req.query.lat
-    const long = req.query.long
+    const long = req.query.lat
     const rad = req.query.rad
 
     pql_db.any(`SELECT *
     FROM users
     WHERE ST_DWithin(location, 'POINT(${long} ${lat})', ${rad})
-    AND id != '${uid}'`)
+        AND id != '${uid}'`)
     .then(data => {
-        res.json(data); 
-        console.log('these are the users: ' + data) // print users in radius
+        res.json(data); // print new user id;
     })
     .catch((error) => {
         console.log('ERROR:', error)
@@ -145,10 +144,66 @@ const updateuserlocation = async function(req, res) {
     pql_db.none(`UPDATE users
     SET location = ST_GeomFromText('POINT(${long} ${lat})', 4326)
     WHERE id = '${uid}'`)
-    .then(console.log("success! User location updated"))
     .catch((error) => {
         console.log('ERROR:', error)
     })
+}
+
+const updateuserinfo = async function(req, res) {
+    const uid = req.query.uid;
+    const hometown = req.query.hometown ?? '';
+    const lookingFor = req.query.lookingFor ?? '';
+    const race = req.query.race ?? [];
+    const religion = req.query.religion ?? '';
+    const languages = req.query.languages ?? [];
+    connection.query(`UPDATE PROFILES
+    SET hometown = '${hometown}',
+        lookingFor = '${lookingFor}',
+        race = '${race}',
+        religion = '${religion}',
+        languages = '${languages}'
+    WHERE id = '${uid}'`,
+    (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! User info was updated with uid: " + uid);
+        }
+    });
+}
+
+const updatedatepreferences = async function(req, res) {
+    const uid = req.query.uid;
+    const vegetarian = req.query.uri ?? '';
+    const priceLevel = req.query.priceLevel ?? '';
+    const timesOfDay = req.query ?? [];
+    connection.query(`UPDATE PROFILES
+    SET vegetarian = '${vegetarian}',
+        priceLevel =  '${priceLevel}'
+        timesOfDay = ${timesOfDay}
+    WHERE id = '${uid}'`,
+    (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! User preferences was updated with uid: " + uid);
+        }
+    });
+}
+
+const updateuserinterests = async function(req, res) {
+    const uid = req.query.uid;
+    const interests = req.query.inserts ?? [];
+    connection.query(`UPDATE PROFILES
+    SET interests = '${interests}'
+    WHERE id = '${uid}'`,
+    (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! User interests was updated with uid: " + uid);
+        }
+    });
 }
 
 module.exports = {
@@ -159,4 +214,5 @@ module.exports = {
     updateuserlocation,
     updateuserprofilepic,
     getnameageimage,
+    updatedatepreferences
 }

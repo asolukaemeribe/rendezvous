@@ -47,26 +47,6 @@ const DatePreferencesPage = ({ route, navigation }) => {
         );
   }
 
-  const renderButtonItem = (item, setSelected) => {
-    const handleButtonPress = () => {
-        setSelected(item)
-    };
-    
-    return (
-        <Pressable
-          style={[
-            styles.listButtonItem,
-            item in [selectedTimes, ]
-              ? styles.listButtonItemSelected
-              : styles.listButtonItemUnselected,
-          ]}
-          onPress={() => handleButtonPress()}
-        >
-          <Text style={styles.listButtonItemText}>{item}</Text>
-        </Pressable>
-    );
-        }
-
     const timesOfDay = [
       "Morning",
       "Afternoon",
@@ -81,20 +61,15 @@ const DatePreferencesPage = ({ route, navigation }) => {
         "$$$$$"
     ];
 
-    const religions = [
+    const vegetarian = [
         "Yes",
         "No"
   ];
 
-  const handleSelectItem = (item) => {
-      if (selectedTimes.includes(item)) {
-        setSelectedTimes(selectedTimes.filter((selectedItem) => selectedItem !== item));
-      } else if (selectedTimes.length < 5) {
-        setSelectedTimes([...selectedTimes, item]);
-      }
-    };
-
-    const addInterests = () => {
+    const addDatePreferences = () => {
+        fetch(`http://${config.server_host}:${config.server_port}/updatedatepreferences?uid=${userID}` + 
+        `&vegetarian=${isVegetarian}` + `&priceLevel=${selectedPriceLevel}` + `&timesOfDay= ${selectedTimes}`)
+          .then(res => {console.log("info updated")})
       navigation.navigate("PictureSelection", {userID: userID})
     }
   
@@ -139,12 +114,12 @@ const DatePreferencesPage = ({ route, navigation }) => {
                   </View>
                   <SelectList
                   setSelected={(val) => setIsVegetarian(val)} 
-                  data={religions} 
+                  data={vegetarian} 
                   save="value"
                   boxStyles={styles.selectList}
                   dropdownStyles={styles.selectList}
                   />
-                  <Pressable style={styles.continueButton} onPress={() => addInterests()}>
+                  <Pressable style={styles.continueButton} onPress={() => addDatePreferences()}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </Pressable>
           

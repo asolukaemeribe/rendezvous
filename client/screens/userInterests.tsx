@@ -13,6 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
+const config = require('../config.json');
 
 const UserInterestsPage = ({ route, navigation }) => {
     const [selectedItems, setSelectedItems] = useState([]);
@@ -143,6 +144,9 @@ const UserInterestsPage = ({ route, navigation }) => {
       };
 
       const addInterests = () => {
+        fetch(`http://${config.server_host}:${config.server_port}/updateimage?uid=${userID}` + 
+        `&interests=${selectedItems}`)
+          .then(res => {console.log("interests updated:" + `${selectedItems}`)})
         navigation.navigate("AddUserInfoPage", {userID: userID})
       }
     
