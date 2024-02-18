@@ -25,7 +25,7 @@ const pql_db = pgp({
 
 
 // mysql user-schema Routes
-// gets infornation about user with inputted userID
+// gets information about user with inputted userID
 const user = async function(req, res) {
     const userID = req.params.uid
 
@@ -108,9 +108,9 @@ const getnameageimage = async function(req, res) {
 const createuserlocation = async function(req, res) {
     const uid = req.query.uid
     const lat = req.query.lat
-    const long = req.query.lat
+    const long = req.query.long
 
-    pql_db.none(`INSERT INTO users (id, location) VALUES (${uid}, ST_GeomFromText('POINT(${long} ${lat})', 4326))`)
+    pql_db.none(`INSERT INTO users (id, location) VALUES ('${uid}', ST_GeomFromText('POINT(${long} ${lat})', 4326))`)
     .catch((error) => {
     console.log('ERROR:', error)
     })
@@ -123,13 +123,14 @@ const getusersinradius = async function(req, res) {
     const long = req.query.long
     const rad = req.query.rad
 
-    pql_db.any(`SELECT *
+    pql_db.any(`SELECT id
     FROM users
     WHERE ST_DWithin(location, 'POINT(${long} ${lat})', ${rad})
     AND id != '${uid}'`)
     .then(data => {
         res.json(data); 
-        console.log('these are the users: ' + data) // print users in radius
+        console.log('these are the users: ')
+        console.log(data) // print users in radius
     })
     .catch((error) => {
         console.log('ERROR:', error)
