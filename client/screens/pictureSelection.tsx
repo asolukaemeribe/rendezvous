@@ -18,53 +18,24 @@ const PictureSelection = ({ route, navigation }) => {
   const [image, setImage] = React.useState(null);
 
   const uploadToS3 = async (result) => {
-    //const s3 = new AWS.S3();
-    // const key = `images/${Date.now()}-${Math.floor(Math.random() * 10000)}.jpg`;
-    // AWS.config.update({
-    //     accessKeyId: 'AKIAQZZTHZFDIMFX7CUZ',
-    //     secretAccessKey: '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',
-    //     region: 'us-east-1',
-    //     maxRetries: 3,
-    //     httpOptions: {timeout: 30000, connectTimeout: 5000},
-    //   });
 
-    
-    
-    // const params = {
-    //   //keyPrefix: "uploads/",
-    //   bucket: "rendezvousfiles",
-    //   region: "us-east-1",
-    //   accessKey: "AKIAQZZTHZFDIMFX7CUZ",
-    //   secretKey: "a+0QJspoF+imywCYy3+j8q0/luImE2F57nxfa2nE",
-    //   successActionStatus: 201
+    // const filePath = result.assets[0].uri.replace('file://', '');
+    // const { userID } = route.params;
+    // const file = {
+    //     uri: filePath,
+    //     name: userID + ".png",
+    //     type: result.assets[0].type
+    // };
+
+    // try {
+    //     const response = await RNS3.put(file, options);
+    //     console.log('AWS S3 Response:', response);
+    //   //const data = await s3.upload(params).promise();
+    //   //console.log('Image uploaded successfully:', data.Location);
+    //   // You can now use data.Location to store the image URL or perform other operations
+    // } catch (error) {
+    //     console.error('Error uploading image:', error);
     // }
-
-    const filePath = result.assets[0].uri.replace('file://', '');
-    const { userID } = route.params;
-    const file = {
-        uri: filePath,
-        name: userID + ".png",
-        type: result.assets[0].type
-    };
-
-    const options = {
-        //keyPrefix: 'uploads/', // Replace with your S3 bucket path
-        bucket: 'rendezvousfiles',
-        region: 'us-east-1',
-        accessKey: 'AKIAQZZTHZFDIMFX7CUZ',
-        secretKey: 'a+0QJspoF+imywCYy3+j8q0/luImE2F57nxfa2nE',
-        successActionStatus: 201,
-    };
-
-    try {
-        const response = await RNS3.put(file, options);
-        console.log('AWS S3 Response:', response);
-      //const data = await s3.upload(params).promise();
-      //console.log('Image uploaded successfully:', data.Location);
-      // You can now use data.Location to store the image URL or perform other operations
-    } catch (error) {
-        console.error('Error uploading image:', error);
-    }
   };
 
   const pickImage = async () => {
