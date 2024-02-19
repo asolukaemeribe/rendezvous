@@ -56,23 +56,23 @@ const PeopleNearby = ({ route, navigation }) => {
       }))
     );
 
-    const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
+    // const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
 
-    useEffect(() => {
-        const { userID, lat, long, rad } = route.params;
-        console.log("POT MATCHES PAGE UID: " + userID)
-        console.log("POT MATCHES PAGE LAT: " + lat)
-        console.log("POT MATCHES PAGE LONG: " + long)
-        console.log("POT MATCHES PAGE RAD: " + rad)
+    // useEffect(() => {
+    //     const { userID, lat, long, rad } = route.params;
+    //     console.log("POT MATCHES PAGE UID: " + userID)
+    //     console.log("POT MATCHES PAGE LAT: " + lat)
+    //     console.log("POT MATCHES PAGE LONG: " + long)
+    //     console.log("POT MATCHES PAGE RAD: " + rad)
     
-        fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
-        .then(res => res.json())
-        .then(resJson => {
-          console.log("POT MATCHES PAGE resJson: ")
-          console.log(resJson)
-          setNearbyUsersData(resJson);  
-        });
-    }, []);
+    //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
+    //     .then(res => res.json())
+    //     .then(resJson => {
+    //       console.log("POT MATCHES PAGE resJson: ")
+    //       console.log(resJson)
+    //       setNearbyUsersData(resJson);  
+    //     });
+    // }, []);
 
 
   const renderButtonItem = (item) => {
@@ -111,9 +111,9 @@ const PeopleNearby = ({ route, navigation }) => {
           <ImageBackground
             style={styles.nearbyUsersListPhoto}
             imageStyle={styles.nearbyUsersListPhotoImageStyle}
-            source={require("../assets/images/imageNotFound.png")}
+            source={require("../assets/images/profilePhoto.png")}
           > 
-            <Text style={styles.nearbyUsersListItemText}>{item.id}{/*{item.first_name} {item.last_name}, {item.age}*/}</Text>
+            <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}, {item.age}</Text>
           </ImageBackground>
       </Pressable>
     );
@@ -135,6 +135,72 @@ const PeopleNearby = ({ route, navigation }) => {
       });
   }
   // TODO: Don't allow user to navigate back to home page from here
+
+  const profilesList = [
+    {
+      id: "boonloo1",
+      first_name: "Boon",
+      last_name: "Loo",
+      pronouns: "he/him",
+      age: "21"
+    },
+    {
+      id: "boonloo2",
+      first_name: "Boon",
+      last_name: "Looo",
+      pronouns: "he/him",
+      age: "22"
+    },
+    {
+      id: "boonloo3",
+      first_name: "Boon",
+      last_name: "Loooo",
+      pronouns: "he/him",
+      age: "23"
+    },
+    {
+      id: "boonloo4",
+      first_name: "Boon",
+      last_name: "Looooo",
+      pronouns: "he/him",
+      age: "24"
+    },
+    {
+      id: "boonloo5",
+      first_name: "Boon",
+      last_name: "Loooooo",
+      pronouns: "he/him",
+      age: "25"
+    },
+    {
+      id: "boonloo6",
+      first_name: "Boon",
+      last_name: "Looooooo",
+      pronouns: "he/him",
+      age: "26"
+    },
+    {
+      id: "boonloo7",
+      first_name: "Boon",
+      last_name: "Loooooooo",
+      pronouns: "he/him",
+      age: "27"
+    },
+    {
+      id: "boonloo8",
+      first_name: "Boon",
+      last_name: "Looooooooo",
+      pronouns: "he/him",
+      age: "28"
+    },
+    {
+      id: "boonloo9",
+      first_name: "Boon",
+      last_name: "Loooooooooo",
+      pronouns: "he/him",
+      age: "29"
+    },
+  ];
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
@@ -173,13 +239,24 @@ const PeopleNearby = ({ route, navigation }) => {
               <Text style={styles.headerText}>Display Name</Text>
             </View> */}
           <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
+                <View style={styles.nearbyUsersFirstWrapper}>
                 <FlatList
-                  data={nearbyUsersData}
+                  data={profilesList}
                   renderItem={({ item }) =>
                     renderButtonItem(item)
                   }
                   keyExtractor={(item) => item.id}
                 />
+                </View>
+                <View style={styles.nearbyUsersSecondWrapper}>
+                <FlatList
+                  data={profilesList}
+                  renderItem={({ item }) =>
+                    renderButtonItem(item)
+                  }
+                  keyExtractor={(item) => item.id}
+                />
+                </View>
           </ScrollView>
           {/* </ScrollView> */}
         </LinearGradient>
@@ -269,12 +346,21 @@ const styles = StyleSheet.create({
   nearbyUsersViewWrapper: {
     paddingHorizontal: padding.xl,
     paddingTop: padding.xxs,
-    alignItems: "center",
+    alignItems: "flex-start",
+    flexDirection: "row"
+  },
+  nearbyUsersFirstWrapper: {
+    alignItems: "flex-start",
+    flex: 1
+  },
+  nearbyUsersSecondWrapper: {
+    alignItems: "flex-end",
+    flex: 1
   },
   nearbyUsersListItem: {
     borderRadius: 10,
     height: 150, 
-    width: 325,
+    width: 150,
     backgroundColor: Color.colorGray_100,
     marginBottom: 15,
     justifyContent: 'center',
@@ -289,7 +375,7 @@ const styles = StyleSheet.create({
   },
   nearbyUsersListPhoto: {
     height: 150,
-    width: 325,
+    width: 150,
     justifyContent: "flex-end",
     alignItems: "flex-start",
     padding: 10,

@@ -22,6 +22,13 @@ export const Color = {
   colorGray_100: "rgba(255, 255, 255, 0.55)",
   colorGray_200: "rgba(255, 255, 255, 0.2)",
   colorGray_300: "rgba(255, 255, 255, 0.4)",
+  colorGray_400: "rgba(0, 0, 0, 0.06)",
+  colorGray_500: "rgba(0, 0, 0, 0.02)",
+  colorGray_600: "rgba(0, 0, 0, 0.8)",
+  colorGray_700: "rgba(0, 0, 0, 0.25)",
+  colorRed: "#ff0000",
+  colorRed_1: "rgba(255, 0, 0, 0.7)",
+  colorRed_2: "rgba(255, 0, 0, 0.5)",
   colorSnow: "#fbf5f5",
 };
 /* Paddings */

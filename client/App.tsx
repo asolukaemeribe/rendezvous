@@ -10,6 +10,7 @@ import ProfileCreation from "./screens/profileCreation";
 import PictureSelection from "./screens/pictureSelection";
 import PeopleNearby from "./screens/peopleNearby";
 import UserInterestsPage from "./screens/userInterests";
+import MessagePage from "./screens/messagePage";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from "react";
 
@@ -50,6 +51,16 @@ const App = () => {
         {hideSplashScreen ? (
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen
+              name="MessagePage"
+              component={MessagePage}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="PeopleNearby"
+              component={PeopleNearby}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
               name="Login"
               component={Login}
               options={{ headerShown: false }}
@@ -62,11 +73,6 @@ const App = () => {
             <Stack.Screen
               name="ProfileCreation"
               component={ProfileCreation}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="PeopleNearby"
-              component={PeopleNearby}
               options={{ headerShown: false }}
             />
             <Stack.Screen
