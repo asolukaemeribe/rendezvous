@@ -35,7 +35,27 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+
+let messagesList = [
+  {
+    id: "1274627638",
+    sender_uid: "boonloo1",
+    receiver_uid: "lukaemeribe2",
+    message: "Heyyyyyyy",
+    timestamp: "2/9/23 10:19 AM",
+  },
+  {
+    id: "158273092",
+    sender_uid: "lukaemeribe2",
+    receiver_uid: "boonloo1",
+    message: "What the fuck did you just fucking say about me, you little bitch? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I'm the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You're fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that's just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little \"clever\" comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn't, you didn't, and now you're paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You're fucking dead, kiddo.",
+    timestamp: "2/9/23 10:19 AM",
+  }
+];
+let messageId = 1248723;
+
+// let messagesRefresh = false;
 
 const config = require('../config.json');
 // const messagesViewRef = useRef();
@@ -45,6 +65,9 @@ const MessagePage = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const [currMessage, onChangeMessage] = React.useState('');
+  const [messagesRefresh, setMessagesRefresh] = useState(true);
+  const messagesRef = useRef();
+
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -126,31 +149,20 @@ const MessagePage = ({ route, navigation }) => {
   const currUserId = "lukaemeribe2";
   const receiverUserId = "boonloo1";
 
-  const messagesList = [
-    {
-      id: "1274627638",
-      sender_uid: "boonloo1",
-      receiver_uid: "lukaemeribe2",
-      message: "Heyyyyyyy",
-      timestamp: "2/9/23 10:19 AM",
-    },
-    {
-      id: "158273092",
-      sender_uid: "lukaemeribe2",
-      receiver_uid: "boonloo1",
-      message: "What the fuck did you just fucking say about me, you little bitch? I'll have you know I graduated top of my class in the Navy Seals, and I've been involved in numerous secret raids on Al-Quaeda, and I have over 300 confirmed kills. I am trained in gorilla warfare and I'm the top sniper in the entire US armed forces. You are nothing to me but just another target. I will wipe you the fuck out with precision the likes of which has never been seen before on this Earth, mark my fucking words. You think you can get away with saying that shit to me over the Internet? Think again, fucker. As we speak I am contacting my secret network of spies across the USA and your IP is being traced right now so you better prepare for the storm, maggot. The storm that wipes out the pathetic little thing you call your life. You're fucking dead, kid. I can be anywhere, anytime, and I can kill you in over seven hundred ways, and that's just with my bare hands. Not only am I extensively trained in unarmed combat, but I have access to the entire arsenal of the United States Marine Corps and I will use it to its full extent to wipe your miserable ass off the face of the continent, you little shit. If only you could have known what unholy retribution your little \"clever\" comment was about to bring down upon you, maybe you would have held your fucking tongue. But you couldn't, you didn't, and now you're paying the price, you goddamn idiot. I will shit fury all over you and you will drown in it. You're fucking dead, kiddo.",
-      timestamp: "2/9/23 10:19 AM",
-    }
-  ];
+ 
 
   const handleMessageSend = () => {
+    console.log(currMessage)
     messagesList.push({
-      id: "19827391273", //idk
+      id: messageId.toString(), //idk
       sender_uid: currUserId,
       receiver_uid: receiverUserId,
       message: currMessage,
       timestamp: "1/2/3 10:10 PM"
-    })
+    });
+    setMessagesRefresh(!messagesRefresh);
+    messageId += 1;
+    console.log(messagesList)
   } 
 
   const getMessageHistory = () => {
@@ -189,71 +201,15 @@ const MessagePage = ({ route, navigation }) => {
 
         </LinearGradient>
         <View style={styles.messagesView}>
-          <ScrollView contentContainerStyle={{flexGrow:1}} /*onContentSizeChange={handleMessageReceive}*/>
+          <ScrollView contentContainerStyle={{flexGrow:1}} ref={messagesRef} onContentSizeChange={() => messagesRef.current.scrollToEnd()} /*onContentSizeChange={handleMessageReceive}*/>
           <FlatList
                   data={messagesList}
                   renderItem={({ item }) =>
                     renderMessageItem(item)
                   }
+                  extraData={messagesRefresh}
                   keyExtractor={(item) => item.id}
                 />
-
-
-
-          {/* <ScrollView ref={scrollViewRef} contentContainerStyle={{flexGrow:1}} onContentSizeChange={handleContentSizeChange}>
-        {messages.map((item, index) => {
-          if (item.messageType === "text") {
-            const isSelected = selectedMessages.includes(item._id);
-            return (
-              <Pressable
-                onLongPress={() => handleSelectMessage(item)}
-                key={index}
-                style={[
-                  item?.senderId?._id === userId
-                    ? {
-                        alignSelf: "flex-end",
-                        backgroundColor: "#DCF8C6",
-                        padding: 8,
-                        maxWidth: "60%",
-                        borderRadius: 7,
-                        margin: 10,
-                      }
-                    : {
-                        alignSelf: "flex-start",
-                        backgroundColor: "white",
-                        padding: 8,
-                        margin: 10,
-                        borderRadius: 7,
-                        maxWidth: "60%",
-                      },
-
-                  isSelected && { width: "100%", backgroundColor: "#F0FFFF" },
-                ]}
-              >
-                <Text
-                  style={{
-                    fontSize: 13,
-                    textAlign: isSelected ? "right" : "left",
-                  }}
-                >
-                  {item?.message}
-                </Text>
-                <Text
-                  style={{
-                    textAlign: "right",
-                    fontSize: 9,
-                    color: "gray",
-                    marginTop: 5,
-                  }}
-                >
-                  {formatTime(item.timeStamp)}
-                </Text>
-              </Pressable>
-            );
-          } */}
-
-
-
           </ScrollView>
         </View>
         <KeyboardAvoidingView style={styles.messageEntryView} behavior="padding">
@@ -470,7 +426,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "900",  
   },
-  messageBubbleSender: {
+  messageBubbleReceiver: {
     alignSelf: "flex-start",
     backgroundColor: Color.colorRed_2,
     padding: 10,
@@ -478,7 +434,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     maxWidth: "65%",
   },
-  messageBubbleReceiver: {
+  messageBubbleSender: {
     alignSelf: "flex-end",
     backgroundColor: Color.colorGray_700,
     padding: 10,
