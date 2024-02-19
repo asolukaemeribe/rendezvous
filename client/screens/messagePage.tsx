@@ -44,7 +44,7 @@ const MessagePage = ({ route, navigation }) => {
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-  const [message, onChangeMessage] = React.useState('');
+  const [currMessage, onChangeMessage] = React.useState('');
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -124,6 +124,7 @@ const MessagePage = ({ route, navigation }) => {
   // TODO: Don't allow user to navigate back to home page from here
 
   const currUserId = "lukaemeribe2";
+  const receiverUserId = "boonloo1";
 
   const messagesList = [
     {
@@ -143,8 +144,14 @@ const MessagePage = ({ route, navigation }) => {
   ];
 
   const handleMessageSend = () => {
-
-  }
+    messagesList.push({
+      id: "19827391273", //idk
+      sender_uid: currUserId,
+      receiver_uid: receiverUserId,
+      message: currMessage,
+      timestamp: "1/2/3 10:10 PM"
+    })
+  } 
 
   const getMessageHistory = () => {
     
@@ -255,7 +262,7 @@ const MessagePage = ({ route, navigation }) => {
             <TextInput
             style={styles.messageTextInput}
             onChangeText={onChangeMessage}
-            value={message}
+            value={currMessage}
             placeholder="Type a message"
           />
           <Pressable style={styles.sendButton}>
