@@ -15,12 +15,7 @@ import { useNavigation, ParamListBase, useRoute } from "@react-navigation/native
 import { FontFamily, Color, Border, Padding, FontSize } from "../GlobalStyles";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { connectToDynamoDB } from "../api/aws";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-} from "firebase/auth";
+
 import * as Location from "expo-location";
 import { useCallback } from "react";
 import { registerRootComponent } from "expo";
@@ -32,6 +27,7 @@ import colors from "../assets/global_styles/color";
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { AuthContext } from "../AppAuthContext"
 const config = require('../config.json');
 
 
@@ -43,6 +39,8 @@ const Login = () => {
   const [location, setLocation] = useState<Location.LocationObject>();
   const auth = FIREBASE_AUTH;
   const route = useRoute()
+  const { signIn, signOut } = React.useContext(AuthContext)
+
 
   useEffect(() => {
     (async () => {
@@ -57,14 +55,14 @@ const Login = () => {
       console.log(location.coords);
     })();
 
-    const user = auth.currentUser;
-    if (user) {
-      const uid = user.uid;
-      console.log("Application has started. User is signed in so navigating to profile page of user with uid: " + uid)
-      navigation.navigate("ProfilePage", {userID: uid});
-    } else {
-      console.log("Application has started; no user is signed in.")
-    }
+    // const user = auth.currentUser;
+    // if (user) {
+    //   const uid = user.uid;
+    //   console.log("Application has started. User is signed in so navigating to profile page of user with uid: " + uid)
+    //   // navigation.navigate("ProfilePage", {userID: uid});
+    // } else {
+    //   console.log("Application has started; no user is signed in.")
+    // }
 
   }, []);
 
@@ -89,60 +87,43 @@ const Login = () => {
   });*/
 
   const logIn = async () => {
-    setLoading(true);
-    try {
-      const response = await signInWithEmailAndPassword(auth, email, password);
-      console.log(response);
-      const user = auth.currentUser;
-
-      // update location in postgresql db
-      fetch(`http://${config.server_host}:${config.server_port}/updateuserlocation?uid=${user.uid}` +
-      `&lat=${location.coords.latitude}&long=${location.coords.longitude}`)
-        .then(res => {console.log("success! check database. Location should be updated.")})
-
-      navigation.navigate("ProfilePage", {userID: user.uid});
-      // router.replace("/profileCreation");
-      // alert('Logged In!');
-    } catch (error: any) {
-      console.log(error);
-      alert("Sign In Failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
+    // setLoading(true);
+    signIn(auth, email, password, location)
   };
 
   const signUp = async () => {
-    setLoading(true);
-    try {
-      console.log("(" + email + ")");
-      console.log(password);
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(response);
-      alert("Success!");
-    } catch (error: any) {
-      console.log(error);
-      alert("Sign Up Failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
+    // setLoading(true);
+    // try {
+    //   console.log("(" + email + ")");
+    //   console.log(password);
+    //   const response = await createUserWithEmailAndPassword(
+    //     auth,
+    //     email,
+    //     password
+    //   );
+    //   console.log(response);
+    //   alert("Success!");
+    // } catch (error: any) {
+    //   console.log(error);
+    //   alert("Sign Up Failed: " + error.message);
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const logOut = async () => {
-    setLoading(true);
-    try {
-      const response = await signOut(auth);
-      console.log(response);
-      alert("Success!");
-    } catch (error: any) {
-      console.log(error);
-      alert("Log out Failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
+    // setLoading(true);
+    // try {
+    //   const response = await signOut(auth);
+    //   console.log(response);
+    //   alert("Success!");
+    // } catch (error: any) {
+    //   console.log(error);
+    //   alert("Log out Failed: " + error.message);
+    // } finally {
+    //   setLoading(false);
+    // }
+    signOut(auth);
   };
 
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();

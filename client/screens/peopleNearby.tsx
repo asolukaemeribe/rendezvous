@@ -35,6 +35,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { AuthContext } from "../AppAuthContext"
 import { useEffect, useState } from "react";
 
 const config = require('../config.json');
@@ -44,6 +45,7 @@ const PeopleNearby = ({ route, navigation }) => {
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
+  const { signOut } = React.useContext(AuthContext)
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -125,14 +127,16 @@ const PeopleNearby = ({ route, navigation }) => {
   }
 
   const logOut = async () => {
-    // ---- Firebase Sign Out ---- 
-    signOut(auth).then(() => {
-      // Sign-out successful.
-          navigation.navigate("Login");
-          console.log("Signed out successfully")
-      }).catch((error) => {
-      // An error happened.
-      });
+
+    // // ---- Firebase Sign Out ---- 
+    // signOut(auth).then(() => {
+    //   // Sign-out successful.
+    //       navigation.navigate("Login");
+    //       console.log("Signed out successfully")
+    //   }).catch((error) => {
+    //   // An error happened.
+    //   });
+    signOut(auth);
   }
   // TODO: Don't allow user to navigate back to home page from here
 

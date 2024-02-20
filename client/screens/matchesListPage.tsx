@@ -34,16 +34,18 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
+import { AuthContext } from "../AppAuthContext"
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { useEffect, useState } from "react";
 
 const config = require('../config.json');
 
-const PeopleNearby = ({ route, navigation }) => {
+const MatchesListPage = ({ route, navigation }) => {
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
+  const { signOut } = React.useContext(AuthContext)
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -126,13 +128,15 @@ const PeopleNearby = ({ route, navigation }) => {
 
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 
-    signOut(auth).then(() => {
-      // Sign-out successful.
-          navigation.navigate("Login");
-          console.log("Signed out successfully")
-      }).catch((error) => {
-      // An error happened.
-      });
+    // signOut(auth).then(() => {
+    //   // Sign-out successful.
+    //       navigation.navigate("Login");
+    //       console.log("Signed out successfully")
+    //   }).catch((error) => {
+    //   // An error happened.
+    //   });
+    signOut(auth);
+
   }
   // TODO: Don't allow user to navigate back to home page from here
 
@@ -231,7 +235,7 @@ const PeopleNearby = ({ route, navigation }) => {
         </View> */}
           </View>           
            <View style={styles.creationHeaderWrapper}>
-              <Text style={styles.creationHeaderText}>People Nearby</Text>
+              <Text style={styles.creationHeaderText}>Matches</Text>
             </View>
           {/* <ScrollView contentContainerStyle={{ paddingTop: 5 }}> */}
 
@@ -391,4 +395,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PeopleNearby;
+export default MatchesListPage;

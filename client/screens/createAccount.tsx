@@ -20,6 +20,8 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { AuthContext } from "../AppAuthContext"
+
 
 
 const CreateAccount = ({ navigation }) => {
@@ -28,6 +30,8 @@ const CreateAccount = ({ navigation }) => {
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const auth = FIREBASE_AUTH;
+  const { signOut, setCreatingAccountData } = React.useContext(AuthContext)
+
 
   const signUp = async () => {
     setLoading(true);
@@ -59,6 +63,11 @@ const CreateAccount = ({ navigation }) => {
     }
   };
 
+  const creatingAccount = () => {
+    setCreatingAccountData({auth: auth, email: email, password: password})
+    // navigation.navigate("ProfileCreation");
+  }
+
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   return (
@@ -82,7 +91,7 @@ const CreateAccount = ({ navigation }) => {
       <Text style={styles.createNewAccount}>Create New Account</Text>
       <Pressable
         style={[styles.signUpWrapper, styles.signWrapperFlexBox]}
-        onPress={() => signUp()}
+        onPress={() => creatingAccount()} // HERE------------------------------------------
       >
         <Text style={[styles.signUp, styles.signUpTypo]}>Sign Up</Text>
       </Pressable>

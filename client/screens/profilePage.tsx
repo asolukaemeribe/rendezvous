@@ -28,12 +28,14 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
+import { AuthContext } from "../AppAuthContext"
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
 const config = require('../config.json');
 
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+  const { signOut } = React.useContext(AuthContext)
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
@@ -100,13 +102,14 @@ const ProfilePage = ({ route, navigation }) => {
 
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 
-    signOut(auth).then(() => {
-      // Sign-out successful.
-          navigation.navigate("Login");
-          console.log("Signed out successfully")
-      }).catch((error) => {
-      // An error happened.
-      });
+    // signOut(auth).then(() => {
+    //   // Sign-out successful.
+    //       navigation.navigate("Login");
+    //       console.log("Signed out successfully")
+    //   }).catch((error) => {
+    //   // An error happened.
+    //   });
+    signOut(auth)
   }
 
   const viewPotentialMatches = async () => {
@@ -146,7 +149,7 @@ const ProfilePage = ({ route, navigation }) => {
           <Pressable onPress ={() => viewPeopleNearby()}>
             <Feather name="chevron-left" size={32} color="white" />
           </Pressable>
-          <Pressable onPress={() => viewPotentialMatches()}>
+          <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="arrow-right" size={24} color="white" />
           </Pressable>
           <Text style={styles.profilePageLogo}>Rendezvous</Text>
@@ -155,7 +158,7 @@ const ProfilePage = ({ route, navigation }) => {
         <View style={styles.profilePhotoWrapper}>
           <Image
             style={styles.profilePhoto}
-            source={require("../assets/images/defaultProfilePic.png")}
+            source={require("../assets/images/profilePhoto.png")}
           />
         </View>
         <View style={styles.profileDataWrapper}>
