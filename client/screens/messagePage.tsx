@@ -121,17 +121,6 @@ const MessagePage = ({ route, navigation }) => {
     return selected ? selected.id : "";
   }
 
-// const handleMessageReceive = () => {
-//   scrollToBottom();
-// }
-
-// const scrollToBottom = () => {
-//   if(messagesViewRef.current){
-//       messagesViewRef.current.scrollToEnd({animated:false})
-//   }
-// }
-
-
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 
     signOut(auth).then(() => {
@@ -142,11 +131,11 @@ const MessagePage = ({ route, navigation }) => {
       // An error happened.
       });
   }
-  // TODO: Don't allow user to navigate back to home page from here
+
+  // ---MATT---
 
   const currUserId = "lukaemeribe2";
   const receiverUserId = "boonloo1";
-
 
   const handleMessageSend = () => {
     messagesList.push({
@@ -167,7 +156,6 @@ const MessagePage = ({ route, navigation }) => {
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
   const mask = 'MM/DD/YYYY';
-  // const isValid = this.datetimeField.isValid()
 
   return (
     // <KeyboardAvoidingView behavior="padding" style={styles.keyboardView}>
@@ -195,7 +183,6 @@ const MessagePage = ({ route, navigation }) => {
 
         </LinearGradient>
         <View style={styles.messagesView}>
-          {/* <ScrollView contentContainerStyle={{flexGrow:1}} ref={messagesRef} onContentSizeChange={() => messagesRef.current.scrollToEnd()} /*onContentSizeChange={handleMessageReceive}> */}
           <FlatList
                   data={messagesList}
                   renderItem={({ item }) =>
@@ -207,7 +194,6 @@ const MessagePage = ({ route, navigation }) => {
                   ref={messagesRef} 
                   onContentSizeChange={() => messagesRef.current.scrollToEnd()}
                 />
-          {/* </ScrollView> */}
         </View>
         <KeyboardAvoidingView style={styles.messageEntryView} behavior="padding">
 
