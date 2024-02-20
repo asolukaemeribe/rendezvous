@@ -1,4 +1,4 @@
-const Stack = createNativeStackNavigator();
+// const Stack = createNativeStackNavigator();
 import * as React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -12,6 +12,7 @@ import PeopleNearbyStack from "./screens/peopleNearby";
 import UserInterestsPage from "./screens/userInterests";
 import MessagePage from "./screens/messagePage";
 import MatchesListPage from "./screens/matchesListPage"
+import Index from "./Index";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from "react";
 import { AnimatedTabBarNavigator } from "react-native-animated-nav-tab-bar"
@@ -39,26 +40,29 @@ const config = require('./config.json');
 
 // SplashScreen.preventAutoHideAsync();
 
-const Tabs = AnimatedTabBarNavigator();
+// const Tabs = AnimatedTabBarNavigator();
 
 // const AuthContext = React.createContext();
 
-function AuthedStack() {
+const Stack = createNativeStackNavigator();
+const Tabs = AnimatedTabBarNavigator();
+
+const AuthedStack = () => {
   return (
-    <>
-      <NavigationContainer>
-        <SafeAreaProvider>
+    // <>
+      /* <NavigationContainer> */
+        // <SafeAreaProvider>
           <Stack.Navigator>
             <Stack.Screen name="AuthedTabs" component={AuthedTabs} options={{ headerShown: false }} />
             <Stack.Screen name="MessagePage" component={MessagePage} options={{ headerShown: false }} />
           </Stack.Navigator>
-        </SafeAreaProvider>
-      </NavigationContainer>
-    </>
+        // </SafeAreaProvider>
+      /* </NavigationContainer> */
+    /* </> */
   )
 }
 
-function AuthedTabs() {
+const AuthedTabs = () => {
   return (
     <Tabs.Navigator
       tabBarOptions={{
@@ -148,11 +152,9 @@ function AuthedTabs() {
 }
 
 
-function UnauthedStack() {
+const UnauthedStack = () => {
   return (
-    <>
-      <NavigationContainer>
-        <SafeAreaProvider>
+        // <SafeAreaProvider>
           <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
             <Stack.Screen
               name="Login"
@@ -165,17 +167,13 @@ function UnauthedStack() {
               options={{ headerShown: false }}
             />
           </Stack.Navigator>
-        </SafeAreaProvider>
-      </NavigationContainer>
-    </>
+        // </SafeAreaProvider>
   )
 }
 
-function CreatingAccountStack() {
+const CreatingAccountStack = () => {
   return (
-    <>
-      <NavigationContainer>
-        <SafeAreaProvider>
+        // <SafeAreaProvider>
           <Stack.Navigator initialRouteName="ProfileCreation" screenOptions={{ headerShown: false }}>
             <Stack.Screen
               name="ProfileCreation"
@@ -213,9 +211,7 @@ function CreatingAccountStack() {
               options={{ headerShown: false }}
             />
           </Stack.Navigator>
-        </SafeAreaProvider>
-      </NavigationContainer>
-    </>
+        // </SafeAreaProvider>
   )
 }
 
@@ -274,10 +270,8 @@ const App = () => {
     isSignout: true,
     userToken: null,
     creatingAccount: false,
-    creatingAccountData: null
+    creatingAccountData: "testcreatingaccountdata"
   }
-
-
 
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
@@ -313,11 +307,13 @@ const App = () => {
     bootstrapAsync();
   }, []);
   const [authState, setAuthState] = React.useReducer(authReducer, initialAuthState);
+
   React.useEffect(() => {
-    console.log('userToken: ', authState.userToken);
-    console.log('isAuth: ', authState.isSignout);
-    console.log("creatingAccountData: ", authState.creatingAccountData);
+    console.log('app.tsx userToken: ', authState.userToken);
+    console.log('app.tsx isAuth: ', authState.isSignout);
+    console.log("app.tsx creatingAccountData: ", authState.creatingAccountData);
   }, [authState]);
+
   const authContext = React.useMemo(
     () => ({
       signIn: async (auth, email, password, location) => {
@@ -403,7 +399,8 @@ const App = () => {
           const user = auth.currentUser;
           console.log("user.uid is " + user.uid);
           setAuthState({ type: 'CREATING_ACCOUNT_DATA', accountData: user.uid })
-          console.log("test: " + authState.creatingAccountData.uid);
+          console.log("test: " + authState.creatingAccountData);
+          console.log("Test: " + authState.creatingAccount);
         } catch (error: any) {
           console.log(error);
           alert("Sign Up Failed: " + error.message);
@@ -418,6 +415,9 @@ const App = () => {
       },
       getUserID: () => {
         return authState.userToken;
+      },
+      getAuthState: () => {
+        return authState;
       }
     }),
     []
@@ -456,9 +456,21 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={authContext}>
-      {(authState.userToken == null) ?
-        (authState.creatingAccount ? <CreatingAccountStack /> : <UnauthedStack />) :
-        (<AuthedStack />)}
+      <NavigationContainer>
+        <Stack.Navigator>
+          {authState.userToken == null ? 
+          (
+            authState.creatingAccount ? 
+            (
+              <Stack.Screen name="creatingAccountStack" component={creatingAccountStack} options={{headerShown: false}}/>
+            ) : (
+              <Stack.Screen name="UnauthedStack" component={UnauthedStack} options={{headerShown: false}}/>
+            )
+          ) : (
+            <Stack.Screen name="AuthedStack" component={AuthedStack} options={{headerShown: false}}/>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
     </AuthContext.Provider>
   );
 };

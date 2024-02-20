@@ -28,7 +28,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
 const config = require('../config.json');

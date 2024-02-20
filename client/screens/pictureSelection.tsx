@@ -9,7 +9,7 @@ import { Auth } from "firebase/auth";
 import AWS from 'aws-sdk';
 // import {  } from "module";
 // import { Amplify } from "";
-import { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
 
 import { RNS3 } from 'react-native-aws3';
 

@@ -14,7 +14,7 @@ import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list'
-import { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
  
 const DatePreferencesPage = ({ route, navigation }) => {
   const [selectedTimes, setSelectedTimes] = useState([]);

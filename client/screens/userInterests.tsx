@@ -13,7 +13,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
-import { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
 
 const UserInterestsPage = ({ route, navigation }) => {
     const [selectedItems, setSelectedItems] = useState([]);

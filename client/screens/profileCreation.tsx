@@ -29,7 +29,8 @@ import { TextInputMask } from "react-native-masked-text";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 const config = require('../config.json');
-import { AuthContext } from "../AppAuthContext"
+// import  { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
 
 
 const ProfilePage = ({ route, navigation }) => {
@@ -45,7 +46,7 @@ const ProfilePage = ({ route, navigation }) => {
   const [date, setDate] = React.useState(dayjs());
   const [dateStr, setDateStr] = React.useState("");
   const [location, setLocation] = React.useState<Location.LocationObject>();
-  const { getCreatingAccountData } = React.useContext(AuthContext);
+  const { getCreatingAccountData, getAuthState } = React.useContext(AuthContext);
 
   // Code for date picker
   // const [showDatePicker, setShowDatePicker] = React.useState(false);
@@ -175,6 +176,8 @@ const ProfilePage = ({ route, navigation }) => {
   // ----MATT: TODO: there is an issue with location not being defined until after i hit buttons sometimes such as login?
   useEffect(() => {
     // get location
+    console.log('useEffect userToken: ', getCreatingAccountData());
+    console.log('profile creation authState ' + getAuthState().userToken + getAuthState().creatingAccount);
     (async () => {
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);

@@ -12,7 +12,7 @@ import { Padding, FontFamily, Color, FontSize, Border } from "../GlobalStyles";
 import { LinearGradient } from "expo-linear-gradient";
 const config = require('../config.json');
 import AWS from 'aws-sdk';
-import { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
 
 const ViewPotentialMatchesPage = ({route, navigation}) => {
     const [nearbyUsersData, setNearbyUsersData] = useState([{}])

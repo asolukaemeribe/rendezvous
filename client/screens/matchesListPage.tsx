@@ -36,7 +36,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { useEffect, useState } from "react";
 

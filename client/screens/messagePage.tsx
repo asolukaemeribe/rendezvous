@@ -35,7 +35,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
-import { AuthContext } from "../AppAuthContext"
+import  { AuthContext } from "../AppAuthContext"
 import { useEffect, useState, useRef } from "react";
 
 let messagesList = [
