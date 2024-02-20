@@ -35,7 +35,9 @@ const config = require('../config.json');
 
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-  const { signOut } = React.useContext(AuthContext)
+  const { signOut, getUserID } = React.useContext(AuthContext)
+  const selfUserID = getUserID();
+  const userID = route.params.userIsSelf ? selfUserID : route.params.userID;
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
@@ -72,31 +74,30 @@ const ProfilePage = ({ route, navigation }) => {
       console.log(location.coords)
     })();
 
-    const { userID } = route.params;
-    console.log("PROFILE PAGE UID: " + userID)
+    console.log("PROFILE PAGE UID: " + userID) //MATT: moved userID get to beginning of page
 
     fetch(`http://${config.server_host}:${config.server_port}/user/${userID}`)
-    .then(res => res.json())
-    .then(resJson => {
-      console.log("resJson first name: " + resJson.first_name)
-      /*profileData.first_name = resJson.first_name;
-      profileData.last_name = resJson.last_name;
-      profileData.about_me = resJson.about_me;
-      profileData.pronouns = resJson.pronouns;
-      profileData.gender = resJson.gender;*/
-      //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
-      setProfileData({
-        first_name: resJson.first_name,
-        last_name: resJson.last_name,
-        about_me: resJson.about_me,
-        pronouns: resJson.pronouns,
-        gender: resJson.gender,
-        image: resJson.image,
-        age: resJson.age,
-        school: "University of Pennsylvania",
-        looking_for: "Looking for long term"
-      })
-    });
+      .then(res => res.json())
+      .then(resJson => {
+        console.log("resJson first name: " + resJson.first_name)
+        /*profileData.first_name = resJson.first_name;
+        profileData.last_name = resJson.last_name;
+        profileData.about_me = resJson.about_me;
+        profileData.pronouns = resJson.pronouns;
+        profileData.gender = resJson.gender;*/
+        //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
+        setProfileData({
+          first_name: resJson.first_name,
+          last_name: resJson.last_name,
+          about_me: resJson.about_me,
+          pronouns: resJson.pronouns,
+          gender: resJson.gender,
+          image: resJson.image,
+          age: resJson.age,
+          school: "University of Pennsylvania",
+          looking_for: "Looking for long term"
+        })
+      });
   }, []);
 
 
@@ -113,21 +114,25 @@ const ProfilePage = ({ route, navigation }) => {
   }
 
   const viewPotentialMatches = async () => {
-    const { userID } = route.params;
+    // const { userID } = route.params;
     console.log("should navigate to viewPotentialMatches Page now")
-    navigation.navigate("ViewPotentialMatchesPage", {userID: userID,
+    navigation.navigate("ViewPotentialMatchesPage", {
+      userID: userID,
       lat: location.coords.latitude,
       long: location.coords.longitude,
-      rad: 16094}) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
+      rad: 16094
+    }) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
   }
 
   const viewPeopleNearby = async () => {
-    const { userID } = route.params;
+    // const { userID } = route.params;
     console.log("should navigate to peopleNearby Page now")
-    navigation.navigate("PeopleNearby", {userID: userID,
+    navigation.navigate("PeopleNearby", {
+      userID: userID,
       lat: location.coords.latitude,
       long: location.coords.longitude,
-      rad: 16094}) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
+      rad: 16094
+    }) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
   }
 
   return (
@@ -146,14 +151,16 @@ const ProfilePage = ({ route, navigation }) => {
           {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
           </Pressable> */}
-          <Pressable onPress ={() => viewPeopleNearby()}>
-            <Feather name="chevron-left" size={32} color="white" />
-          </Pressable>
-          <Pressable onPress={() => logOut()}>
-            <Octicons style={styles.topNavigationBarSignOut} name="arrow-right" size={24} color="white" />
-          </Pressable>
+          {route.params.userIsSelf ?
+            (<Pressable onPress={() => logOut()}>
+                <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
+              </Pressable>) :
+            (<Pressable onPress={() => navigation.goBack()}>
+                <Feather name="chevron-left" size={32} color="white" />
+              </Pressable>)
+          }
           <Text style={styles.profilePageLogo}>Rendezvous</Text>
-          <View style={{width: 29}}></View>
+          <View style={{ width: 29 }}></View>
         </View>
         <View style={styles.profilePhotoWrapper}>
           <Image
@@ -186,7 +193,7 @@ const ProfilePage = ({ route, navigation }) => {
             <Image
               style={styles.profileDataImage}
               //source={require("../assets/images/handWave.png")}
-              source = {{uri: profileData.image}}
+              source={{ uri: profileData.image }}
             />
             <Text style={styles.profilePreferencesDescriptionText}>
               {profileData.about_me}

@@ -14,10 +14,12 @@ import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list'
+import { AuthContext } from "../AppAuthContext"
 
 const AddUserInfo = ({ route, navigation }) => {
   const [selectedRaces, setSelectedRaces] = useState([]);
-  const { userID } = route.params; 
+  const { getCreatingAccountData } = React.useContext(AuthContext);
+  const userID = getCreatingAccountData();
   const [selectedLookingFor, setSelectedLookingFor] = React.useState(null);
   const [selectedReligion, setSelectedReligion] = React.useState("");
   const [selectedLanguages, setSelectedLanguage] = React.useState([]);
@@ -291,7 +293,7 @@ const AddUserInfo = ({ route, navigation }) => {
   ];
 
     const addInterests = () => {
-      navigation.navigate("DatePreferencesPage", {userID: userID})
+      navigation.navigate("DatePreferencesPage")
     }
   
 

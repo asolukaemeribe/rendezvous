@@ -41,7 +41,7 @@ const Login = () => {
   const route = useRoute()
   const { signIn, signOut } = React.useContext(AuthContext)
 
-
+  // ----MATT: TODO: there is an issue with location not being defined until after i hit buttons sometimes such as login?
   useEffect(() => {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();

@@ -10,7 +10,7 @@ import {
   FlatList,
   ScrollView,
   KeyboardAvoidingView,
-  ImageBackground, 
+  ImageBackground,
 } from "react-native";
 import Octicons from "react-native-vector-icons/Octicons";
 // import { Image } from "expo-image";
@@ -35,6 +35,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { AuthContext } from "../AppAuthContext"
 import { useEffect, useState, useRef } from "react";
 
 let messagesList = [
@@ -69,32 +70,33 @@ const MessagePage = ({ route, navigation }) => {
   const messagesRef = useRef();
 
 
-  const [orientationTypesArray, setOrientationTypesArray] =
-    React.useState(
-      Object.entries(
-        profileInfoData.find((item) => item.category === "Sexual Orientation")
-          .types
-      ).map(([key, value]) => ({
-        id: key,
-        isSelected: value,
-      }))
-    );
-    // useEffect(() => {
-    //     const { userID, lat, long, rad } = route.params;
-    //     console.log("POT MATCHES PAGE UID: " + userID)
-    //     console.log("POT MATCHES PAGE LAT: " + lat)
-    //     console.log("POT MATCHES PAGE LONG: " + long)
-    //     console.log("POT MATCHES PAGE RAD: " + rad)
-    
-    //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
-    //     .then(res => res.json())
-    //     .then(resJson => {
-    //       console.log("POT MATCHES PAGE resJson: ")
-    //       console.log(resJson)
-    //       setNearbyUsersData(resJson);  
-    //     });
-    // }, []);
+  const { getCreatingAccountData } = React.useContext(AuthContext);
+  // const selfUserID = getUserID();
+  // const receivingChatUserID = route.params.userID;
+  // --------------------------MATT-------------------^ TODO: use this when working
+  const selfUserID = "lukaemeribe2";
+  const receivingChatUserID = "boonloo1";
+
+  // useEffect(() => {
+  //     const { userID, lat, long, rad } = route.params;
+  //     console.log("POT MATCHES PAGE UID: " + userID)
+  //     console.log("POT MATCHES PAGE LAT: " + lat)
+  //     console.log("POT MATCHES PAGE LONG: " + long)
+  //     console.log("POT MATCHES PAGE RAD: " + rad)
+
+  //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
+  //     .then(res => res.json())
+  //     .then(resJson => {
+  //       console.log("POT MATCHES PAGE resJson: ")
+  //       console.log(resJson)
+  //       setNearbyUsersData(resJson);  
+  //     });
+  // }, []);
   // };
+
+  // useEffect(() => {
+  //   navigation.getParent('tabs').setOptions({tabBarStyle: {display: 'none'}})
+  // })
 
   const renderMessageItem = (item) => {
 
@@ -105,12 +107,12 @@ const MessagePage = ({ route, navigation }) => {
     return (
       <Pressable
         style={[
-          item.sender_uid === currUserId ? styles.messageBubbleSender : styles.messageBubbleReceiver
+          item.sender_uid === selfUserID ? styles.messageBubbleSender : styles.messageBubbleReceiver
         ]}
         onPress={() => handleMessagePress()}
       >
         {/* <View> */}
-          <Text style={styles.messageText}>{item.message}</Text>
+        <Text style={styles.messageText}>{item.message}</Text>
         {/* </View> */}
       </Pressable>
     );
@@ -125,32 +127,30 @@ const MessagePage = ({ route, navigation }) => {
     // ---- Firebase Sign Out ---- 
     signOut(auth).then(() => {
       // Sign-out successful.
-          navigation.navigate("Login");
-          console.log("Signed out successfully")
-      }).catch((error) => {
+      navigation.navigate("Login");
+      console.log("Signed out successfully")
+    }).catch((error) => {
       // An error happened.
-      });
+    });
   }
 
   // ---MATT---
 
-  const currUserId = "lukaemeribe2";
-  const receiverUserId = "boonloo1";
 
   const handleMessageSend = () => {
     messagesList.push({
       id: messageId.toString(), //idk
-      sender_uid: currUserId,
-      receiver_uid: receiverUserId,
+      sender_uid: selfUserID,
+      receiver_uid: receivingChatUserID,
       message: currMessage,
       timestamp: "1/2/3 10:10 PM"
     });
     setMessagesRefresh(!messagesRefresh);
     messageId += 1;
-  } 
+  }
 
   const getMessageHistory = () => {
-    
+
   }
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
@@ -159,46 +159,48 @@ const MessagePage = ({ route, navigation }) => {
 
   return (
     // <KeyboardAvoidingView behavior="padding" style={styles.keyboardView}>
-      <View style={styles.pageView}>
-        <StatusBar style="light" />
-        <LinearGradient
-          style={styles.pageGradient}
-          locations={[0, 0.9]}
-          colors={["#ff0000", "#db17a4"]}
-        >
-          <View style={[{ paddingTop: insets.top * 0.8 }]} />
-          <View style={styles.topMenuWrapper}>
+    <View style={styles.pageView}>
+      <StatusBar style="light" />
+      <LinearGradient
+        style={styles.pageGradient}
+        locations={[0, 0.9]}
+        colors={["#ff0000", "#db17a4"]}
+      >
+        <View style={[{ paddingTop: insets.top * 0.8 }]} />
+        <View style={styles.topMenuWrapper}>
           {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
           </Pressable> */}
-             <View style={styles.topNavigationBarWrapper}>
-          <Feather name="chevron-left" size={32} color="white" />
-          <Text style={styles.profilePageLogo}>Rendezvous</Text>
-          <View style={{width: 29}}></View>
-        </View> 
-          </View>           
-           <View style={styles.creationHeaderWrapper}>
-              <Text style={styles.creationHeaderText}></Text>
-            </View>
-
-        </LinearGradient>
-        <View style={styles.messagesView}>
-          <FlatList
-                  data={messagesList}
-                  renderItem={({ item }) =>
-                    renderMessageItem(item)
-                  }
-                  extraData={messagesRefresh}
-                  keyExtractor={(item) => item.id
-                  }
-                  ref={messagesRef} 
-                  onContentSizeChange={() => messagesRef.current.scrollToEnd()}
-                />
+          <View style={styles.topNavigationBarWrapper}>
+            <Pressable onPress={() => navigation.goBack()}>
+              <Feather name="chevron-left" size={32} color="white" />
+            </Pressable>
+            <Text style={styles.profilePageLogo}>Rendezvous</Text>
+            <View style={{ width: 29 }}></View>
+          </View>
         </View>
-        <KeyboardAvoidingView style={styles.messageEntryView} behavior="padding">
+        <View style={styles.creationHeaderWrapper}>
+          <Text style={styles.creationHeaderText}></Text>
+        </View>
 
-          <View style={styles.messageTextInputWrapper}>
-            <TextInput
+      </LinearGradient>
+      <View style={styles.messagesView}>
+        <FlatList
+          data={messagesList}
+          renderItem={({ item }) =>
+            renderMessageItem(item)
+          }
+          extraData={messagesRefresh}
+          keyExtractor={(item) => item.id
+          }
+          ref={messagesRef}
+          onContentSizeChange={() => messagesRef.current.scrollToEnd()}
+        />
+      </View>
+      <KeyboardAvoidingView style={styles.messageEntryView} behavior="padding">
+
+        <View style={styles.messageTextInputWrapper}>
+          <TextInput
             style={styles.messageTextInput}
             onChangeText={onChangeMessage}
             value={currMessage}
@@ -207,9 +209,9 @@ const MessagePage = ({ route, navigation }) => {
           <Pressable style={styles.sendButton}>
             <Text style={styles.sendButtonText} onPress={() => handleMessageSend()}>Send</Text>
           </Pressable>
-          </View>
-        </KeyboardAvoidingView>
-      </View>
+        </View>
+      </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -235,7 +237,7 @@ const styles = StyleSheet.create({
     flex: 13,
     height: 10,
     backgroundColor: Color.colorGray_300,
-    
+
   },
   messageEntryView: {
     flex: 1.7,
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     // alignItems: "center",
-    paddingHorizontal: padding.sm,
+    paddingHorizontal: padding.xxs,
     marginBottom: 10,
   },
   profilePageLogo: {
@@ -351,7 +353,7 @@ const styles = StyleSheet.create({
   },
   nearbyUsersListItem: {
     borderRadius: 10,
-    height: 150, 
+    height: 150,
     width: 150,
     backgroundColor: Color.colorGray_100,
     marginBottom: 15,
@@ -372,8 +374,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 10,
     overflow: 'hidden',
-    borderRadius: 10,  
-    
+    borderRadius: 10,
+
   },
   nearbyUsersListPhotoImageStyle: {
 
@@ -396,7 +398,7 @@ const styles = StyleSheet.create({
   },
   sendButton: {
     flex: 1,
-    alignItems:"flex-end",
+    alignItems: "flex-end",
     paddingRight: 10,
   },
   sendButtonText: {
@@ -407,7 +409,7 @@ const styles = StyleSheet.create({
     color: Color.colorWhite,
     fontFamily: FontFamily.interMedium,
     fontSize: 15,
-    fontWeight: "900",  
+    fontWeight: "900",
   },
   messageBubbleReceiver: {
     alignSelf: "flex-start",

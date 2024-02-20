@@ -37,15 +37,20 @@ import {
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { AuthContext } from "../AppAuthContext"
 import { useEffect, useState } from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import ProfilePage from "./profilePage"
+
 
 const config = require('../config.json');
+const Stack = createNativeStackNavigator();
 
 const PeopleNearby = ({ route, navigation }) => {
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-  const { signOut } = React.useContext(AuthContext)
+  const { signOut, getUserID } = React.useContext(AuthContext)
+  const userID = getUserID();
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -58,23 +63,23 @@ const PeopleNearby = ({ route, navigation }) => {
       }))
     );
 
-    // const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
+  // const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
 
-    // useEffect(() => {
-    //     const { userID, lat, long, rad } = route.params;
-    //     console.log("POT MATCHES PAGE UID: " + userID)
-    //     console.log("POT MATCHES PAGE LAT: " + lat)
-    //     console.log("POT MATCHES PAGE LONG: " + long)
-    //     console.log("POT MATCHES PAGE RAD: " + rad)
-    
-    //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
-    //     .then(res => res.json())
-    //     .then(resJson => {
-    //       console.log("POT MATCHES PAGE resJson: ")
-    //       console.log(resJson)
-    //       setNearbyUsersData(resJson);  
-    //     });
-    // }, []);
+  // useEffect(() => {
+  //     const { userID, lat, long, rad } = route.params;
+  //     console.log("POT MATCHES PAGE UID: " + userID)
+  //     console.log("POT MATCHES PAGE LAT: " + lat)
+  //     console.log("POT MATCHES PAGE LONG: " + long)
+  //     console.log("POT MATCHES PAGE RAD: " + rad)
+
+  //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
+  //     .then(res => res.json())
+  //     .then(resJson => {
+  //       console.log("POT MATCHES PAGE resJson: ")
+  //       console.log(resJson)
+  //       setNearbyUsersData(resJson);  
+  //     });
+  // }, []);
 
 
   const renderButtonItem = (item) => {
@@ -100,7 +105,8 @@ const PeopleNearby = ({ route, navigation }) => {
     // };
 
     const handleButtonPress = () => {
-      navigation.push("ProfilePage", {userID: item.id})
+      navigation.push("ProfilePage", {userIsSelf: false, userID: item.id})
+      // navigation.push("ProfilePage")
     }
 
     return (
@@ -110,13 +116,13 @@ const PeopleNearby = ({ route, navigation }) => {
         ]}
         onPress={() => handleButtonPress()}
       >
-          <ImageBackground
-            style={styles.nearbyUsersListPhoto}
-            imageStyle={styles.nearbyUsersListPhotoImageStyle}
-            source={require("../assets/images/profilePhoto.png")}
-          > 
-            <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}, {item.age}</Text>
-          </ImageBackground>
+        <ImageBackground
+          style={styles.nearbyUsersListPhoto}
+          imageStyle={styles.nearbyUsersListPhotoImageStyle}
+          source={require("../assets/images/profilePhoto.png")}
+        >
+          <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}, {item.age}</Text>
+        </ImageBackground>
       </Pressable>
     );
   };
@@ -212,62 +218,73 @@ const PeopleNearby = ({ route, navigation }) => {
   // const isValid = this.datetimeField.isValid()
 
   return (
-    <KeyboardAvoidingView behavior="padding" style={styles.keyboardView}>
-      <View style={styles.pageView}>
-        <StatusBar style="light" />
-        <LinearGradient
-          style={styles.pageGradient}
-          locations={[0, 0.9]}
-          colors={["#ff0000", "#db17a4"]}
-        >
-          <View style={[{ paddingTop: insets.top * 0.8 }]} />
-          <View style={styles.topMenuWrapper}>
-            {/* <Feather name="chevron-left" size={32} color="white" /> */}
-          <Pressable onPress={() => logOut()}>
-            <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
-          </Pressable>
-            {/* <View style={styles.topNavigationBarWrapper}>*/}
-          {/* <Pressable onPress={() => logOut()}>
+        <KeyboardAvoidingView behavior="padding" style={styles.keyboardView}>
+          <View style={styles.pageView}>
+            <StatusBar style="light" />
+            <LinearGradient
+              style={styles.pageGradient}
+              locations={[0, 0.9]}
+              colors={["#ff0000", "#db17a4"]}
+            >
+              <View style={[{ paddingTop: insets.top * 0.8 }]} />
+              <View style={styles.topMenuWrapper}>
+                {/* <Feather name="chevron-left" size={32} color="white" /> */}
+                <Pressable onPress={() => logOut()}>
+                  <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
+                </Pressable>
+                {/* <View style={styles.topNavigationBarWrapper}>*/}
+                {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
           </Pressable> */}
-          {/*<Text style={styles.profilePageLogo}>Rendezvous</Text>
+                {/*<Text style={styles.profilePageLogo}>Rendezvous</Text>
           <View style={{width: 29}}></View>
         </View> */}
-          </View>           
-           <View style={styles.creationHeaderWrapper}>
-              <Text style={styles.creationHeaderText}>People Nearby</Text>
-            </View>
-          {/* <ScrollView contentContainerStyle={{ paddingTop: 5 }}> */}
+              </View>
+              <View style={styles.creationHeaderWrapper}>
+                <Text style={styles.creationHeaderText}>People Nearby</Text>
+              </View>
+              {/* <ScrollView contentContainerStyle={{ paddingTop: 5 }}> */}
 
-            {/* <View style={styles.headerWrapper}>
+              {/* <View style={styles.headerWrapper}>
               <Text style={styles.headerText}>Display Name</Text>
             </View> */}
-          <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
+              <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
                 <View style={styles.nearbyUsersFirstWrapper}>
-                <FlatList
-                  data={profilesList}
-                  renderItem={({ item }) =>
-                    renderButtonItem(item)
-                  }
-                  keyExtractor={(item) => item.id}
-                />
+                  <FlatList
+                    data={profilesList}
+                    renderItem={({ item }) =>
+                      renderButtonItem(item)
+                    }
+                    scrollEnabled={false}
+                    keyExtractor={(item) => item.id}
+                  />
                 </View>
                 <View style={styles.nearbyUsersSecondWrapper}>
-                <FlatList
-                  data={profilesList}
-                  renderItem={({ item }) =>
-                    renderButtonItem(item)
-                  }
-                  keyExtractor={(item) => item.id}
-                />
+                  <FlatList
+                    data={profilesList}
+                    renderItem={({ item }) =>
+                      renderButtonItem(item)
+                    }
+                    scrollEnabled={false}
+                    keyExtractor={(item) => item.id}
+                  />
                 </View>
-          </ScrollView>
-          {/* </ScrollView> */}
-        </LinearGradient>
-      </View>
-    </KeyboardAvoidingView>
+              </ScrollView>
+              {/* </ScrollView> */}
+            </LinearGradient>
+          </View>
+        </KeyboardAvoidingView>
   );
 };
+
+const PeopleNearbyStack = ({ navigation }) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="PeopleNearby" component={ PeopleNearby }/>
+      <Stack.Screen name="ProfilePage" component={ ProfilePage }/>
+    </Stack.Navigator>
+  )
+}
 
 const styles = StyleSheet.create({
   pageView: {
@@ -363,7 +380,7 @@ const styles = StyleSheet.create({
   },
   nearbyUsersListItem: {
     borderRadius: 10,
-    height: 150, 
+    height: 150,
     width: 150,
     backgroundColor: Color.colorGray_100,
     marginBottom: 15,
@@ -384,8 +401,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     padding: 10,
     overflow: 'hidden',
-    borderRadius: 10,  
-    
+    borderRadius: 10,
+
   },
   nearbyUsersListPhotoImageStyle: {
 
@@ -395,4 +412,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default PeopleNearby;
+export default PeopleNearbyStack;

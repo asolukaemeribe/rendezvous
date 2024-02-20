@@ -33,38 +33,39 @@ const CreateAccount = ({ navigation }) => {
   const { signOut, setCreatingAccountData } = React.useContext(AuthContext)
 
 
-  const signUp = async () => {
-    setLoading(true);
-    try {
-      console.log("(" + email + ")");
-      console.log(password);
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(response);
-      const user = auth.currentUser;
-      if (user) {
-        const uid = user.uid;
-        navigation.navigate("ProfileCreation", {userID: uid});
-      } else {
-        // user is not signed in for some reason
-        console.log("user is not signed in")
-      }
+  // const signUp = async () => {
+  //   setLoading(true);
+  //   try {
+  //     console.log("(" + email + ")");
+  //     console.log(password);
+  //     const response = await createUserWithEmailAndPassword(
+  //       auth,
+  //       email,
+  //       password
+  //     );
+  //     console.log(response);
+  //     const user = auth.currentUser;
+  //     if (user) {
+  //       const uid = user.uid;
+  //       navigation.navigate("ProfileCreation", {userID: uid});
+  //     } else {
+  //       // user is not signed in for some reason
+  //       console.log("user is not signed in")
+  //     }
 
       
-      // alert("Success!");
-    } catch (error: any) {
-      console.log(error);
-      alert("Sign Up Failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     // alert("Success!");
+  //   } catch (error: any) {
+  //     console.log(error);
+  //     alert("Sign Up Failed: " + error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const creatingAccount = () => {
-    setCreatingAccountData({auth: auth, email: email, password: password})
+    setCreatingAccountData(auth, email, password);
+    // setCreatingAccountData({auth: auth, email: email, password: password})
     // navigation.navigate("ProfileCreation");
   }
 

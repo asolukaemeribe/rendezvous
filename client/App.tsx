@@ -8,12 +8,12 @@ import Login from "./screens/login";
 import ProfilePage from "./screens/profilePage";
 import ProfileCreation from "./screens/profileCreation";
 import PictureSelection from "./screens/pictureSelection";
-import PeopleNearby from "./screens/peopleNearby";
+import PeopleNearbyStack from "./screens/peopleNearby";
 import UserInterestsPage from "./screens/userInterests";
 import MessagePage from "./screens/messagePage";
 import MatchesListPage from "./screens/matchesListPage"
 import * as SplashScreen from 'expo-splash-screen';
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { AnimatedTabBarNavigator } from "react-native-animated-nav-tab-bar"
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { View, Text, Pressable, TouchableOpacity } from "react-native";
@@ -40,6 +40,7 @@ const config = require('./config.json');
 // SplashScreen.preventAutoHideAsync();
 
 const Tabs = AnimatedTabBarNavigator();
+
 // const AuthContext = React.createContext();
 
 function AuthedStack() {
@@ -47,81 +48,105 @@ function AuthedStack() {
     <>
       <NavigationContainer>
         <SafeAreaProvider>
-          <Tabs.Navigator
-            tabBarOptions={{
-              activeTintColor: "#FF000099",
-              inactiveTintColor: "#00000099",
-              activeBackgroundColor: "#00000022",
-              tabStyle: {
-                width: 270,
-                alignSelf: "center"
-              }
-            }}
-            appearance={{
-              whenActiveShow: "icon-only",
-              whenInactiveShow: "icon-only",
-              floating: "true",
-              dotSize: "small"
-            }}
-            screenOptions={{ headerShown: false }}
-          >
-            <Tabs.Screen
-              name="ProfilePage"
-              component={ProfilePage}
-              options={{
-                headerShown: false,
-                tabBarIcon: ({ focused, color, size }) => (
-                  <FontAwesomeIcon
-                    icon={faUser}
-                    size={30}
-                    color={focused ? color : "#222222"}
-                  // focused={focused}
-                  // color={color}
-                  />
-                )
-              }}
-              initialParams={{ userID: "abc" }}
-            // userID: userID
-            />
-            <Tabs.Screen
-              name="PeopleNearby"
-              component={PeopleNearby}
-              // options={{ headerShown: false }}
-              options={{
-                headerShown: false,
-                tabBarIcon: ({ focused, color, size }) => (
-                  <Foundation
-                    name="home"
-                    size={30}
-                    color={focused ? color : "#222222"}
-                    focused={focused}
-                  // color={color}
-                  />
-                )
-              }}
-            />
-            <Tabs.Screen
-              name="MatchesListPage"
-              component={MatchesListPage}
-              options={{
-                headerShown: false,
-                tabBarIcon: ({ focused, color, size }) => (
-                  <Ionicons
-                    name="chatbubble-ellipses"
-                    size={30}
-                    color={focused ? color : "#222222"}
-                    focused={focused}
-                  // color={color}
-                  />
-                )
-              }}
-            />
-          </Tabs.Navigator>
+          <Stack.Navigator>
+            <Stack.Screen name="AuthedTabs" component={AuthedTabs} options={{ headerShown: false }} />
+            <Stack.Screen name="MessagePage" component={MessagePage} options={{ headerShown: false }} />
+          </Stack.Navigator>
         </SafeAreaProvider>
       </NavigationContainer>
     </>
   )
 }
+
+function AuthedTabs() {
+  return (
+    <Tabs.Navigator
+      tabBarOptions={{
+        activeTintColor: "#FF000099",
+        inactiveTintColor: "#00000099",
+        activeBackgroundColor: "#00000022",
+        tabStyle: {
+          width: 270,
+          alignSelf: "center"
+        }
+      }}
+      appearance={{
+        whenActiveShow: "icon-only",
+        whenInactiveShow: "icon-only",
+        floating: "true",
+        dotSize: "small"
+      }}
+      id="tabs"
+      screenOptions={{ headerShown: false }}
+      initialRouteName="PeopleNearbyStack"
+    >
+      <Tabs.Screen
+        name="ProfilePage"
+        component={ProfilePage}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => (
+            <FontAwesomeIcon
+              icon={faUser}
+              size={30}
+              color={focused ? color : "#222222"}
+            // focused={focused}
+            // color={color}
+            />
+          )
+        }}
+        initialParams={{ userIsSelf: true }}
+      // userID: userID
+      />
+      <Tabs.Screen
+        name="PeopleNearbyStack"
+        component={PeopleNearbyStack}
+        // options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Foundation
+              name="home"
+              size={30}
+              color={focused ? color : "#222222"}
+              focused={focused}
+            // color={color}
+            />
+          )
+        }}
+      />
+      <Tabs.Screen
+        name="MatchesListPage"
+        component={MatchesListPage}
+        // options={({ route }) => ({
+        //   headerShown: false,
+        //   tabBarVisible: this.getTabBarVisibility(route),
+        //   tabBarIcon: ({ focused, color, size }) => (
+        //     <Ionicons
+        //       name="chatbubble-ellipses"
+        //       size={30}
+        //       color={focused ? color : "#222222"}
+        //       focused={focused}
+        //     />
+        //   ),
+        // })}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name="chatbubble-ellipses"
+              size={30}
+              color={focused ? color : "#222222"}
+              focused={focused}
+            // color={color}
+            />
+          )
+        }}
+      />
+    </Tabs.Navigator>
+  )
+}
+
 
 function UnauthedStack() {
   return (
@@ -198,16 +223,17 @@ function CreatingAccountStack() {
 const App = () => {
   const [hideSplashScreen, setHideSplashScreen] = React.useState(true);
 
-
   function authReducer(prevAuthState, action) {
     switch (action.type) {
       case 'RESTORE_TOKEN':
+        console.log("restore");
         return {
           ...prevAuthState,
           userToken: action.token,
           isLoading: false,
         };
       case 'SIGN_IN':
+        console.log("sign in");
         return {
           ...prevAuthState,
           isSignout: false,
@@ -216,6 +242,7 @@ const App = () => {
           creatingAccount: false,
         };
       case 'SIGN_OUT':
+        console.log("sign out");
         return {
           ...prevAuthState,
           isSignout: true,
@@ -224,16 +251,21 @@ const App = () => {
           creatingAccountData: null
         };
       case 'CREATING_ACCOUNT':
+        console.log("creatingacc");
         return {
           ...prevAuthState,
           creatingAccount: true
         }
       case 'CREATING_ACCOUNT_DATA':
+        console.log(" creating account data now with " + action.accountData )
         return {
           ...prevAuthState,
           creatingAccount: true,
-          creatingAccountData: action.creatingAccountData
+          creatingAccountData: action.accountData,
         }
+      default:
+        console.log("default")
+        return prevAuthState;
     }
   }
 
@@ -244,6 +276,8 @@ const App = () => {
     creatingAccount: false,
     creatingAccountData: null
   }
+
+
 
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
@@ -278,7 +312,12 @@ const App = () => {
 
     bootstrapAsync();
   }, []);
-
+  const [authState, setAuthState] = React.useReducer(authReducer, initialAuthState);
+  React.useEffect(() => {
+    console.log('userToken: ', authState.userToken);
+    console.log('isAuth: ', authState.isSignout);
+    console.log("creatingAccountData: ", authState.creatingAccountData);
+  }, [authState]);
   const authContext = React.useMemo(
     () => ({
       signIn: async (auth, email, password, location) => {
@@ -295,7 +334,7 @@ const App = () => {
           fetch(`http://${config.server_host}:${config.server_port}/updateuserlocation?uid=${user.uid}` +
             `&lat=${location.coords.latitude}&long=${location.coords.longitude}`)
             .then(res => { console.log("success! check database. Location should be updated.") })
-            setAuthState({ type: 'SIGN_IN', token: user.uid });
+          setAuthState({ type: 'SIGN_IN', token: user.uid });
 
           // navigation.navigate("ProfilePage", {userID: user.uid});
           // router.replace("/profileCreation");
@@ -312,7 +351,7 @@ const App = () => {
         try {
           const response = await signOut(auth);
           console.log(response);
-          alert("Success!");
+          // alert("Success!");
         } catch (error: any) {
           console.log(error);
           alert("Log out Failed: " + error.message);
@@ -327,39 +366,63 @@ const App = () => {
         // After getting token, we need to persist the token using `SecureStore`
         // In the example, we'll use a dummy token
         // setLoading(true);
+        // try {
+        //   console.log("(" + authState.creatingAccountData.email + ")");
+        //   console.log(authState.creatingAccountData.password);
+        //   const response = await createUserWithEmailAndPassword(
+        //     authState.creatingAccountData.auth,
+        //     authState.creatingAccountData.email,
+        //     authState.creatingAccountData.password
+        //   );
+        //   console.log(response);
+        //   alert("Success!");
+        //   const user = authState.creatingAccountData.auth.currentUser;
+        console.log("signing up and in user " + authState.creatingAccountData);
+        setAuthState({ type: 'SIGN_IN', token: authState.creatingAccountData });
+        // } catch (error: any) {
+        //   console.log(error);
+        //   alert("Sign Up Failed: " + error.message);
+        // } finally {
+        //   // setLoading(false);
+        // }
+      },
+      creatingAccount: async () => {
+        setAuthState({ type: 'CREATING_ACCOUNT' })
+      },
+      setCreatingAccountData: async (auth, email, password) => {
         try {
-          console.log("(" + authState.creatingAccountData.email + ")");
-          console.log(authState.creatingAccountData.password);
+          console.log("(" + email + ")");
+          console.log(password);
           const response = await createUserWithEmailAndPassword(
-            authState.creatingAccountData.auth,
-            authState.creatingAccountData.email,
-            authState.creatingAccountData.password
+            auth,
+            email,
+            password
           );
           console.log(response);
-          alert("Success!");
-          const user = authState.creatingAccountData.auth.currentUser;
-          setAuthState({ type: 'SIGN_IN', token: user.uid });
+          // alert("Success!");
+          const user = auth.currentUser;
+          console.log("user.uid is " + user.uid);
+          setAuthState({ type: 'CREATING_ACCOUNT_DATA', accountData: user.uid })
+          console.log("test: " + authState.creatingAccountData.uid);
         } catch (error: any) {
           console.log(error);
           alert("Sign Up Failed: " + error.message);
         } finally {
           // setLoading(false);
         }
-      },
-      creatingAccount: async () => {
-        setAuthState({ type: 'CREATING_ACCOUNT'})
-      },
-      setCreatingAccountData: async(data) => {
-        setAuthState({ type: 'CREATING_ACCOUNT_DATA', creatingAccountData: data})
+        // setAuthState({ type: 'CREATING_ACCOUNT_DATA', creatingAccountData: data})
       },
       getCreatingAccountData: () => {
+        console.log(authState.creatingAccountData);
         return authState.creatingAccountData;
+      },
+      getUserID: () => {
+        return authState.userToken;
       }
     }),
     []
   );
 
-  const [authState, setAuthState] = React.useReducer(authReducer, initialAuthState);
   const [fontsLoaded, error] = useFonts({
     "Inter-Regular": require("./assets/fonts/Inter-Regular.ttf"),
     "Inter-Medium": require("./assets/fonts/Inter-Medium.ttf"),
@@ -393,9 +456,9 @@ const App = () => {
 
   return (
     <AuthContext.Provider value={authContext}>
-      {(authState.userToken == null) ? 
-                                     (authState.creatingAccount ? <CreatingAccountStack /> : <UnauthedStack />) : 
-                                     (<AuthedStack />)}
+      {(authState.userToken == null) ?
+        (authState.creatingAccount ? <CreatingAccountStack /> : <UnauthedStack />) :
+        (<AuthedStack />)}
     </AuthContext.Provider>
   );
 };

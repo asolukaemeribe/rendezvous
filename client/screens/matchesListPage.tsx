@@ -26,7 +26,9 @@ import padding from "../assets/global_styles/padding";
 import colors from "../assets/global_styles/color";
 import profileInfoData from "../assets/data/profileInfoData";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { TextInputMask } from "react-native-masked-text";
+import { TextInputMask } from "react-native-masked-text"
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MessagePage from "./messagePage";
 import dayjs from "dayjs";
 import {
   createUserWithEmailAndPassword,
@@ -39,13 +41,15 @@ import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { useEffect, useState } from "react";
 
 const config = require('../config.json');
+const Stack = createNativeStackNavigator();
 
 const MatchesListPage = ({ route, navigation }) => {
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-  const { signOut } = React.useContext(AuthContext)
+  const { signOut, getUserID } = React.useContext(AuthContext)
+  const userID = getUserID();
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -100,9 +104,10 @@ const MatchesListPage = ({ route, navigation }) => {
     // };
 
     const handleButtonPress = () => {
-      navigation.push("ProfilePage", {userID: item.id})
+      navigation.push("MessagePage", { userID: item.id })
     }
 
+    // TODO: Matches page makeover
     return (
       <Pressable
         style={[
@@ -115,7 +120,7 @@ const MatchesListPage = ({ route, navigation }) => {
             imageStyle={styles.nearbyUsersListPhotoImageStyle}
             source={require("../assets/images/profilePhoto.png")}
           > 
-            <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}, {item.age}</Text>
+            <Text style={styles.nearbyUsersListItemText}>{item.first_name}</Text>
           </ImageBackground>
       </Pressable>
     );
@@ -149,60 +154,11 @@ const MatchesListPage = ({ route, navigation }) => {
       age: "21"
     },
     {
-      id: "boonloo2",
-      first_name: "Boon",
-      last_name: "Looo",
+      id: "boonloo21",
+      first_name: "Luka",
+      last_name: "Loo",
       pronouns: "he/him",
       age: "22"
-    },
-    {
-      id: "boonloo3",
-      first_name: "Boon",
-      last_name: "Loooo",
-      pronouns: "he/him",
-      age: "23"
-    },
-    {
-      id: "boonloo4",
-      first_name: "Boon",
-      last_name: "Looooo",
-      pronouns: "he/him",
-      age: "24"
-    },
-    {
-      id: "boonloo5",
-      first_name: "Boon",
-      last_name: "Loooooo",
-      pronouns: "he/him",
-      age: "25"
-    },
-    {
-      id: "boonloo6",
-      first_name: "Boon",
-      last_name: "Looooooo",
-      pronouns: "he/him",
-      age: "26"
-    },
-    {
-      id: "boonloo7",
-      first_name: "Boon",
-      last_name: "Loooooooo",
-      pronouns: "he/him",
-      age: "27"
-    },
-    {
-      id: "boonloo8",
-      first_name: "Boon",
-      last_name: "Looooooooo",
-      pronouns: "he/him",
-      age: "28"
-    },
-    {
-      id: "boonloo9",
-      first_name: "Boon",
-      last_name: "Loooooooooo",
-      pronouns: "he/him",
-      age: "29"
     },
   ];
 
@@ -242,7 +198,7 @@ const MatchesListPage = ({ route, navigation }) => {
             {/* <View style={styles.headerWrapper}>
               <Text style={styles.headerText}>Display Name</Text>
             </View> */}
-          <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
+
                 <View style={styles.nearbyUsersFirstWrapper}>
                 <FlatList
                   data={profilesList}
@@ -250,24 +206,26 @@ const MatchesListPage = ({ route, navigation }) => {
                     renderButtonItem(item)
                   }
                   keyExtractor={(item) => item.id}
+                  contentContainerStyle={styles.nearbyUsersViewWrapper}
                 />
                 </View>
-                <View style={styles.nearbyUsersSecondWrapper}>
-                <FlatList
-                  data={profilesList}
-                  renderItem={({ item }) =>
-                    renderButtonItem(item)
-                  }
-                  keyExtractor={(item) => item.id}
-                />
-                </View>
-          </ScrollView>
+
           {/* </ScrollView> */}
         </LinearGradient>
       </View>
     </KeyboardAvoidingView>
   );
 };
+
+
+const MatchesListStack = ({ navigation }) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MatchesList" component={ MatchesListPage }/>
+      <Stack.Screen name="MessagePage" component={ MessagePage }/>
+    </Stack.Navigator>
+  )
+}
 
 const styles = StyleSheet.create({
   pageView: {
@@ -351,7 +309,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: padding.xl,
     paddingTop: padding.xxs,
     alignItems: "flex-start",
-    flexDirection: "row"
+    // flexDirection: "row"
   },
   nearbyUsersFirstWrapper: {
     alignItems: "flex-start",
@@ -362,9 +320,9 @@ const styles = StyleSheet.create({
     flex: 1
   },
   nearbyUsersListItem: {
-    borderRadius: 10,
-    height: 150, 
-    width: 150,
+    borderRadius: 50,
+    height: 100, 
+    width: 100,
     backgroundColor: Color.colorGray_100,
     marginBottom: 15,
     justifyContent: 'center',
@@ -378,13 +336,13 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   nearbyUsersListPhoto: {
-    height: 150,
-    width: 150,
+    height: 100,
+    width: 100,
     justifyContent: "flex-end",
-    alignItems: "flex-start",
-    padding: 10,
+    alignItems: "center",
+    padding: 16,
     overflow: 'hidden',
-    borderRadius: 10,  
+    borderRadius: 50,  
     
   },
   nearbyUsersListPhotoImageStyle: {

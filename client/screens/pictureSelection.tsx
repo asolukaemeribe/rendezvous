@@ -17,12 +17,12 @@ import { RNS3 } from 'react-native-aws3';
 
 const PictureSelection = ({ route, navigation }) => {
   const [image, setImage] = React.useState(null);
-  const { signIn, signOut, signUp } = React.useContext(AuthContext)
+  const { signIn, signOut, signUp, getCreatingAccountData } = React.useContext(AuthContext)
+  const userID = getCreatingAccountData();
 
   const uploadToS3 = async (result) => {
 
     // const filePath = result.assets[0].uri.replace('file://', '');
-    // const { userID } = route.params;
     // const file = {
     //     uri: filePath,
     //     name: userID + ".png",
@@ -57,11 +57,10 @@ const PictureSelection = ({ route, navigation }) => {
   };
 
 const addProfilePicture = () => {
-    const { userID } = route.params;
     console.log(image);
     uploadToS3(image);
     signUp()
-    // navigation.navigate("ProfilePage", {userID: userID})
+    // navigation.navigate("ProfilePage")
 }
 
   return (

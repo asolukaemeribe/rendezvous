@@ -29,6 +29,8 @@ import { TextInputMask } from "react-native-masked-text";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 const config = require('../config.json');
+import { AuthContext } from "../AppAuthContext"
+
 
 const ProfilePage = ({ route, navigation }) => {
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -43,6 +45,7 @@ const ProfilePage = ({ route, navigation }) => {
   const [date, setDate] = React.useState(dayjs());
   const [dateStr, setDateStr] = React.useState("");
   const [location, setLocation] = React.useState<Location.LocationObject>();
+  const { getCreatingAccountData } = React.useContext(AuthContext);
 
   // Code for date picker
   // const [showDatePicker, setShowDatePicker] = React.useState(false);
@@ -138,37 +141,38 @@ const ProfilePage = ({ route, navigation }) => {
     console.log("birthday: " + dateStr);
     console.log("age: " + getAge());
 
-    const { userID } = route.params;
+    const userID = getCreatingAccountData();
+    console.log("UserID is " + userID);
 
     // add profile data to mysql database
-    fetch(`http://${config.server_host}:${config.server_port}/newuser?uid=${userID}` + 
-    `&first_name=${firstName}` +
-    `&last_name=${lastName}` + 
-    `&about_me=${aboutMe}` + 
-    `&pronouns=${pronouns}` + 
-    `&gender=${getSelected(genderTypesArray)}` + 
-    `&orientation=${getSelected(orientationTypesArray)}` +
-    `&birthday=${dateStr}` +
-    `&age=${getAge()}`)
-      .then(res => {console.log("success! check database")})
+    fetch(`http://${config.server_host}:${config.server_port}/newuser?uid=${userID}` +
+      `&first_name=${firstName}` +
+      `&last_name=${lastName}` +
+      `&about_me=${aboutMe}` +
+      `&pronouns=${pronouns}` +
+      `&gender=${getSelected(genderTypesArray)}` +
+      `&orientation=${getSelected(orientationTypesArray)}` +
+      `&birthday=${dateStr}` +
+      `&age=${getAge()}`)
+      .then(res => { console.log("success! check database") })
 
     // add location data to postgresql database
     fetch(`http://${config.server_host}:${config.server_port}/newuserlocation?uid=${userID}` +
-    `&lat=${location.coords.latitude}&long=${location.coords.longitude}`)
-      .then(res => {console.log("success! check database. Location should be added.")})
+      `&lat=${location.coords.latitude}&long=${location.coords.longitude}`)
+      .then(res => { console.log("success! check database. Location should be added.") })
 
     // Date (non-string) I'll figure out later but also maybe no need
     console.log(date.toString());
-    navigation.navigate("SelectInterestsPage", {userID: userID})
-    //navigation.navigate("ProfilePage", {userID: userID});
+    navigation.navigate("SelectInterestsPage")
+    //navigation.navigate("ProfilePage");
   }
-  // TODO: Don't allow user to navigate back to home page from here
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
   const mask = 'MM/DD/YYYY';
   // const isValid = this.datetimeField.isValid()
 
+  // ----MATT: TODO: there is an issue with location not being defined until after i hit buttons sometimes such as login?
   useEffect(() => {
     // get location
     (async () => {
