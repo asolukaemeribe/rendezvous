@@ -79,8 +79,6 @@ const MessagePage = ({ route, navigation }) => {
         isSelected: value,
       }))
     );
-    // const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
-
     // useEffect(() => {
     //     const { userID, lat, long, rad } = route.params;
     //     console.log("POT MATCHES PAGE UID: " + userID)
@@ -149,10 +147,8 @@ const MessagePage = ({ route, navigation }) => {
   const currUserId = "lukaemeribe2";
   const receiverUserId = "boonloo1";
 
- 
 
   const handleMessageSend = () => {
-    console.log(currMessage)
     messagesList.push({
       id: messageId.toString(), //idk
       sender_uid: currUserId,
@@ -162,13 +158,11 @@ const MessagePage = ({ route, navigation }) => {
     });
     setMessagesRefresh(!messagesRefresh);
     messageId += 1;
-    console.log(messagesList)
   } 
 
   const getMessageHistory = () => {
     
   }
-
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
@@ -201,16 +195,19 @@ const MessagePage = ({ route, navigation }) => {
 
         </LinearGradient>
         <View style={styles.messagesView}>
-          <ScrollView contentContainerStyle={{flexGrow:1}} ref={messagesRef} onContentSizeChange={() => messagesRef.current.scrollToEnd()} /*onContentSizeChange={handleMessageReceive}*/>
+          {/* <ScrollView contentContainerStyle={{flexGrow:1}} ref={messagesRef} onContentSizeChange={() => messagesRef.current.scrollToEnd()} /*onContentSizeChange={handleMessageReceive}> */}
           <FlatList
                   data={messagesList}
                   renderItem={({ item }) =>
                     renderMessageItem(item)
                   }
                   extraData={messagesRefresh}
-                  keyExtractor={(item) => item.id}
+                  keyExtractor={(item) => item.id
+                  }
+                  ref={messagesRef} 
+                  onContentSizeChange={() => messagesRef.current.scrollToEnd()}
                 />
-          </ScrollView>
+          {/* </ScrollView> */}
         </View>
         <KeyboardAvoidingView style={styles.messageEntryView} behavior="padding">
 

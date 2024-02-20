@@ -11,6 +11,7 @@ import PictureSelection from "./screens/pictureSelection";
 import PeopleNearby from "./screens/peopleNearby";
 import UserInterestsPage from "./screens/userInterests";
 import MessagePage from "./screens/messagePage";
+import MatchesListPage from "./screens/matchesListPage"
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from "react";
 
@@ -53,6 +54,11 @@ const App = () => {
             <Stack.Screen
               name="MessagePage"
               component={MessagePage}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="MatchesListPage"
+              component={MatchesListPage}
               options={{ headerShown: false }}
             />
             <Stack.Screen
