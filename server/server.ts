@@ -1,9 +1,14 @@
 const express = require('express');
+const io = require('socket.io');
+const http = require('http');
 const cors = require('cors');
-const serverConfig = require('./config')
+const serverConfig = require('./config');
 const routes = require('./routes.ts');
 
 const app = express();
+const server = http.createServer(app);
+const socketIO = io(server);
+
 app.use(cors({
     origin: '*',
 }));
@@ -22,6 +27,13 @@ app.get('/', (req, res) => {
     res.send('Rendezvous Server made with Express');
 });
 
-app.listen(serverConfig.server_port, () => {
+io.on('connection', socket => { /* user is connected */
+    console.log("User " + socket.id + " is connected!")
+    io.on('send-message', (room: String, message: String) => {
+        console.log("lets send a message")
+    })
+});
+
+server.listen(serverConfig.server_port, () => {
     console.log(`Server running at http://${serverConfig.server_host}:${serverConfig.server_port}/`)
 });
