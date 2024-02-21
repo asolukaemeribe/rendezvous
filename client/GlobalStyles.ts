@@ -25,11 +25,14 @@ export const Color = {
   colorGray_300: "rgba(255, 255, 255, 0.4)",
   colorGray_400: "rgba(0, 0, 0, 0.06)",
   colorGray_500: "rgba(0, 0, 0, 0.02)",
+  colorGray_900: "rgba(0, 0, 0, 0.03)",
   colorGray_600: "rgba(0, 0, 0, 0.8)",
   colorGray_700: "rgba(0, 0, 0, 0.20)",
+  colorGray_800: "#969696",
   colorRed: "#ff0000",
   colorRed_1: "rgba(255, 0, 0, 0.7)",
   colorRed_2: "rgba(255, 0, 0, 0.5)",
+  colorRed_3: "rgba(255, 0, 0, 0.85)",
   colorSnow: "#fbf5f5",
   colorBlack: "#000000"
 };
