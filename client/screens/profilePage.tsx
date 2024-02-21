@@ -38,12 +38,12 @@ const config = require('../config.json');
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const { signOut, getUserID } = React.useContext(AuthContext)
-  const selfUserID = route.params.userID;
+  const selfUserID = route.params.selfUserID;
+  const userIsSelf = route.params.userIsSelf;
+  const profileUserID = route.params.userID;
   console.log("profile page test userid ", selfUserID);
-  // const selfUserID = getUserID();
-  // console.log("userisself: ", route.params.userIsSelf)
-  const userID = route.params.userIsSelf ? selfUserID : route.params.userID;
-  console.log("profile page uid: ", userID);
+  console.log("userisself: ", route.params.userIsSelf)
+  console.log("profile page uid: ", profileUserID);
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const [profileData, setProfileData] = useState({
@@ -79,9 +79,9 @@ const ProfilePage = ({ route, navigation }) => {
       console.log(location.coords)
     })();
 
-    console.log("PROFILE PAGE UID: " + userID) //MATT: moved userID get to beginning of page
+    console.log("PROFILE PAGE UID: " + profileUserID) //MATT: moved userID get to beginning of page
 
-    fetch(`http://${config.server_host}:${config.server_port}/user/${userID}`)
+    fetch(`http://${config.server_host}:${config.server_port}/user/${profileUserID}`)
       .then(res => res.json())
       .then(resJson => {
         console.log("resJson first name: " + resJson.first_name)
@@ -122,7 +122,7 @@ const ProfilePage = ({ route, navigation }) => {
     // const { userID } = route.params;
     console.log("should navigate to viewPotentialMatches Page now")
     navigation.navigate("ViewPotentialMatchesPage", {
-      userID: userID,
+      userID: profileUserID,
       lat: location.coords.latitude,
       long: location.coords.longitude,
       rad: 16094
@@ -133,7 +133,7 @@ const ProfilePage = ({ route, navigation }) => {
     // const { userID } = route.params;
     console.log("should navigate to peopleNearby Page now")
     navigation.navigate("PeopleNearby", {
-      userID: userID,
+      userID: profileUserID,
       lat: location.coords.latitude,
       long: location.coords.longitude,
       rad: 16094
