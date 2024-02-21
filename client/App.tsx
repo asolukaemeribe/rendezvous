@@ -122,6 +122,12 @@ function AuthedTabs({ uid }) {
             />
           )
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            // e.preventDefault();
+            navigation.navigate('ProfilePage', { userIsSelf: true });
+          },
+        })}
         initialParams={{ userIsSelf: true, userID: uid }}
       // userID: userID
       />

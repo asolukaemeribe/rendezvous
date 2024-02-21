@@ -19,6 +19,7 @@ export const FontSize = {
 export const Color = {
   colorBlue: "#0500ff",
   colorWhite: "#fff",
+  colorWhite_2: "rgba(255, 255, 255, 0.85)",
   colorGray_100: "rgba(255, 255, 255, 0.55)",
   colorGray_200: "rgba(255, 255, 255, 0.2)",
   colorGray_300: "rgba(255, 255, 255, 0.4)",
@@ -30,6 +31,7 @@ export const Color = {
   colorRed_1: "rgba(255, 0, 0, 0.7)",
   colorRed_2: "rgba(255, 0, 0, 0.5)",
   colorSnow: "#fbf5f5",
+  colorBlack: "#000000"
 };
 /* Paddings */
 export const Padding = {
