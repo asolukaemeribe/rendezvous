@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   pageContentWrapper: {
-    backgroundColor: Color.colorWhite,
+    backgroundColor: Color.colorGray_300,
     paddingTop: padding.md
   }
 });
