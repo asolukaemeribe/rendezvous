@@ -200,7 +200,7 @@ function convertIds(response) {
     let stringArray = []
 
     for (let i = 0; i < response.length; i++) {
-        stringArray.push(response[0]['id'])
+        stringArray.push(response[i]['id'])
     }
 
     const string = '\'' + stringArray.join('\', \'') + '\''
@@ -213,7 +213,7 @@ const getusersinradius = async function(req, res) {
 
     const uid = req.query.uid
     const lat = req.query.lat
-    const long = req.query.lat
+    const long = req.query.long
     const rad = req.query.rad
 
     // pql query to get the ids of all users in radius
@@ -238,6 +238,8 @@ const getusersinradius = async function(req, res) {
                 console.log(err);
                 res.json({});
             } else {
+                console.log("These users are selected: ")
+                console.log(data)
                 res.json(data);
             }
         });

@@ -53,7 +53,7 @@ const PeopleNearby = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const { signOut, getUserID } = React.useContext(AuthContext)
-  const [location, setLocation] = React.useState<Location.LocationObject>();
+  //const [location, setLocation] = React.useState<Location.LocationObject>();
   const userID = route.params.userID;
   console.log("test peopleNearby userid ", userID);
   // const userIDs = React.useMemo((() => {
@@ -84,11 +84,11 @@ const PeopleNearby = ({ route, navigation }) => {
 
       const getLocation = async () => {
         let location = await Location.getCurrentPositionAsync({});
-        setLocation(location);
-        getNearbyUsers()
+        //setLocation(location);
+        getNearbyUsers(location);
       }
 
-      const getNearbyUsers = () => {
+      const getNearbyUsers = (location) => {
         console.log("POT MATCHES PAGE UID: " + userID)
         console.log("POT MATCHES PAGE LAT: " + location.coords.latitude)
         console.log("POT MATCHES PAGE LONG: " + location.coords.longitude)
@@ -147,7 +147,7 @@ const PeopleNearby = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={require("../assets/images/profilePhoto.png")}
+          source={require("../assets/images/defaultProfilePicDark.png")}
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}</Text>
         </ImageBackground>
@@ -287,7 +287,7 @@ const PeopleNearby = ({ route, navigation }) => {
                     keyExtractor={(item) => item.id}
                   />
                 </View>
-                <View style={styles.nearbyUsersSecondWrapper}>
+                {/*<View style={styles.nearbyUsersSecondWrapper}>
                   <FlatList
                     data={nearbyUsersData}
                     renderItem={({ item }) =>
@@ -296,7 +296,7 @@ const PeopleNearby = ({ route, navigation }) => {
                     scrollEnabled={false}
                     keyExtractor={(item) => item.id}
                   />
-                </View>
+                </View>*/}
               </ScrollView>
               {/* </ScrollView> */}
             </LinearGradient>

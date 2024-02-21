@@ -16,7 +16,7 @@ import Octicons from "react-native-vector-icons/Octicons";
 // import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation, ParamListBase } from "@react-navigation/native";
+import { useNavigation, ParamListBase, useIsFocused } from "@react-navigation/native";
 import { Padding, FontFamily, Color, FontSize, Border } from "../GlobalStyles";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -64,19 +64,22 @@ const MatchesListPage = ({ route, navigation }) => {
     );
 
     const [matchesData, setMatchesData] = useState([{id: "", first_name: "", last_name: ""}])
+    const isFocused = useIsFocused();
 
     useEffect(() => {
         const userID = route.params.userID;
         console.log("Should fetch all matches now.")
-      
-        fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
-        .then(res => res.json())
-        .then(resJson => {
-          console.log("MATCHES resJson: ")
-          console.log(resJson)
-          setMatchesData(resJson);  
-        });
-    }, []);
+
+        if (isFocused) {
+          fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
+          .then(res => res.json())
+          .then(resJson => {
+            console.log("MATCHES resJson: ")
+            console.log(resJson)
+            setMatchesData(resJson);  
+          });
+        }
+    }, [isFocused]);
 
 
   const renderButtonItem = (item) => {
@@ -116,7 +119,7 @@ const MatchesListPage = ({ route, navigation }) => {
           <ImageBackground
             style={styles.nearbyUsersListPhoto}
             imageStyle={styles.nearbyUsersListPhotoImageStyle}
-            source={require("../assets/images/profilePhoto.png")}
+            source={require("../assets/images/defaultProfilePicDark.png")}
           > 
             <Text style={styles.nearbyUsersListItemText}>{item.first_name}</Text>
           </ImageBackground>

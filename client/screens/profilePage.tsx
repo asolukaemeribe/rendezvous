@@ -141,6 +141,15 @@ const ProfilePage = ({ route, navigation }) => {
   }
 
   const matchWithUser = async () => {
+    console.log("SELF USER ID: ")
+    console.log(selfUserID)
+    console.log("OTHER USERS ID: ")
+    console.log(profileUserID)
+
+    // send match to database!
+    fetch(`http://${config.server_host}:${config.server_port}/newmatch?uid1=${selfUserID}` +
+      `&uid2=${profileUserID}`)
+      .then(res => { console.log("success! check database") })
 
   }
 
@@ -175,7 +184,7 @@ const ProfilePage = ({ route, navigation }) => {
           <View style={styles.profilePhotoWrapper}>
             <ImageBackground
               style={styles.profilePhoto}
-              source={require("../assets/images/profilePhoto.png")}
+              source={require("../assets/images/defaultProfilePic.png")}
             >
               <View style={styles.matchButtonWrapper}>
                 {(route.params.userIsSelf) ? (<View />) :
