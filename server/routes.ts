@@ -102,6 +102,48 @@ const getnameageimage = async function(req, res) {
     });
 }
 
+// mysql match storage routes
+// inserts new match into MATCHES table
+const newmatch = async function(req, res) {
+    const uid1 = req.query.uid1;
+    const uid2 = req.query.uid2
+
+    connection.query(`
+    INSERT INTO MATCHES (userOneID, userTwoID)
+    VALUES ('${uid1}', '${uid2}')
+    `, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! New match added with between users with ids: " + uid1 + " and " + uid2);
+        }
+    });
+}
+
+// get all matches for a specific user
+const getmatches = async function(req, res) {
+    const userID = req.params.uid
+
+    connection.query(`
+    WITH allIds AS (
+        SELECT userOneID AS id FROM MATCHES WHERE userOneID = '${userID}' OR userTwoID = '${userID}'
+        UNION
+        SELECT userTwoID AS id FROM MATCHES WHERE userOneID = '${userID}' OR userTwoID = '${userID}'
+    ),
+        relevantIds AS (
+            SELECT id FROM allIds WHERE id != '${userID}'
+        )
+        SELECT PROFILES.id, first_name, last_name FROM PROFILES JOIN relevantIds ON PROFILES.id = relevantIds.id;
+    `, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data);
+        }
+    });
+}
+
 // pql user-location Routes
 
 // inserts user into table with a certain latitude and longitude
@@ -116,24 +158,54 @@ const createuserlocation = async function(req, res) {
     })
 }
 
+function convertIds(response) {
+    let stringArray = []
+
+    for (let i = 0; i < response.length; i++) {
+        stringArray.push(response[0]['id'])
+    }
+
+    const string = '\'' + stringArray.join('\', \'') + '\''
+
+    return string
+}
+
 // gets all users in a certain radius (in meters) from the inputted latitude and longitude
 const getusersinradius = async function(req, res) {
+
     const uid = req.query.uid
     const lat = req.query.lat
     const long = req.query.lat
     const rad = req.query.rad
 
+    // pql query to get the ids of all users in radius
     pql_db.any(`SELECT id
     FROM users
     WHERE ST_DWithin(location, 'POINT(${long} ${lat})', ${rad})
         AND id != '${uid}'`)
     .then(data => {
-        res.json(data); 
         console.log('these are the users: ')
         console.log(data) // print users in radius
+    
+        const ids = convertIds(data)
+        console.log(ids) // print ids string
+
+        // mysql query to get the names of nearby users based on ids from earlier query
+        connection.query(`
+        SELECT id, first_name, last_name
+        FROM PROFILES
+        WHERE id IN (${ids})
+        `, (err, data) => {
+            if (err || data.length === 0) {
+                console.log(err);
+                res.json({});
+            } else {
+                res.json(data);
+            }
+        });
     })
     .catch((error) => {
-        console.log('ERROR:', error)
+        console.log('ERROR getting ids and names of users in radius from Postgres:', error)
     })
 }
 
@@ -212,6 +284,8 @@ module.exports = {
     user,
     createuser,
     createuserlocation,
+    getmatches,
+    newmatch,
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,

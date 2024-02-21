@@ -19,6 +19,8 @@ app.get('/user/:uid', routes.user);
 app.get('/newuser', routes.createuser);
 app.get('/newuserlocation', routes.createuserlocation);
 app.get('/getusersinradius', routes.getusersinradius);
+app.get('/getmatches', routes.getmatches);
+app.get('/newmatches', routes.newmatches);
 app.get('/updateuserlocation', routes.updateuserlocation);
 app.get('/updateimage', routes.updateuserprofilepic);
 app.get('/getimage', routes.getnameageimage);
@@ -28,9 +30,9 @@ app.get('/', (req, res) => {
 });
 
 // socket io
-io.on('connection', socket => { /* user is connected */
+socketIO.on('connection', socket => { /* user is connected */
     console.log("User " + socket.id + " is connected!")
-    socket.on('send-message', (room: String, message: String) => {
+    socket.on('send-message', (room, message) => {
         console.log("Sent message has been received! Redirecting to room: " + room + "Message is: " + message)
         socket.to(room).emit('receive-message', message)
     })
