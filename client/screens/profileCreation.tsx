@@ -195,7 +195,7 @@ const ProfilePage = ({ route, navigation }) => {
         >
           <View style={[{ paddingTop: insets.top * 0.8 }]} />
           <View style={styles.topMenuWrapper}>
-            <Feather name="chevron-left" size={32} color="white" />
+            {/* <Feather name="chevron-left" size={32} color="white" /> */}
           </View>
           <ScrollView contentContainerStyle={{ paddingTop: 5 }}>
             <View style={styles.creationHeaderWrapper}>
