@@ -63,23 +63,19 @@ const MatchesListPage = ({ route, navigation }) => {
       }))
     );
 
-    // const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
+    const [matchesData, setMatchesData] = useState([{id: "", first_name: "", last_name: ""}])
 
-    // useEffect(() => {
-    //     const { userID, lat, long, rad } = route.params;
-    //     console.log("POT MATCHES PAGE UID: " + userID)
-    //     console.log("POT MATCHES PAGE LAT: " + lat)
-    //     console.log("POT MATCHES PAGE LONG: " + long)
-    //     console.log("POT MATCHES PAGE RAD: " + rad)
-    
-    //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
-    //     .then(res => res.json())
-    //     .then(resJson => {
-    //       console.log("POT MATCHES PAGE resJson: ")
-    //       console.log(resJson)
-    //       setNearbyUsersData(resJson);  
-    //     });
-    // }, []);
+    useEffect(() => {
+        const { userID, lat, long, rad } = route.params;
+      
+        fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
+        .then(res => res.json())
+        .then(resJson => {
+          console.log("MATCHES resJson: ")
+          console.log(resJson)
+          setMatchesData(resJson);  
+        });
+    }, []);
 
 
   const renderButtonItem = (item) => {
@@ -202,7 +198,7 @@ const MatchesListPage = ({ route, navigation }) => {
 
                 <View style={styles.nearbyUsersFirstWrapper}>
                 <FlatList
-                  data={profilesList}
+                  data={matchesData}
                   renderItem={({ item }) =>
                     renderButtonItem(item)
                   }

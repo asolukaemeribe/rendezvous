@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as Location from "expo-location";
 import {
   Pressable,
   StyleSheet,
@@ -52,6 +53,7 @@ const PeopleNearby = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const { signOut, getUserID } = React.useContext(AuthContext)
+  const [location, setLocation] = React.useState<Location.LocationObject>();
   const userID = route.params.userID;
   console.log("test peopleNearby userid ", userID);
   // const userIDs = React.useMemo((() => {
@@ -75,23 +77,34 @@ const PeopleNearby = ({ route, navigation }) => {
       }))
     );
 
-  // const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
+  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: ""}])
 
-  // useEffect(() => {
-  //     const { userID, lat, long, rad } = route.params;
-  //     console.log("POT MATCHES PAGE UID: " + userID)
-  //     console.log("POT MATCHES PAGE LAT: " + lat)
-  //     console.log("POT MATCHES PAGE LONG: " + long)
-  //     console.log("POT MATCHES PAGE RAD: " + rad)
+  useEffect(() => {
+      const { userID, lat, long, rad } = route.params;
 
-  //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
-  //     .then(res => res.json())
-  //     .then(resJson => {
-  //       console.log("POT MATCHES PAGE resJson: ")
-  //       console.log(resJson)
-  //       setNearbyUsersData(resJson);  
-  //     });
-  // }, []);
+      const getLocation = async () => {
+        let location = await Location.getCurrentPositionAsync({});
+        setLocation(location);
+        getNearbyUsers()
+      }
+
+      const getNearbyUsers = async () => {
+        console.log("POT MATCHES PAGE UID: " + userID)
+        console.log("POT MATCHES PAGE LAT: " + location.coords.latitude)
+        console.log("POT MATCHES PAGE LONG: " + location.coords.longitude)
+        console.log("POT MATCHES PAGE RAD: " + 16094)
+
+        fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${location.coords.latitude}&long=${location.coords.longitude}&rad=${16094}`)
+        .then(res => res.json())
+        .then(resJson => {
+          console.log("POT MATCHES PAGE resJson: ")
+          console.log(resJson)
+          setNearbyUsersData(resJson);  
+        });
+      }
+
+      getLocation()
+  }, []);
 
 
   const renderButtonItem = (item) => {
@@ -133,7 +146,7 @@ const PeopleNearby = ({ route, navigation }) => {
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
           source={require("../assets/images/profilePhoto.png")}
         >
-          <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}, {item.age}</Text>
+          <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}</Text>
         </ImageBackground>
       </Pressable>
     );
@@ -263,7 +276,7 @@ const PeopleNearby = ({ route, navigation }) => {
               <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
                 <View style={styles.nearbyUsersFirstWrapper}>
                   <FlatList
-                    data={profilesList}
+                    data={nearbyUsersData}
                     renderItem={({ item }) =>
                       renderButtonItem(item)
                     }
@@ -273,7 +286,7 @@ const PeopleNearby = ({ route, navigation }) => {
                 </View>
                 <View style={styles.nearbyUsersSecondWrapper}>
                   <FlatList
-                    data={profilesList}
+                    data={nearbyUsersData}
                     renderItem={({ item }) =>
                       renderButtonItem(item)
                     }
