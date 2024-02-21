@@ -178,16 +178,22 @@ const MessagePage = ({ route, navigation }) => {
             <Pressable onPress={() => navigation.goBack()}>
               <Feather name="chevron-left" size={32} color="white" />
             </Pressable>
-            <Text style={styles.profilePageLogo}>Rendezvous</Text>
+            <View style={styles.profileImageNameWrapper}>
+              <Image
+                style={styles.messagesListPhoto}
+                // imageStyle={styles.messagesListPhotoImageStyle}
+                source={require("../assets/images/defaultProfilePicDark.png")}
+              />
+              <Text style={styles.profileNameTextStyle}>Boon</Text>
+            </View>
+            {/* <Text style={styles.profilePageLogo}>Rendezvous</Text> */}
             <View style={{ width: 29 }}></View>
           </View>
         </View>
-        <View style={styles.creationHeaderWrapper}>
-          <Text style={styles.creationHeaderText}></Text>
-        </View>
+
 
       </LinearGradient>
-      <View style={styles.messagesView}>
+      <View style={styles.messagesView} behavior="padding">
         <FlatList
           data={messagesList}
           renderItem={({ item }) =>
@@ -200,8 +206,7 @@ const MessagePage = ({ route, navigation }) => {
           onContentSizeChange={() => messagesRef.current.scrollToEnd()}
         />
       </View>
-      <KeyboardAvoidingView style={styles.messageEntryView} behavior="padding">
-
+      <KeyboardAvoidingView contentContainerStyle={styles.messageEntryView} style={styles.messageEntryView} behavior={"position"}>
         <View style={styles.messageTextInputWrapper}>
           <TextInput
             style={styles.messageTextInput}
@@ -215,6 +220,7 @@ const MessagePage = ({ route, navigation }) => {
         </View>
       </KeyboardAvoidingView>
     </View>
+    // {/* </KeyboardAvoidingView> */}
   );
 };
 
@@ -225,9 +231,10 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   pageGradient: {
-    flex: 2.8,
+    flex: 2.9,
     backgroundColor: "transparent",
     width: "100%",
+    position: "relative"
   },
   messageEntryGradient: {
     flex: 2.8,
@@ -238,7 +245,8 @@ const styles = StyleSheet.create({
   },
   messagesView: {
     flex: 13,
-    height: 10,
+    // height: 10,
+    // position: "absolute"
     backgroundColor: Color.colorGray_300,
 
   },
@@ -247,7 +255,9 @@ const styles = StyleSheet.create({
     backgroundColor: Color.colorWhite,
     flexDirection: "column",
     justifyContent: "flex-start",
-    alignItems: "center"
+    alignItems: "center",
+    paddingHorizontal: padding.lg,
+    // paddingVertical: padding.sm
   },
   scrollView: {
     flex: 1,
@@ -429,6 +439,30 @@ const styles = StyleSheet.create({
     margin: 10,
     borderRadius: 15,
     maxWidth: "65%",
+  },
+  messagesListPhoto: {
+    height: 60,
+    width: 60,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: 16,
+    overflow: 'hidden',
+    borderRadius: 30,
+    marginBottom: 3
+    // marginTop: 20
+  },
+  messagesListPhotoImageStyle: {
+
+  },
+  profileImageNameWrapper: {
+    alignItems: "center",
+    paddingTop: 39
+  },
+  profileNameTextStyle: {
+    fontSize: 15,
+    fontFamily: FontFamily.interBold,
+    fontWeight: "900",
+    color: colors.white,
   }
 });
 

@@ -237,7 +237,7 @@ const MatchesListPage = ({ route, navigation }) => {
         <LinearGradient
           style={styles.pageGradient}
           locations={[0, 0.9]}
-          colors={["#ff0000D6", "#db176AD6"]}
+          colors={["#ff0000EF", "#db176AEF"]}
         >
           <View style={[{ paddingTop: insets.top * 0.8 }]} />
           <View style={styles.topMenuWrapper}>
@@ -500,7 +500,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: FontFamily.interRegular,
     fontWeight: "900",
-    color: colors.black,
+    color: Color.colorGray_1000,
   },
   messagesListTextWrapper: {
     paddingLeft: 10,
@@ -509,7 +509,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   pageContentWrapper: {
-    backgroundColor: Color.colorGray_900,
+    backgroundColor: Color.colorWhite,
     paddingTop: padding.md
   }
 });

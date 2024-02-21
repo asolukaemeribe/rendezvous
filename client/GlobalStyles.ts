@@ -28,6 +28,7 @@ export const Color = {
   colorGray_900: "rgba(0, 0, 0, 0.03)",
   colorGray_600: "rgba(0, 0, 0, 0.8)",
   colorGray_700: "rgba(0, 0, 0, 0.20)",
+  colorGray_1000: "rgba(0, 0, 0, 0.65)",
   colorGray_800: "#969696",
   colorRed: "#ff0000",
   colorRed_1: "rgba(255, 0, 0, 0.7)",
