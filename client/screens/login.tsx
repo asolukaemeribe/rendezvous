@@ -14,8 +14,12 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation, ParamListBase, useRoute } from "@react-navigation/native";
 import { FontFamily, Color, Border, Padding, FontSize } from "../GlobalStyles";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
-import { connectToDynamoDB } from "../api/aws";
-
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from "firebase/auth";
 import * as Location from "expo-location";
 import { useCallback } from "react";
 import { registerRootComponent } from "expo";

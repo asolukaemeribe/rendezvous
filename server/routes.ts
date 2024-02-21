@@ -25,7 +25,7 @@ const pql_db = pgp({
 
 
 // mysql user-schema Routes
-// gets infornation about user with inputted userID
+// gets information about user with inputted userID
 const user = async function(req, res) {
     const userID = req.params.uid
 
@@ -102,37 +102,146 @@ const getnameageimage = async function(req, res) {
     });
 }
 
+// mysql match storage routes
+// inserts new match into MATCHES table
+const newmatch = async function(req, res) {
+    const uid1 = req.query.uid1;
+    const uid2 = req.query.uid2
+
+    connection.query(`
+    INSERT INTO MATCHES (userOneID, userTwoID)
+    VALUES ('${uid1}', '${uid2}')
+    `, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! New match added with between users with ids: " + uid1 + " and " + uid2);
+        }
+    });
+}
+
+// get all matches for a specific user
+const getmatches = async function(req, res) {
+    const userID = req.params.uid
+
+    connection.query(`
+    WITH allIds AS (
+        SELECT userOneID AS id FROM MATCHES WHERE userOneID = '${userID}' OR userTwoID = '${userID}'
+        UNION
+        SELECT userTwoID AS id FROM MATCHES WHERE userOneID = '${userID}' OR userTwoID = '${userID}'
+    ),
+        relevantIds AS (
+            SELECT id FROM allIds WHERE id != '${userID}'
+        )
+        SELECT PROFILES.id, first_name, last_name FROM PROFILES JOIN relevantIds ON PROFILES.id = relevantIds.id;
+    `, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data);
+        }
+    });
+}
+
+// mysql message storage routes
+const newmessage = async function(req, res) {
+    const senderID = req.query.senderID
+    const receiverID = req.query.receiverID
+    const message = req.query.message
+    const timestamp = req.query.timestamp
+
+    connection.query(`
+    INSERT INTO MESSAGES (senderID, receiverID, message, timestamp)
+    VALUES ('${senderID}', '${receiverID}', '${message}', '${timestamp}')
+    `, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! New message sent by user with id: " + senderID + " and received by user with id: " + receiverID + " was added to the database.");
+        }
+    });
+
+}
+
+// get all of messages of a specific user
+const getmessages = async function(req, res) {
+    const userID = req.params.uid
+
+    connection.query(`
+    SELECT * FROM MESSAGES WHERE senderID = '${userID}' OR receiverID = '${userID}'
+    `, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data);
+        }
+    });
+}
+
 // pql user-location Routes
 
 // inserts user into table with a certain latitude and longitude
 const createuserlocation = async function(req, res) {
     const uid = req.query.uid
     const lat = req.query.lat
-    const long = req.query.lat
+    const long = req.query.long
 
-    pql_db.none(`INSERT INTO users (id, location) VALUES (${uid}, ST_GeomFromText('POINT(${long} ${lat})', 4326))`)
+    pql_db.none(`INSERT INTO users (id, location) VALUES ('${uid}', ST_GeomFromText('POINT(${long} ${lat})', 4326))`)
     .catch((error) => {
     console.log('ERROR:', error)
     })
 }
 
-// gets all users in a certain radius (in meters) from the inputted latitude and longitude
+function convertIds(response) {
+    let stringArray = []
+
+    for (let i = 0; i < response.length; i++) {
+        stringArray.push(response[0]['id'])
+    }
+
+    const string = '\'' + stringArray.join('\', \'') + '\''
+
+    return string
+}
+
+// gets all users in a certain radius (in meters) from the inputted latitude and longitude (uses pql and mysql)
 const getusersinradius = async function(req, res) {
+
     const uid = req.query.uid
     const lat = req.query.lat
-    const long = req.query.long
+    const long = req.query.lat
     const rad = req.query.rad
 
-    pql_db.any(`SELECT *
+    // pql query to get the ids of all users in radius
+    pql_db.any(`SELECT id
     FROM users
     WHERE ST_DWithin(location, 'POINT(${long} ${lat})', ${rad})
-    AND id != '${uid}'`)
+        AND id != '${uid}'`)
     .then(data => {
-        res.json(data); 
-        console.log('these are the users: ' + data) // print users in radius
+        console.log('these are the users: ')
+        console.log(data) // print users in radius
+    
+        const ids = convertIds(data) // convert ids
+        console.log(ids) // print ids string
+
+        // mysql query to get the names of nearby users based on ids from earlier query
+        connection.query(`
+        SELECT id, first_name, last_name
+        FROM PROFILES
+        WHERE id IN (${ids})
+        `, (err, data) => {
+            if (err || data.length === 0) {
+                console.log(err);
+                res.json({});
+            } else {
+                res.json(data);
+            }
+        });
     })
     .catch((error) => {
-        console.log('ERROR:', error)
+        console.log('ERROR getting ids and names of users in radius from Postgres:', error)
     })
 }
 
@@ -145,18 +254,79 @@ const updateuserlocation = async function(req, res) {
     pql_db.none(`UPDATE users
     SET location = ST_GeomFromText('POINT(${long} ${lat})', 4326)
     WHERE id = '${uid}'`)
-    .then(console.log("success! User location updated"))
     .catch((error) => {
         console.log('ERROR:', error)
     })
+}
+
+const updateuserinfo = async function(req, res) {
+    const uid = req.query.uid;
+    const hometown = req.query.hometown ?? '';
+    const lookingFor = req.query.lookingFor ?? '';
+    const race = req.query.race ?? [];
+    const religion = req.query.religion ?? '';
+    const languages = req.query.languages ?? [];
+    connection.query(`UPDATE PROFILES
+    SET hometown = '${hometown}',
+        lookingFor = '${lookingFor}',
+        race = '${race}',
+        religion = '${religion}',
+        languages = '${languages}'
+    WHERE id = '${uid}'`,
+    (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! User info was updated with uid: " + uid);
+        }
+    });
+}
+
+const updatedatepreferences = async function(req, res) {
+    const uid = req.query.uid;
+    const vegetarian = req.query.uri ?? '';
+    const priceLevel = req.query.priceLevel ?? '';
+    const timesOfDay = req.query ?? [];
+    connection.query(`UPDATE PROFILES
+    SET vegetarian = '${vegetarian}',
+        priceLevel =  '${priceLevel}'
+        timesOfDay = ${timesOfDay}
+    WHERE id = '${uid}'`,
+    (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! User preferences was updated with uid: " + uid);
+        }
+    });
+}
+
+const updateuserinterests = async function(req, res) {
+    const uid = req.query.uid;
+    const interests = req.query.inserts ?? [];
+    connection.query(`UPDATE PROFILES
+    SET interests = '${interests}'
+    WHERE id = '${uid}'`,
+    (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! User interests was updated with uid: " + uid);
+        }
+    });
 }
 
 module.exports = {
     user,
     createuser,
     createuserlocation,
+    newmatch,
+    getmatches,
+    newmessage,
+    getmessages,
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,
     getnameageimage,
+    updatedatepreferences
 }

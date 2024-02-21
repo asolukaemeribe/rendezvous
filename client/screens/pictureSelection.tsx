@@ -24,6 +24,7 @@ const PictureSelection = ({ route, navigation }) => {
   const uploadToS3 = async (result) => {
 
     // const filePath = result.assets[0].uri.replace('file://', '');
+    // const { userID } = route.params;
     // const file = {
     //     uri: filePath,
     //     name: userID + ".png",
