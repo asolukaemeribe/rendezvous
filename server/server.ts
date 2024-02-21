@@ -20,7 +20,7 @@ app.get('/newuser', routes.createuser);
 app.get('/newuserlocation', routes.createuserlocation);
 app.get('/getusersinradius', routes.getusersinradius);
 app.get('/getmatches', routes.getmatches);
-app.get('/newmatches', routes.newmatches);
+app.get('/newmatch', routes.newmatch);
 app.get('/updateuserlocation', routes.updateuserlocation);
 app.get('/updateimage', routes.updateuserprofilepic);
 app.get('/getimage', routes.getnameageimage);
