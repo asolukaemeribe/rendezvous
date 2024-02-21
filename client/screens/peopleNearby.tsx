@@ -131,7 +131,9 @@ const PeopleNearby = ({ route, navigation }) => {
     // };
 
     const handleButtonPress = () => {
-      navigation.push("ProfilePage", {userIsSelf: false, userID: item.id})
+      console.log("button test user id " + userID);
+      // FOR MATT: ----------item.id is the user id of the other person--------------
+      navigation.push("ProfilePage", {userIsSelf: false, userID: item.id, selfUserID: userID})
       // navigation.push("ProfilePage")
     }
 

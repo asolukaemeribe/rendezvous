@@ -125,10 +125,10 @@ function AuthedTabs({ uid }) {
         listeners={({ navigation }) => ({
           tabPress: (e) => {
             // e.preventDefault();
-            navigation.navigate('ProfilePage', { userIsSelf: true });
+            navigation.navigate('ProfilePage', { userIsSelf: true, selfUserID: uid });
           },
         })}
-        initialParams={{ userIsSelf: true, userID: uid }}
+        initialParams={{ userIsSelf: true, userID: uid, selfUserID: uid }}
       // userID: userID
       />
       <Tabs.Screen
