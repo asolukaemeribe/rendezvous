@@ -35,7 +35,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 import { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import ProfilePage from "./profilePage"
@@ -44,13 +44,25 @@ import ProfilePage from "./profilePage"
 const config = require('../config.json');
 const Stack = createNativeStackNavigator();
 
+
+
 const PeopleNearby = ({ route, navigation }) => {
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
+  // const [userID, setUserID] = React.useState(null);
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const { signOut, getUserID } = React.useContext(AuthContext)
-  const userID = getUserID();
+  const userID = route.params.userID;
+  console.log("test peopleNearby userid ", userID);
+  // const userIDs = React.useMemo((() => {
+  //   async function asyncGetUserID() {
+  //     await getUserID();
+  //   }
+  //  setUserID(asyncGetUserID())}),
+  //  [getUserID]
+  // );
+
+  // console.log("people nearby userid: ", userIDs);
 
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
@@ -277,11 +289,12 @@ const PeopleNearby = ({ route, navigation }) => {
   );
 };
 
-const PeopleNearbyStack = ({ navigation }) => {
+const PeopleNearbyStack = ({ route, navigation }) => {
+  const userID = route.params.userID;
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="PeopleNearby" component={ PeopleNearby }/>
-      <Stack.Screen name="ProfilePage" component={ ProfilePage }/>
+      <Stack.Screen name="PeopleNearby" component={ PeopleNearby } initialParams={{userID:userID}}/>
+      <Stack.Screen name="ProfilePage" component={ ProfilePage } initialParams={{userID:userID}}/>
     </Stack.Navigator>
   )
 }

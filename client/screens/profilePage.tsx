@@ -28,7 +28,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
 const config = require('../config.json');
@@ -36,9 +36,12 @@ const config = require('../config.json');
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const { signOut, getUserID } = React.useContext(AuthContext)
-  const selfUserID = getUserID();
+  const selfUserID = route.params.userID;
+  console.log("profile page test userid ", selfUserID);
+  // const selfUserID = getUserID();
+  // console.log("userisself: ", route.params.userIsSelf)
   const userID = route.params.userIsSelf ? selfUserID : route.params.userID;
-
+  console.log("profile page uid: ", userID);
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const [profileData, setProfileData] = useState({

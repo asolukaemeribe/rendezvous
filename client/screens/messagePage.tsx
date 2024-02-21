@@ -35,7 +35,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 import { useEffect, useState, useRef } from "react";
 
 let messagesList = [
@@ -68,14 +68,17 @@ const MessagePage = ({ route, navigation }) => {
   const [currMessage, onChangeMessage] = React.useState('');
   const [messagesRefresh, setMessagesRefresh] = useState(true);
   const messagesRef = useRef();
-
-
+  const userID = route.params.userID;
   const { getCreatingAccountData } = React.useContext(AuthContext);
-  // const selfUserID = getUserID();
+  const selfUserID = userID;
+  const receivingChatUserID = route.params.receivingUserID;
+  console.log("Message page self userID: " + selfUserID);
+  console.log("Message page receiving userID: " + receivingChatUserID);
+
   // const receivingChatUserID = route.params.userID;
   // --------------------------MATT-------------------^ TODO: use this when working
-  const selfUserID = "lukaemeribe2";
-  const receivingChatUserID = "boonloo1";
+  // const selfUserID = "lukaemeribe2";
+  // const receivingChatUserID = "boonloo1";
 
   // useEffect(() => {
   //     const { userID, lat, long, rad } = route.params;

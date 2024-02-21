@@ -27,7 +27,7 @@ import colors from "../assets/global_styles/color";
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 const config = require('../config.json');
 
 

@@ -29,7 +29,7 @@ import { TextInputMask } from "react-native-masked-text";
 import dayjs from "dayjs";
 import { useEffect } from "react";
 const config = require('../config.json');
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 
 
 const ProfilePage = ({ route, navigation }) => {
@@ -41,7 +41,8 @@ const ProfilePage = ({ route, navigation }) => {
   const [pronouns, setPronouns] = React.useState("");
   const [firstName, setFirstName] = React.useState("");
   const [lastName, setLastName] = React.useState("");
-
+  const userID = route.params.userID;
+  console.log("profile creation userID " + userID);
   const [date, setDate] = React.useState(dayjs());
   const [dateStr, setDateStr] = React.useState("");
   const [location, setLocation] = React.useState<Location.LocationObject>();
@@ -141,7 +142,7 @@ const ProfilePage = ({ route, navigation }) => {
     console.log("birthday: " + dateStr);
     console.log("age: " + getAge());
 
-    const userID = getCreatingAccountData();
+    // const userID = getCreatingAccountData();
     console.log("UserID is " + userID);
 
     // add profile data to mysql database

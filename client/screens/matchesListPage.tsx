@@ -36,7 +36,7 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { useEffect, useState } from "react";
 
@@ -49,8 +49,9 @@ const MatchesListPage = ({ route, navigation }) => {
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const { signOut, getUserID } = React.useContext(AuthContext)
-  const userID = getUserID();
-
+  // const userID = getUserID();
+  const userID = route.params.userID;
+  console.log("Matches list userID " + userID);
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
       Object.entries(
@@ -104,7 +105,7 @@ const MatchesListPage = ({ route, navigation }) => {
     // };
 
     const handleButtonPress = () => {
-      navigation.push("MessagePage", { userID: item.id })
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
     }
 
     // TODO: Matches page makeover

@@ -34,6 +34,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faUser } from '@fortawesome/free-solid-svg-icons/faUser'
 import { FIREBASE_AUTH } from "./FirebaseConfig";
 import { AuthContext } from "./AppAuthContext";
+import AsyncStorage from '@react-native-async-storage/async-storage'
 const config = require('./config.json');
 
 
@@ -43,14 +44,39 @@ const Tabs = AnimatedTabBarNavigator();
 
 // const AuthContext = React.createContext();
 
-function AuthedStack() {
+// export const AuthContext = React.createContext();
+export const storeUserIDAsync = async (value) => {
+  try {
+    await AsyncStorage.setItem('userID', value);
+  } catch (e) {
+    // saving error
+  }
+};
+
+export const getUserIDAsync = async () => {
+  try {
+    const value = await AsyncStorage.getItem('userID');
+    if (value !== null) {
+      // value previously stored
+      return value;
+    }
+  } catch (e) {
+    // error reading value
+  }
+};
+
+function AuthedStack({ uid }) {
   return (
     <>
       <NavigationContainer>
         <SafeAreaProvider>
           <Stack.Navigator>
-            <Stack.Screen name="AuthedTabs" component={AuthedTabs} options={{ headerShown: false }} />
-            <Stack.Screen name="MessagePage" component={MessagePage} options={{ headerShown: false }} />
+            <Stack.Screen name="AuthedTabs" options={{ headerShown: false }}>
+              {(props) => <AuthedTabs {...props} uid={uid} />}
+            </Stack.Screen>
+            <Stack.Screen name="MessagePage" component={MessagePage} options={{ headerShown: false }} initialParams={{userID: uid}}/>
+              {/* {(props) => <MessagePage {...props} uid={uid}/>} */}
+            {/* </Stack.Screen> */}
           </Stack.Navigator>
         </SafeAreaProvider>
       </NavigationContainer>
@@ -58,7 +84,7 @@ function AuthedStack() {
   )
 }
 
-function AuthedTabs() {
+function AuthedTabs({ uid }) {
   return (
     <Tabs.Navigator
       tabBarOptions={{
@@ -83,6 +109,7 @@ function AuthedTabs() {
       <Tabs.Screen
         name="ProfilePage"
         component={ProfilePage}
+        // initialParams={{userIsSelf: false}}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
@@ -95,7 +122,7 @@ function AuthedTabs() {
             />
           )
         }}
-        initialParams={{ userIsSelf: true }}
+        initialParams={{ userIsSelf: true, userID: uid }}
       // userID: userID
       />
       <Tabs.Screen
@@ -114,6 +141,7 @@ function AuthedTabs() {
             />
           )
         }}
+        initialParams={{ userID: uid }}
       />
       <Tabs.Screen
         name="MatchesListPage"
@@ -142,6 +170,7 @@ function AuthedTabs() {
             />
           )
         }}
+        initialParams={{ userID: uid }}
       />
     </Tabs.Navigator>
   )
@@ -158,11 +187,13 @@ function UnauthedStack() {
               name="Login"
               component={Login}
               options={{ headerShown: false }}
+            // initialParams={{userID: uid}}
             />
             <Stack.Screen
               name="CreateAccount"
               component={CreateAccount}
               options={{ headerShown: false }}
+            // initialParams={{userID: uid}}
             />
           </Stack.Navigator>
         </SafeAreaProvider>
@@ -171,7 +202,7 @@ function UnauthedStack() {
   )
 }
 
-function CreatingAccountStack() {
+function CreatingAccountStack({ uid }) {
   return (
     <>
       <NavigationContainer>
@@ -181,6 +212,7 @@ function CreatingAccountStack() {
               name="ProfileCreation"
               component={ProfileCreation}
               options={{ headerShown: false }}
+              initialParams={{ userID: uid }}
             />
             {/* <Stack.Screen
               name="ProfilePage"
@@ -196,21 +228,25 @@ function CreatingAccountStack() {
               name="SelectInterestsPage"
               component={UserInterestsPage}
               options={{ headerShown: false }}
+              initialParams={{ userID: uid }}
             />
             <Stack.Screen
               name="PictureSelection"
               component={PictureSelection}
               options={{ headerShown: false }}
+              initialParams={{ userID: uid }}
             />
             <Stack.Screen
               name="AddUserInfoPage"
               component={AddUserInfo}
               options={{ headerShown: false }}
+              initialParams={{ userID: uid }}
             />
             <Stack.Screen
               name="DatePreferencesPage"
               component={DatePreferencesPage}
               options={{ headerShown: false }}
+              initialParams={{ userID: uid }}
             />
           </Stack.Navigator>
         </SafeAreaProvider>
@@ -257,7 +293,7 @@ const App = () => {
           creatingAccount: true
         }
       case 'CREATING_ACCOUNT_DATA':
-        console.log(" creating account data now with " + action.accountData )
+        console.log(" creating account data now with " + action.accountData)
         return {
           ...prevAuthState,
           creatingAccount: true,
@@ -298,6 +334,7 @@ const App = () => {
       // screen will be unmounted and thrown away.
       if (user) {
         setAuthState({ type: 'RESTORE_TOKEN', token: user.uid });
+        storeUserIDAsync(user.uid);
         console.log("App.tsx Application has started. User is signed in so navigating to profile page of user with uid: " + user.uid)
         // navigation.navigate("ProfilePage", {userID: uid});
       }
@@ -334,8 +371,10 @@ const App = () => {
           fetch(`http://${config.server_host}:${config.server_port}/updateuserlocation?uid=${user.uid}` +
             `&lat=${location.coords.latitude}&long=${location.coords.longitude}`)
             .then(res => { console.log("success! check database. Location should be updated.") })
+          console.log("curr user idea is ", user.uid);
+          storeUserIDAsync(user.uid);
+          console.log("sign in user ID: ", await getUserIDAsync());
           setAuthState({ type: 'SIGN_IN', token: user.uid });
-
           // navigation.navigate("ProfilePage", {userID: user.uid});
           // router.replace("/profileCreation");
           // alert('Logged In!');
@@ -351,6 +390,8 @@ const App = () => {
         try {
           const response = await signOut(auth);
           console.log(response);
+          storeUserIDAsync("");
+
           // alert("Success!");
         } catch (error: any) {
           console.log(error);
@@ -377,8 +418,8 @@ const App = () => {
         //   console.log(response);
         //   alert("Success!");
         //   const user = authState.creatingAccountData.auth.currentUser;
-        console.log("signing up and in user " + authState.creatingAccountData);
-        setAuthState({ type: 'SIGN_IN', token: authState.creatingAccountData });
+        console.log("signing up and in user " + await getUserIDAsync());
+        setAuthState({ type: 'SIGN_IN', token: await getUserIDAsync() });
         // } catch (error: any) {
         //   console.log(error);
         //   alert("Sign Up Failed: " + error.message);
@@ -403,7 +444,9 @@ const App = () => {
           const user = auth.currentUser;
           console.log("user.uid is " + user.uid);
           setAuthState({ type: 'CREATING_ACCOUNT_DATA', accountData: user.uid })
-          console.log("test: " + authState.creatingAccountData.uid);
+          // console.log("test: " + authState.creatingAccountData.uid);
+          storeUserIDAsync(user.uid);
+          console.log("test storeUserId" + await getUserIDAsync());
         } catch (error: any) {
           console.log(error);
           alert("Sign Up Failed: " + error.message);
@@ -412,12 +455,13 @@ const App = () => {
         }
         // setAuthState({ type: 'CREATING_ACCOUNT_DATA', creatingAccountData: data})
       },
-      getCreatingAccountData: () => {
-        console.log(authState.creatingAccountData);
-        return authState.creatingAccountData;
+      getCreatingAccountData: async () => {
+        // console.log(authState.creatingAccountData);
+        return await getUserIDAsync();
       },
-      getUserID: () => {
-        return authState.userToken;
+      getUserID: async () => {
+        return await getUserIDAsync();
+        // return authState.userToken;
       }
     }),
     []
@@ -457,8 +501,8 @@ const App = () => {
   return (
     <AuthContext.Provider value={authContext}>
       {(authState.userToken == null) ?
-        (authState.creatingAccount ? <CreatingAccountStack /> : <UnauthedStack />) :
-        (<AuthedStack />)}
+        (authState.creatingAccount ? <CreatingAccountStack uid={authState.creatingAccountData} /> : <UnauthedStack />) :
+        (<AuthedStack uid={authState.userToken} />)}
     </AuthContext.Provider>
   );
 };

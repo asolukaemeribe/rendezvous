@@ -13,15 +13,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 
 const UserInterestsPage = ({ route, navigation }) => {
     const [selectedItems, setSelectedItems] = useState([]);
     const [searchText, setSearchText] = useState('');
     const { getCreatingAccountData } = React.useContext(AuthContext);
-    const userID = getCreatingAccountData();
+    // const userID = getCreatingAccountData();
   
-
+    const userID = route.params.userID;
+    console.log("user interests userID " + userID);
 
     const renderButtonItem = (item) => {
         const handleButtonPress = () => {

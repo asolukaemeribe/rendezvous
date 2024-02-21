@@ -14,12 +14,14 @@ import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
 import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list'
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 
 const AddUserInfo = ({ route, navigation }) => {
   const [selectedRaces, setSelectedRaces] = useState([]);
   const { getCreatingAccountData } = React.useContext(AuthContext);
-  const userID = getCreatingAccountData();
+  // const userID = getCreatingAccountData();
+  const userID = route.params.userID;
+  console.log("add user info userID " + userID);
   const [selectedLookingFor, setSelectedLookingFor] = React.useState(null);
   const [selectedReligion, setSelectedReligion] = React.useState("");
   const [selectedLanguages, setSelectedLanguage] = React.useState([]);

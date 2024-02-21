@@ -12,13 +12,15 @@ import { Padding, FontFamily, Color, FontSize, Border } from "../GlobalStyles";
 import { LinearGradient } from "expo-linear-gradient";
 const config = require('../config.json');
 import AWS from 'aws-sdk';
-import { AuthContext } from "../AppAuthContext"
+import { AuthContext } from "../AppAuthContext";
 
 const ViewPotentialMatchesPage = ({route, navigation}) => {
     const [nearbyUsersData, setNearbyUsersData] = useState([{}])
     const [image, setImage] = React.useState(null);
     const { getCreatingAccountData } = React.useContext(AuthContext);
-    const userID = getCreatingAccountData();
+    // const userID = getCreatingAccountData();
+    const userID = route.params.userID;
+    console.log("view potential matches userID " + userID);
 
     useEffect(() => {
         const { lat, long, rad } = route.params;
