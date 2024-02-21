@@ -49,7 +49,7 @@ const PeopleNearby = ({ route, navigation }) => {
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-  const { signOut, getUserID } = React.useContext(AuthContext)
+  const { signOut, getUserID } = React.useContext(AuthContext);
   const userID = getUserID();
 
   const [orientationTypesArray, setOrientationTypesArray] =

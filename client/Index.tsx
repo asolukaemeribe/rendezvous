@@ -38,7 +38,7 @@ const config = require('./config.json');
 const Stack = createNativeStackNavigator();
 const Tabs = AnimatedTabBarNavigator();
 
-const AuthedStack = () => {
+export const AuthedStack = () => {
   return (
     // <>
       /* <NavigationContainer> */
@@ -143,7 +143,7 @@ const AuthedTabs = () => {
 }
 
 
-const UnauthedStack = () => {
+export const UnauthedStack = () => {
   return (
         // <SafeAreaProvider>
           <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
@@ -162,7 +162,7 @@ const UnauthedStack = () => {
   )
 }
 
-const CreatingAccountStack = () => {
+export const CreatingAccountStack = () => {
   return (
         // <SafeAreaProvider>
           <Stack.Navigator initialRouteName="ProfileCreation" screenOptions={{ headerShown: false }}>
@@ -222,4 +222,4 @@ const Index = () => {
   )
 }
 
-export default Index;
+// export default Index;

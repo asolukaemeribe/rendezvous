@@ -46,7 +46,7 @@ const ProfilePage = ({ route, navigation }) => {
   const [date, setDate] = React.useState(dayjs());
   const [dateStr, setDateStr] = React.useState("");
   const [location, setLocation] = React.useState<Location.LocationObject>();
-  const { getCreatingAccountData, getAuthState } = React.useContext(AuthContext);
+  const { authState } = React.useContext(AuthContext);
 
   // Code for date picker
   // const [showDatePicker, setShowDatePicker] = React.useState(false);
@@ -142,7 +142,7 @@ const ProfilePage = ({ route, navigation }) => {
     console.log("birthday: " + dateStr);
     console.log("age: " + getAge());
 
-    const userID = getCreatingAccountData();
+    const userID = authState.creatingAccountData;
     console.log("UserID is " + userID);
 
     // add profile data to mysql database
