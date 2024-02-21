@@ -37,23 +37,24 @@ import {
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { AuthContext } from "../AppAuthContext";
 import { useEffect, useState, useRef } from "react";
+import { setUpSocketIO, sendMessage } from "../logic/messaging";
 
-let messagesList = [
+/*let messagesList = [
   {
-    id: "1274627638",
+    id: "12746",
     sender_uid: "boonloo1",
     receiver_uid: "lukaemeribe2",
     message: "Heyyyyyyy",
     timestamp: "2/9/23 10:19 AM",
   },
   {
-    id: "158273092",
+    id: "158272",
     sender_uid: "lukaemeribe2",
     receiver_uid: "boonloo1",
     message: "What's up?",
     timestamp: "2/9/23 10:19 AM",
   }
-];
+];*/
 let messageId = 1248723;
 
 // let messagesRefresh = false;
@@ -67,11 +68,29 @@ const MessagePage = ({ route, navigation }) => {
   const auth = FIREBASE_AUTH;
   const [currMessage, onChangeMessage] = React.useState('');
   const [messagesRefresh, setMessagesRefresh] = useState(true);
+  const [room, setRoom] = useState("");
+  const [messagesList, setMessagesList] = useState([
+    {
+      id: "12746",
+      sender_uid: "boonloo1",
+      receiver_uid: "lukaemeribe2",
+      message: "Heyyyyyyy",
+      timestamp: "2/9/23 10:19 AM",
+    },
+    {
+      id: "158272",
+      sender_uid: "lukaemeribe2",
+      receiver_uid: "boonloo1",
+      message: "What's up?",
+      timestamp: "2/9/23 10:19 AM",
+    }
+  ]);
   const messagesRef = useRef();
   const userID = route.params.userID;
   const { getCreatingAccountData } = React.useContext(AuthContext);
   const selfUserID = userID;
   const receivingChatUserID = route.params.receivingUserID;
+  const roomName = receivingChatUserID
   console.log("Message page self userID: " + selfUserID);
   console.log("Message page receiving userID: " + receivingChatUserID);
 
@@ -97,9 +116,35 @@ const MessagePage = ({ route, navigation }) => {
   // }, []);
   // };
 
-  // useEffect(() => {
-  //   navigation.getParent('tabs').setOptions({tabBarStyle: {display: 'none'}})
-  // })
+  useEffect(() => {
+
+    fetch(`http://${config.server_host}:${config.server_port}/getroom?uid1=${selfUserID}&uid2=${receivingChatUserID}`)
+        .then(res => res.json())
+        .then(resJson => {
+          console.log("ROOM resJson: ")
+          console.log(resJson)
+
+          setRoom(resJson[0]["room"]) 
+          setUpSocketIO((x) => {
+
+            let newMessage = messagesList
+            
+
+            newMessage.push({
+              id: messageId.toString(),
+              sender_uid: receivingChatUserID,
+              receiver_uid: selfUserID,
+              message: x,
+              timestamp: "2/9/23 10:19 AM"
+            })
+
+            setMessagesList(newMessage)
+            setMessagesRefresh(!messagesRefresh)
+
+            messageId++
+          }, resJson[0]["room"])
+    });
+  },[])
 
   const renderMessageItem = (item) => {
 
@@ -141,19 +186,22 @@ const MessagePage = ({ route, navigation }) => {
 
 
   const handleMessageSend = () => {
+    sendMessage(room, currMessage)
+
     messagesList.push({
       id: messageId.toString(), //idk
       sender_uid: selfUserID,
       receiver_uid: receivingChatUserID,
       message: currMessage,
-      timestamp: "1/2/3 10:10 PM"
+      timestamp: "1/2/3 10:10 PM" // get current timestamp
     });
     setMessagesRefresh(!messagesRefresh);
     messageId += 1;
   }
 
   const getMessageHistory = () => {
-
+    // get from db
+    // write all to screen
   }
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')

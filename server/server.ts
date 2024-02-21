@@ -23,6 +23,7 @@ app.get('/getmatches/:uid', routes.getmatches);
 app.get('/newmatch', routes.newmatch);
 app.get('/getmessages/:uid', routes.getmessages);
 app.get('/newmessage', routes.newmessage);
+app.get('/getroom', routes.getroom);
 app.get('/updateuserlocation', routes.updateuserlocation);
 app.get('/updateimage', routes.updateuserprofilepic);
 app.get('/getimage', routes.getnameageimage);
@@ -40,6 +41,9 @@ socketIO.on('connection', socket => { /* user is connected */
     })
     socket.on('join-room', room => {
         socket.join(room)
+    })
+    socket.on('leave-room', room => {
+        socket.leave(room)
     })
 });
 

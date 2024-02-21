@@ -182,6 +182,25 @@ const getmessages = async function(req, res) {
     });
 }
 
+// get chat rooom name between two users
+const getroom = async function(req, res) {
+    const uid1 = req.query.uid1;
+    const uid2 = req.query.uid2;
+
+    connection.query(`
+    SELECT CONCAT(userOneID, '-', userTwoID) AS room FROM MATCHES
+    WHERE (userOneID = '${uid1}' AND userTwoID = '${uid2}')
+        OR (userOneID = '${uid2}' AND userTwoID = '${uid1}')
+    `, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data);
+        }
+    });
+}
+
 // pql user-location Routes
 
 // inserts user into table with a certain latitude and longitude
@@ -328,6 +347,7 @@ module.exports = {
     getmatches,
     newmessage,
     getmessages,
+    getroom,
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,
