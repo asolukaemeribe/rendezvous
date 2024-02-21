@@ -27,10 +27,15 @@ app.get('/', (req, res) => {
     res.send('Rendezvous Server made with Express');
 });
 
+// socket io
 io.on('connection', socket => { /* user is connected */
     console.log("User " + socket.id + " is connected!")
-    io.on('send-message', (room: String, message: String) => {
-        console.log("lets send a message")
+    socket.on('send-message', (room: String, message: String) => {
+        console.log("Sent message has been received! Redirecting to room: " + room + "Message is: " + message)
+        socket.to(room).emit('receive-message', message)
+    })
+    socket.on('join-room', room => {
+        socket.join(room)
     })
 });
 
