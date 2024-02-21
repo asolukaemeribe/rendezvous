@@ -139,6 +139,8 @@ const getmatches = async function(req, res) {
             console.log(err);
             res.json({});
         } else {
+            console.log("Matches for user: " + userID)
+            console.log(data)
             res.json(data);
         }
     });

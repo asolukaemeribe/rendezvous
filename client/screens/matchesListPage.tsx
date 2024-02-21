@@ -66,7 +66,8 @@ const MatchesListPage = ({ route, navigation }) => {
     const [matchesData, setMatchesData] = useState([{id: "", first_name: "", last_name: ""}])
 
     useEffect(() => {
-        const { userID, lat, long, rad } = route.params;
+        const userID = route.params.userID;
+        console.log("Should fetch all matches now.")
       
         fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
         .then(res => res.json())

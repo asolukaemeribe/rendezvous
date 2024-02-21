@@ -88,12 +88,13 @@ const PeopleNearby = ({ route, navigation }) => {
         getNearbyUsers()
       }
 
-      const getNearbyUsers = async () => {
+      const getNearbyUsers = () => {
         console.log("POT MATCHES PAGE UID: " + userID)
         console.log("POT MATCHES PAGE LAT: " + location.coords.latitude)
         console.log("POT MATCHES PAGE LONG: " + location.coords.longitude)
         console.log("POT MATCHES PAGE RAD: " + 16094)
 
+        
         fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${location.coords.latitude}&long=${location.coords.longitude}&rad=${16094}`)
         .then(res => res.json())
         .then(resJson => {
