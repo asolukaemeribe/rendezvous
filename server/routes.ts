@@ -144,6 +144,42 @@ const getmatches = async function(req, res) {
     });
 }
 
+// mysql message storage routes
+const newmessage = async function(req, res) {
+    const senderID = req.query.senderID
+    const receiverID = req.query.receiverID
+    const message = req.query.message
+    const timestamp = req.query.timestamp
+
+    connection.query(`
+    INSERT INTO MESSAGES (senderID, receiverID, message, timestamp)
+    VALUES ('${senderID}', '${receiverID}', '${message}', '${timestamp}')
+    `, (err, data) => {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log("Success! New message sent by user with id: " + senderID + " and received by user with id: " + receiverID + " was added to the database.");
+        }
+    });
+
+}
+
+// get all of messages of a specific user
+const getmessages = async function(req, res) {
+    const userID = req.params.uid
+
+    connection.query(`
+    SELECT * FROM MESSAGES WHERE senderID = '${userID}' OR receiverID = '${userID}'
+    `, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data);
+        }
+    });
+}
+
 // pql user-location Routes
 
 // inserts user into table with a certain latitude and longitude
@@ -170,7 +206,7 @@ function convertIds(response) {
     return string
 }
 
-// gets all users in a certain radius (in meters) from the inputted latitude and longitude
+// gets all users in a certain radius (in meters) from the inputted latitude and longitude (uses pql and mysql)
 const getusersinradius = async function(req, res) {
 
     const uid = req.query.uid
@@ -187,7 +223,7 @@ const getusersinradius = async function(req, res) {
         console.log('these are the users: ')
         console.log(data) // print users in radius
     
-        const ids = convertIds(data)
+        const ids = convertIds(data) // convert ids
         console.log(ids) // print ids string
 
         // mysql query to get the names of nearby users based on ids from earlier query
@@ -284,8 +320,10 @@ module.exports = {
     user,
     createuser,
     createuserlocation,
-    getmatches,
     newmatch,
+    getmatches,
+    newmessage,
+    getmessages,
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,

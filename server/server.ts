@@ -21,6 +21,8 @@ app.get('/newuserlocation', routes.createuserlocation);
 app.get('/getusersinradius', routes.getusersinradius);
 app.get('/getmatches', routes.getmatches);
 app.get('/newmatch', routes.newmatch);
+app.get('/getmessages', routes.getmessages);
+app.get('/newmessage', routes.newmessage);
 app.get('/updateuserlocation', routes.updateuserlocation);
 app.get('/updateimage', routes.updateuserprofilepic);
 app.get('/getimage', routes.getnameageimage);
