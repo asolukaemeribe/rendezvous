@@ -5,15 +5,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import * as ImagePicker from 'expo-image-picker';
 import colors from "../assets/global_styles/color";
 const config = require('../config.json');
-import { Auth } from "firebase/auth";
 import AWS from 'aws-sdk';
-// import {  } from "module";
-// import { Amplify } from "";
 import { AuthContext } from "../AppAuthContext";
-
-import { RNS3 } from 'react-native-aws3';
-
-
+global.Buffer = require('buffer').Buffer;
 
 const PictureSelection = ({ route, navigation }) => {
   const [image, setImage] = React.useState(null);
@@ -22,24 +16,38 @@ const PictureSelection = ({ route, navigation }) => {
   console.log("picture selection userID " + userID);
 
   const uploadToS3 = async (result) => {
+    console.log("region: " + process.env.AWS_REGION);
+    console.log("key: " + process.env.AWS_ACCESS_KEY_ID);
+    console.log("secret key: " + process.env.AWS_SECRET_ACCESS_KEY);
+    AWS.config.update({
+      region: process.env.AWS_REGION,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+    const s3 = new AWS.S3();
 
-    // const filePath = result.assets[0].uri.replace('file://', '');
-    // const { userID } = route.params;
-    // const file = {
-    //     uri: filePath,
-    //     name: userID + ".png",
-    //     type: result.assets[0].type
-    // };
-
-    // try {
-    //     const response = await RNS3.put(file, options);
-    //     console.log('AWS S3 Response:', response);
-    //   //const data = await s3.upload(params).promise();
-    //   //console.log('Image uploaded successfully:', data.Location);
-    //   // You can now use data.Location to store the image URL or perform other operations
-    // } catch (error) {
-    //     console.error('Error uploading image:', error);
-    // }
+    try {
+      const fileUri = result.assets[0].uri;
+      const imageExt = fileUri.split('.').pop();
+      console.log("ext:" +imageExt);
+      const imageMime = `image/${imageExt}`;
+      const binaryImageData = Buffer.from(result.assets[0].base64, 'base64');
+      const uploadParams = {
+        Bucket: 'rendezvous-files',
+        Key: `${userID}` + '.jpeg', // The name to use for the uploaded object
+        Body: binaryImageData, // The file data
+        ContentType: imageMime
+      };
+      s3.upload(uploadParams, function(err, data) {
+        if (err) {
+          console.error('Error uploading file:', err);
+        } else {
+          console.log('File uploaded successfully. ETag:', data.ETag);
+        }
+      });
+    } catch (error) {
+      console.error('Error reading file:', error);
+    } 
   };
 
   const pickImage = async () => {
@@ -48,11 +56,12 @@ const PictureSelection = ({ route, navigation }) => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: true
     });
 
     console.log(result);
 
-    if (image) {
+    if (result) {
       setImage(result);
       
     }
@@ -61,8 +70,7 @@ const PictureSelection = ({ route, navigation }) => {
 const addProfilePicture = () => {
     console.log(image);
     uploadToS3(image);
-    signUp()
-    // navigation.navigate("ProfilePage")
+    signUp();
 }
 
   return (
