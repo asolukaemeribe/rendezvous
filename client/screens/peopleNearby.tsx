@@ -39,7 +39,9 @@ import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { AuthContext } from "../AppAuthContext";
 import { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ProfilePage from "./profilePage"
+import ProfilePage from "./profilePage";
+import AWS from 'aws-sdk';
+import { json } from "express";
 
 
 const config = require('../config.json');
@@ -48,6 +50,7 @@ const Stack = createNativeStackNavigator();
 
 
 const PeopleNearby = ({ route, navigation }) => {
+
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   // const [userID, setUserID] = React.useState(null);
   const insets = useSafeAreaInsets();
@@ -77,7 +80,7 @@ const PeopleNearby = ({ route, navigation }) => {
       }))
     );
 
-  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: ""}])
+  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: "", profilePic: null}])
 
   useEffect(() => {
       const { userID, lat, long, rad } = route.params;
@@ -99,13 +102,51 @@ const PeopleNearby = ({ route, navigation }) => {
         .then(res => res.json())
         .then(resJson => {
           console.log("POT MATCHES PAGE resJson: ")
-          console.log(resJson)
+          resJson = updateList(resJson);
           setNearbyUsersData(resJson);  
+          console.log('mylist: ' + resJson);
         });
       }
 
       getLocation()
   }, []);
+
+  const updateList = async (jsonList) => {
+    for (let i = 0; i < jsonList.length; i++) {
+      const image = getProfilePic(jsonList[i].id);
+      jsonList[i]['picture'] = image;
+    }
+    return jsonList;
+  }
+
+  const getProfilePic = async (id) => {
+    console.log('id: ' + id);
+    AWS.config.update({
+      region: process.env.AWS_REGION,
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+    const s3 = new AWS.S3();
+    
+    try {
+      const downloadParams = {
+        Bucket: 'rendezvous-files',
+        Key: `${id}` + '.jpeg', // The name to use for the uploaded object
+      };
+      const response = await s3.getObject(downloadParams).promise();
+      console.log('reponse: ' + response);
+      return response;
+      //const fileData = response.Body.toString('base64');
+    } catch (error) {
+      console.error('Error retrieving file:', error);
+    }
+  }
+
+  //set nearby users data is a list of every single user in radius
+  // what i need to do is fetch the profile pciture for each of these users and append it to each item
+  // use effect is where users are fetched, it would make sense to also update pictures here since correct picture
+  // must be displayed when page is loaded
+  //maybe do this before SETNEARBYUSERSDATA
 
 
   const renderButtonItem = (item) => {
@@ -147,7 +188,7 @@ const PeopleNearby = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={require("../assets/images/defaultProfilePicDark.png")}
+          source={require("../assets/images/defaultProfilePicDark.png")} //IMPORTANT
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}</Text>
         </ImageBackground>

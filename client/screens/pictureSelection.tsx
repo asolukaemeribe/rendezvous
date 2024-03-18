@@ -16,9 +16,6 @@ const PictureSelection = ({ route, navigation }) => {
   console.log("picture selection userID " + userID);
 
   const uploadToS3 = async (result) => {
-    console.log("region: " + process.env.AWS_REGION);
-    console.log("key: " + process.env.AWS_ACCESS_KEY_ID);
-    console.log("secret key: " + process.env.AWS_SECRET_ACCESS_KEY);
     AWS.config.update({
       region: process.env.AWS_REGION,
       accessKeyId: process.env.AWS_ACCESS_KEY_ID,
