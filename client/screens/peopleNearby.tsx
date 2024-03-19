@@ -104,7 +104,9 @@ const PeopleNearby = ({ route, navigation }) => {
           console.log("POT MATCHES PAGE resJson: ")
           resJson = updateList(resJson);
           setNearbyUsersData(resJson);  
-          console.log('mylist: ' + resJson);
+          for (let i = 0; i < resJson.length; i++) {
+            console.log(i + resJson[i]);
+          }
         });
       }
 
@@ -134,11 +136,16 @@ const PeopleNearby = ({ route, navigation }) => {
         Key: `${id}` + '.jpeg', // The name to use for the uploaded object
       };
       const response = await s3.getObject(downloadParams).promise();
-      console.log('reponse: ' + response);
-      return response;
+      if (response.Body) {
+        const imageBase64 = response.Body.toString('base64');
+        return `data:image/jpeg;base64,${imageBase64}`;
+      } else {
+        return "../assets/images/defaultProfilePicDark.png";
+      }
       //const fileData = response.Body.toString('base64');
     } catch (error) {
       console.error('Error retrieving file:', error);
+      return "../assets/images/defaultProfilePicDark.png";
     }
   }
 
@@ -188,7 +195,7 @@ const PeopleNearby = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={require("../assets/images/defaultProfilePicDark.png")} //IMPORTANT
+          source={{ uri: item.image }} //IMPORTANT
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}</Text>
         </ImageBackground>
