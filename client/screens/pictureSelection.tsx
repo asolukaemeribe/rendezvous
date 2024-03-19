@@ -26,7 +26,6 @@ const PictureSelection = ({ route, navigation }) => {
     try {
       const fileUri = result.assets[0].uri;
       const imageExt = fileUri.split('.').pop();
-      console.log("ext:" +imageExt);
       const imageMime = `image/${imageExt}`;
       const binaryImageData = Buffer.from(result.assets[0].base64, 'base64');
       const uploadParams = {
@@ -56,8 +55,6 @@ const PictureSelection = ({ route, navigation }) => {
       base64: true
     });
 
-    console.log(result);
-
     if (result) {
       setImage(result);
       
@@ -65,7 +62,6 @@ const PictureSelection = ({ route, navigation }) => {
   };
 
 const addProfilePicture = () => {
-    console.log(image);
     uploadToS3(image);
     signUp();
 }
