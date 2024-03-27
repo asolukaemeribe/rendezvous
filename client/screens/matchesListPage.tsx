@@ -63,47 +63,26 @@ const MatchesListPage = ({ route, navigation }) => {
       }))
     );
 
-    const [matchesData, setMatchesData] = useState([{id: "", first_name: "", last_name: ""}])
-    const isFocused = useIsFocused();
+  const [matchesData, setMatchesData] = useState([{ id: "", first_name: "", last_name: "" }])
+  const isFocused = useIsFocused();
 
-    useEffect(() => {
-        const userID = route.params.userID;
-        console.log("Should fetch all matches now.")
+  useEffect(() => {
+    const userID = route.params.userID;
+    console.log("Should fetch all matches now.")
 
-        if (isFocused) {
-          fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
-          .then(res => res.json())
-          .then(resJson => {
-            console.log("MATCHES resJson: ")
-            console.log(resJson)
-            setMatchesData(resJson);  
-          });
-        }
-    }, [isFocused]);
+    if (isFocused) {
+      fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
+        .then(res => res.json())
+        .then(resJson => {
+          console.log("MATCHES resJson: ")
+          console.log(resJson)
+          setMatchesData(resJson);
+        });
+    }
+  }, [isFocused]);
 
 
   const renderButtonItem = (item) => {
-    // const handleButtonPress = () => {
-    //   const index = array.findIndex((type) => type.id === item.id);
-
-    //   // TODO: This can be used when multiple can be selected at once
-    //   // setGenderTypesArray((prevArray) => {
-    //   //   const newArray = [...prevArray];
-    //   //   newArray[index].isSelected = !newArray[index].isSelected;
-    //   //   return newArray;
-    //   // });
-    //   setArrayFunction((prevArray) => {
-    //     const newArray = prevArray.map((item) => ({
-    //       ...item,
-    //       isSelected: false,
-    //     }));
-
-    //     newArray[index].isSelected = true;
-
-    //     return newArray;
-    //   });
-    // };
-
     const handleButtonPress = () => {
       navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
     }
@@ -116,13 +95,47 @@ const MatchesListPage = ({ route, navigation }) => {
         ]}
         onPress={() => handleButtonPress()}
       >
+        <ImageBackground
+          style={styles.nearbyUsersListPhoto}
+          imageStyle={styles.nearbyUsersListPhotoImageStyle}
+          source={require("../assets/images/defaultProfilePicDark.png")}
+        >
+          <Text style={styles.nearbyUsersListItemText}>{item.first_name}</Text>
+        </ImageBackground>
+      </Pressable>
+    );
+  };
+
+  const renderMessagesListItem = (item) => {
+    const handleButtonPress = () => {
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
+    }
+
+    // TODO: Matches page makeover
+    return (
+      <Pressable
+        style={[
+          styles.messagesListItem,
+        ]}
+        onPress={() => handleButtonPress()}
+      >
+        <View>
           <ImageBackground
-            style={styles.nearbyUsersListPhoto}
-            imageStyle={styles.nearbyUsersListPhotoImageStyle}
+            style={styles.messagesListPhoto}
+            imageStyle={styles.messagesListPhotoImageStyle}
             source={require("../assets/images/defaultProfilePicDark.png")}
-          > 
-            <Text style={styles.nearbyUsersListItemText}>{item.first_name}</Text>
+          >
           </ImageBackground>
+        </View>
+        <View style={styles.messagesListTextWrapper}>
+          <View style={styles.messagesListItemHeadingWrapper}>
+            <Text style={styles.messagesListItemName}>{item.first_name}</Text>
+            <Text style={styles.messagesListItemTime}>{item.message_time}</Text>
+          </View>
+          <View style={styles.messagesListChatWrapper}>
+            <Text style={styles.messagesListChat}>{item.first_message}</Text>
+          </View>
+        </View>
       </Pressable>
     );
   };
@@ -152,14 +165,63 @@ const MatchesListPage = ({ route, navigation }) => {
       first_name: "Boon",
       last_name: "Loo",
       pronouns: "he/him",
-      age: "21"
+      age: "21",
+      message_time: "2m",
+      first_message: "Hey wanna meet up for coffee and coding on Saturday?"
     },
     {
-      id: "boonloo21",
+      id: "lukaemeribe21",
       first_name: "Luka",
-      last_name: "Loo",
+      last_name: "Emeribe",
       pronouns: "he/him",
-      age: "22"
+      age: "22",
+      message_time: "3d",
+      first_message: "Let's hoop!"
+    },
+    {
+      id: "mattromage3",
+      first_name: "Matt",
+      last_name: "Romage",
+      pronouns: "he/him",
+      age: "21",
+      message_time: "5d",
+      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr."
+    },
+    {
+      id: "jasonli21123",
+      first_name: "Jason",
+      last_name: "Li",
+      pronouns: "he/him",
+      age: "22",
+      message_time: "5d",
+      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!"
+    },
+    {
+      id: "craiglee",
+      first_name: "Craig",
+      last_name: "Lee",
+      pronouns: "he/him",
+      age: "22",
+      message_time: "7d",
+      first_message: "Yo"
+    },
+    {
+      id: "venuc",
+      first_name: "Venu",
+      last_name: "Chillal",
+      pronouns: "he/him",
+      age: "22",
+      message_time: "2w",
+      first_message: "I'll sing u a lullaby"
+    },
+    {
+      id: "daisyt",
+      first_name: "Daisy",
+      last_name: "Teller",
+      pronouns: "she/her",
+      age: "22",
+      message_time: "2w",
+      first_message: "What's your favorite flower?"
     },
   ];
 
@@ -175,44 +237,63 @@ const MatchesListPage = ({ route, navigation }) => {
         <LinearGradient
           style={styles.pageGradient}
           locations={[0, 0.9]}
-          colors={["#ff0000", "#db17a4"]}
+          colors={["#ff0000D6", "#db176AD6"]}
         >
           <View style={[{ paddingTop: insets.top * 0.8 }]} />
           <View style={styles.topMenuWrapper}>
             {/* <Feather name="chevron-left" size={32} color="white" /> */}
-          <Pressable onPress={() => logOut()}>
-            <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
-          </Pressable>
+            <Pressable onPress={() => logOut()}>
+              <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
+            </Pressable>
+            
             {/* <View style={styles.topNavigationBarWrapper}>*/}
-          {/* <Pressable onPress={() => logOut()}>
+            {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
           </Pressable> */}
-          {/*<Text style={styles.profilePageLogo}>Rendezvous</Text>
+            {/*<Text style={styles.profilePageLogo}>Rendezvous</Text>
           <View style={{width: 29}}></View>
         </View> */}
-          </View>           
-           <View style={styles.creationHeaderWrapper}>
-              <Text style={styles.creationHeaderText}>Matches</Text>
-            </View>
+          </View>
+        </LinearGradient>
+          <ScrollView style={styles.pageContentWrapper}>
+          <View style={styles.creationHeaderWrapper}>
+            <Text style={styles.creationHeaderText}>Matches</Text>
+          </View>
           {/* <ScrollView contentContainerStyle={{ paddingTop: 5 }}> */}
 
-            {/* <View style={styles.headerWrapper}>
+          {/* <View style={styles.headerWrapper}>
               <Text style={styles.headerText}>Display Name</Text>
             </View> */}
 
-                <View style={styles.nearbyUsersFirstWrapper}>
-                <FlatList
-                  data={matchesData}
-                  renderItem={({ item }) =>
-                    renderButtonItem(item)
-                  }
-                  keyExtractor={(item) => item.id}
-                  contentContainerStyle={styles.nearbyUsersViewWrapper}
-                />
-                </View>
+          <View style={styles.nearbyUsersFirstWrapper}>
+            <FlatList
+              data={profilesList}
+              renderItem={({ item }) =>
+                renderButtonItem(item)
+              }
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.nearbyUsersViewWrapper}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+          <View style={styles.messagesListVerticalViewWrapper}>
+            <Text style={styles.messagesHeaderText}>Messages</Text>
+            <FlatList
+              data={profilesList}
+              renderItem={({ item }) =>
+                renderMessagesListItem(item)
+              }
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.messagesListVerticalWrapper}
+              scrollEnabled={false}
+            // horizontal={true}
+            // showsHorizontalScrollIndicator={false}
+            />
+          </View>
+          </ScrollView>
 
           {/* </ScrollView> */}
-        </LinearGradient>
       </View>
     </KeyboardAvoidingView>
   );
@@ -222,8 +303,8 @@ const MatchesListPage = ({ route, navigation }) => {
 const MatchesListStack = ({ navigation }) => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MatchesList" component={ MatchesListPage }/>
-      <Stack.Screen name="MessagePage" component={ MessagePage }/>
+      <Stack.Screen name="MatchesList" component={MatchesListPage} />
+      <Stack.Screen name="MessagePage" component={MessagePage} />
     </Stack.Navigator>
   )
 }
@@ -235,7 +316,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   pageGradient: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: "transparent",
     width: "100%",
   },
@@ -252,7 +333,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   creationHeaderWrapper: {
-    paddingHorizontal: padding.xl,
+    paddingHorizontal: padding.lg,
     height: 55,
     paddingTop: padding.xxs,
   },
@@ -260,13 +341,14 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.interBold,
     fontSize: 30,
     fontWeight: "900",
-    color: Color.colorWhite,
+    color: Color.colorRed_3,
   },
   headerText: {
     fontFamily: FontFamily.interBold,
     fontSize: 23,
     fontWeight: "700",
-    color: Color.colorWhite,
+    // color: Color.colorWhite,
+    color: Color.colorRed,
     alignItems: "center",
   },
   keyboardView: {
@@ -289,8 +371,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   listButtonItemUnselected: {
-    backgroundColor: colors.white_55,
-    borderColor: colors.white_55,
+    backgroundColor: colors.black_55,
+    borderColor: colors.black_55,
   },
   listButtonItemSelected: {
     backgroundColor: colors.black,
@@ -299,33 +381,31 @@ const styles = StyleSheet.create({
   listButtonItemText: {
     fontSize: 11,
     textAlign: "center",
-    color: colors.white,
+    color: colors.black,
   },
   headerWrapper: {
-    paddingHorizontal: padding.xl,
+    paddingHorizontal: padding.lg,
     height: 37,
     justifyContent: "flex-start",
   },
   nearbyUsersViewWrapper: {
-    paddingHorizontal: padding.xl,
+    paddingHorizontal: padding.lg,
     paddingTop: padding.xxs,
     alignItems: "flex-start",
-    // flexDirection: "row"
+    flexDirection: "row",
+    marginBottom: padding.md
   },
   nearbyUsersFirstWrapper: {
     alignItems: "flex-start",
-    flex: 1
-  },
-  nearbyUsersSecondWrapper: {
-    alignItems: "flex-end",
-    flex: 1
+    flexDirection: "row",
+    // flex: 1
   },
   nearbyUsersListItem: {
     borderRadius: 50,
-    height: 100, 
+    height: 100,
     width: 100,
     backgroundColor: Color.colorGray_100,
-    marginBottom: 15,
+    marginRight: 5,
     justifyContent: 'center',
     alignItems: 'center',
     // padding: 10
@@ -343,14 +423,94 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 16,
     overflow: 'hidden',
-    borderRadius: 50,  
-    
+    borderRadius: 50,
+
   },
   nearbyUsersListPhotoImageStyle: {
 
   },
   topNavigationBarSignOut: {
     alignSelf: "flex-start",
+  },
+  messagesListVerticalViewWrapper: {
+    paddingHorizontal: padding.lg,
+  },
+  messagesListVerticalWrapper: {
+    paddingBottom: 100
+  },
+  messagesListItem: {
+    borderRadius: 50,
+    height: 70,
+    width: 300,
+    // backgroundColor: Color.colorGray_100,
+    marginBottom: 15,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  messagesListPhoto: {
+    height: 70,
+    width: 70,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: 16,
+    overflow: 'hidden',
+    borderRadius: 50,
+  },
+  messagesListPhotoImageStyle: {
+
+  },
+  messagesListItemText: {
+    fontSize: 15,
+    fontFamily: FontFamily.interBold,
+    fontWeight: "900",
+    color: colors.black,
+  },
+  messagesHeaderText: {
+    fontFamily: FontFamily.interMedium,
+    fontSize: 25,
+    fontWeight: "900",
+    color: Color.colorRed_3,
+    marginBottom: padding.sm,
+    justifyContent: "flex-start"
+  },
+  messagesListItemHeadingWrapper: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    marginBottom: padding.xxs / 2,
+    // flex: 1
+  },
+  messagesListItemName: {
+    fontSize: 17,
+    fontFamily: FontFamily.interBold,
+    fontWeight: "900",
+    color: colors.black,
+  },
+  messagesListItemTime: {
+    fontSize: 12,
+    fontFamily: FontFamily.interRegular,
+    fontWeight: "900",
+    color: colors.black,
+    marginLeft: padding.xxs
+  },
+  messagesListChatWrapper: {
+    flex: 1
+  },
+  messagesListChat: {
+    fontSize: 12,
+    fontFamily: FontFamily.interRegular,
+    fontWeight: "900",
+    color: colors.black,
+  },
+  messagesListTextWrapper: {
+    paddingLeft: 10,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    flex: 1
+  },
+  pageContentWrapper: {
+    backgroundColor: Color.colorGray_900,
+    paddingTop: padding.md
   }
 });
 

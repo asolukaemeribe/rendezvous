@@ -148,11 +148,11 @@ const UserInterestsPage = ({ route, navigation }) => {
       };
 
       const addInterests = () => {
-        navigation.navigate("AddUserInfoPage")
-        /*fetch(`http://${config.server_host}:${config.server_port}/updateimage?uid=${userID}` + 
+        //navigation.navigate("AddUserInfoPage")
+        fetch(`http://${config.server_host}:${config.server_port}/updateuserinterests?uid=${userID}` + 
         `&interests=${selectedItems}`)
           .then(res => {console.log("interests updated:" + `${selectedItems}`)})
-        navigation.navigate("AddUserInfoPage", {userID: userID})*/
+        navigation.navigate("AddUserInfoPage")
       }
     
 

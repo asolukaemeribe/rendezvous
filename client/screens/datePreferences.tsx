@@ -29,11 +29,16 @@ const DatePreferencesPage = ({ route, navigation }) => {
 
   const renderSelectMultipleButtonItem = (item) => {
       const handleButtonPress = () => {
+          console.log("item: " + item);
+          console.log("here: " + selectedTimes);
           if (selectedTimes.includes(item)) {
               setSelectedTimes(selectedTimes.filter((selectedItem) => selectedItem !== item));
+              console.log("first");
           } else if (selectedTimes.length < 5) {
               setSelectedTimes([...selectedTimes, item]);
+              console.log("second");
           }
+          console.log("here 1: " + [...selectedTimes, item]);
       };
       
       return (
@@ -71,20 +76,66 @@ const DatePreferencesPage = ({ route, navigation }) => {
         "No"
   ];
 
-  const handleSelectItem = (item) => {
-      if (selectedTimes.includes(item)) {
-        setSelectedTimes(selectedTimes.filter((selectedItem) => selectedItem !== item));
-      } else if (selectedTimes.length < 5) {
-        setSelectedTimes([...selectedTimes, item]);
-      }
-    };
+  // const renderSelectMultipleButtonItem = (item) => {
+  //   const handleButtonPress = () => {
+  //       if (selectedTimes.includes(item)) {
+  //           setSelectedTimes(selectedTimes.filter((selectedItem) => selectedItem !== item));
+  //       } else if (selectedTimes.length < 5) {
+  //           setSelectedTimes([...selectedTimes, item]);
+  //       }
+  //   };
+    
+  //   return (
+  //       <Pressable
+  //         style={[
+  //           styles.listButtonItem,
+  //           selectedTimes.includes(item)
+  //             ? styles.listButtonItemSelected
+  //             : styles.listButtonItemUnselected,
+  //         ]}
+  //         onPress={() => handleButtonPress()}
+  //       >
+  //         <Text style={styles.listButtonItemText}>{item}</Text>
+  //       </Pressable>
+  //       //<Text>hey</Text>
+  //     );
+  // }
+
+// const renderButtonItem = (item, setSelected) => {
+//   const handleButtonPress = () => {
+//       setSelected(item)
+//   };
+  
+//   return (
+//       <Pressable
+//         style={[
+//           styles.listButtonItem,
+//           item in [selectedLookingFor, ]
+//             ? styles.listButtonItemSelected
+//             : styles.listButtonItemUnselected,
+//         ]}
+//         onPress={() => handleButtonPress()}
+//       >
+//         <Text style={styles.listButtonItemText}>{item}</Text>
+//       </Pressable>
+//   );
+//       }
+
+  // const handleSelectItem = (item) => {
+  //     if (selectedTimes.includes(item)) {
+  //       setSelectedTimes(selectedTimes.filter((selectedItem) => selectedItem !== item));
+  //     } else if (selectedTimes.length < 5) {
+  //       setSelectedTimes([...selectedTimes, item]);
+  //     }
+  //   };
 
     const addInterests = () => {
       navigation.navigate("PictureSelection")
     }
     const addDatePreferences = () => {
+      console.log("times of day: " + selectedTimes);
         fetch(`http://${config.server_host}:${config.server_port}/updatedatepreferences?uid=${userID}` + 
-        `&vegetarian=${isVegetarian}` + `&priceLevel=${selectedPriceLevel}` + `&timesOfDay= ${selectedTimes}`)
+        `&vegetarian=${isVegetarian}` + `&timesOfDay= ${selectedTimes}` + `&priceLevel=${selectedPriceLevel}`)
           .then(res => {console.log("info updated")})
       navigation.navigate("PictureSelection", {userID: userID})
     }

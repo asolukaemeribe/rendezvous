@@ -33,7 +33,10 @@ import {
 import { AuthContext } from "../AppAuthContext";
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
+import AWS from 'aws-sdk';
+
 const config = require('../config.json');
+
 
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -57,18 +60,8 @@ const ProfilePage = ({ route, navigation }) => {
     school: "University of Pennsylvania",
     looking_for: "Looking for long term"
   })
+  const [imageData, setImageData] = useState("");
   const [location, setLocation] = useState<Location.LocationObject>();
-
-  /*const profileData = {
-    first_name: "Boon",
-    last_name: "Loo",
-    about_me: "If you love Computer Science, then you will love me!",
-    pronouns: "he/him",
-    gender: "Male",
-    age: "21",
-    school: "University of Pennsylvania",
-    looking_for: "Looking for long term"
-  };*/
 
   useEffect(() => {
     // get location
@@ -85,12 +78,29 @@ const ProfilePage = ({ route, navigation }) => {
       .then(res => res.json())
       .then(resJson => {
         console.log("resJson first name: " + resJson.first_name)
-        /*profileData.first_name = resJson.first_name;
-        profileData.last_name = resJson.last_name;
-        profileData.about_me = resJson.about_me;
-        profileData.pronouns = resJson.pronouns;
-        profileData.gender = resJson.gender;*/
-        //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
+        const getProfilePic = async (id) => {
+          AWS.config.update({
+            region: process.env.AWS_REGION,
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          });
+          const s3 = new AWS.S3();
+          
+          try {
+            const downloadParams = {
+              Bucket: 'rendezvous-files',
+              Key: `${id}` + '.jpeg', // The name to use for the uploaded object
+            };
+            const response = await s3.getObject(downloadParams).promise();
+            if (response.Body) {
+              const imageBase64 = response.Body.toString('base64');
+              setImageData(`data:image/jpeg;base64,${imageBase64}`);
+            }
+          } catch (error) {
+            console.error('Error retrieving file:', error);
+          }
+        }
+        getProfilePic(profileUserID);
         setProfileData({
           first_name: resJson.first_name,
           last_name: resJson.last_name,
@@ -184,7 +194,8 @@ const ProfilePage = ({ route, navigation }) => {
           <View style={styles.profilePhotoWrapper}>
             <ImageBackground
               style={styles.profilePhoto}
-              source={require("../assets/images/defaultProfilePic.png")}
+              source={{ uri: imageData }}
+              //source={require("../assets/images/defaultProfilePic.png")}
             >
               <View style={styles.matchButtonWrapper}>
                 {(route.params.userIsSelf) ? (<View />) :
