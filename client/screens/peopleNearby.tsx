@@ -77,7 +77,7 @@ const PeopleNearby = ({ route, navigation }) => {
       }))
     );
 
-  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: ""}])
+  // const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: ""}])
 
   useEffect(() => {
       const { userID, lat, long, rad } = route.params;
@@ -137,6 +137,9 @@ const PeopleNearby = ({ route, navigation }) => {
       // navigation.push("ProfilePage")
     }
 
+    const source = item.photo_path;
+
+
     return (
       <Pressable
         style={[
@@ -147,7 +150,7 @@ const PeopleNearby = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={require("../assets/images/defaultProfilePicDark.png")}
+          source={source}
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}</Text>
         </ImageBackground>
@@ -174,71 +177,148 @@ const PeopleNearby = ({ route, navigation }) => {
   }
   // TODO: Don't allow user to navigate back to home page from here
 
-  const profilesList = [
+
+  const nearbyUsersData = [
     {
       id: "boonloo1",
       first_name: "Boon",
       last_name: "Loo",
       pronouns: "he/him",
-      age: "21"
+      age: "21",
+      message_time: "2m",
+      first_message: "Hey wanna meet up for coffee and coding on Saturday?",
+      photo_path: require("../assets/images/profilePhoto.png")
     },
     {
-      id: "boonloo2",
-      first_name: "Boon",
-      last_name: "Looo",
+      id: "lukaemeribe21",
+      first_name: "Luka",
+      last_name: "Emeribe",
       pronouns: "he/him",
-      age: "22"
+      age: "22",
+      message_time: "3d",
+      first_message: "Let's hoop!",
+      photo_path: require("../assets/images/lukaemeribe.jpg")
     },
     {
-      id: "boonloo3",
-      first_name: "Boon",
-      last_name: "Loooo",
+      id: "mattromage3",
+      first_name: "Matt",
+      last_name: "Romage",
       pronouns: "he/him",
-      age: "23"
+      age: "21",
+      message_time: "5d",
+      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr.",
+      photo_path: require("../assets/images/mattromage.jpg")
     },
     {
-      id: "boonloo4",
-      first_name: "Boon",
-      last_name: "Looooo",
+      id: "jasonli21123",
+      first_name: "Jason",
+      last_name: "Li",
       pronouns: "he/him",
-      age: "24"
+      age: "22",
+      message_time: "5d",
+      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!",
+      photo_path: require("../assets/images/jasonli.png")
     },
     {
-      id: "boonloo5",
-      first_name: "Boon",
-      last_name: "Loooooo",
+      id: "craiglee",
+      first_name: "Craig",
+      last_name: "Lee",
       pronouns: "he/him",
-      age: "25"
+      age: "22",
+      message_time: "7d",
+      first_message: "Yo",
+      photo_path: require("../assets/images/craiglee.jpg")
     },
     {
-      id: "boonloo6",
-      first_name: "Boon",
-      last_name: "Looooooo",
+      id: "venuc",
+      first_name: "Venu",
+      last_name: "Chillal",
       pronouns: "he/him",
-      age: "26"
+      age: "22",
+      message_time: "2w",
+      first_message: "I'll sing u a lullaby",
+      photo_path: require("../assets/images/venuchillal.png")
     },
     {
-      id: "boonloo7",
-      first_name: "Boon",
-      last_name: "Loooooooo",
-      pronouns: "he/him",
-      age: "27"
-    },
-    {
-      id: "boonloo8",
-      first_name: "Boon",
-      last_name: "Looooooooo",
-      pronouns: "he/him",
-      age: "28"
-    },
-    {
-      id: "boonloo9",
-      first_name: "Boon",
-      last_name: "Loooooooooo",
-      pronouns: "he/him",
-      age: "29"
+      id: "daisyt",
+      first_name: "Daisy",
+      last_name: "Teller",
+      pronouns: "she/her",
+      age: "22",
+      message_time: "2w",
+      first_message: "What's your favorite flower?",
+      photo_path: require("../assets/images/daisyteller.jpg")
     },
   ];
+
+  const everySecondItem = nearbyUsersData.filter((_, index) => index % 2 !== 0);
+  const everyFirstItem = nearbyUsersData.filter((_, index) => index % 2 === 0);
+
+  // const profilesList = [
+  //   {
+  //     id: "boonloo1",
+  //     first_name: "Boon",
+  //     last_name: "Loo",
+  //     pronouns: "he/him",
+  //     age: "21"
+  //   },
+  //   {
+  //     id: "boonloo2",
+  //     first_name: "Boon",
+  //     last_name: "Looo",
+  //     pronouns: "he/him",
+  //     age: "22"
+  //   },
+  //   {
+  //     id: "boonloo3",
+  //     first_name: "Boon",
+  //     last_name: "Loooo",
+  //     pronouns: "he/him",
+  //     age: "23"
+  //   },
+  //   {
+  //     id: "boonloo4",
+  //     first_name: "Boon",
+  //     last_name: "Looooo",
+  //     pronouns: "he/him",
+  //     age: "24"
+  //   },
+  //   {
+  //     id: "boonloo5",
+  //     first_name: "Boon",
+  //     last_name: "Loooooo",
+  //     pronouns: "he/him",
+  //     age: "25"
+  //   },
+  //   {
+  //     id: "boonloo6",
+  //     first_name: "Boon",
+  //     last_name: "Looooooo",
+  //     pronouns: "he/him",
+  //     age: "26"
+  //   },
+  //   {
+  //     id: "boonloo7",
+  //     first_name: "Boon",
+  //     last_name: "Loooooooo",
+  //     pronouns: "he/him",
+  //     age: "27"
+  //   },
+  //   {
+  //     id: "boonloo8",
+  //     first_name: "Boon",
+  //     last_name: "Looooooooo",
+  //     pronouns: "he/him",
+  //     age: "28"
+  //   },
+  //   {
+  //     id: "boonloo9",
+  //     first_name: "Boon",
+  //     last_name: "Loooooooooo",
+  //     pronouns: "he/him",
+  //     age: "29"
+  //   },
+  // ];
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
@@ -279,7 +359,7 @@ const PeopleNearby = ({ route, navigation }) => {
               <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
                 <View style={styles.nearbyUsersFirstWrapper}>
                   <FlatList
-                    data={nearbyUsersData}
+                    data={everyFirstItem}
                     renderItem={({ item }) =>
                       renderButtonItem(item)
                     }
@@ -287,16 +367,16 @@ const PeopleNearby = ({ route, navigation }) => {
                     keyExtractor={(item) => item.id}
                   />
                 </View>
-                {/*<View style={styles.nearbyUsersSecondWrapper}>
+                <View style={styles.nearbyUsersSecondWrapper}>
                   <FlatList
-                    data={nearbyUsersData}
+                    data={everySecondItem}
                     renderItem={({ item }) =>
                       renderButtonItem(item)
                     }
                     scrollEnabled={false}
                     keyExtractor={(item) => item.id}
                   />
-                </View>*/}
+                </View>
               </ScrollView>
               {/* </ScrollView> */}
             </LinearGradient>
