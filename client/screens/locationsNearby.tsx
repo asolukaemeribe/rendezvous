@@ -53,7 +53,7 @@ const LocationsNearby = ({ route, navigation }) => {
   const { signOut, getUserID } = React.useContext(AuthContext)
   const userID = route.params.userID;
 
-
+  // this is initial state of locations data when loaded onto the page
   const initialLocationsNearbyData = [
     {
       id: "location1",
@@ -123,6 +123,7 @@ const LocationsNearby = ({ route, navigation }) => {
     },
   ]
 
+  // THIS IS CURRENT STATE OF LOCATIONS DATA (favorited might have changed)
   const [locationsNearbyData, setLocationsNearbyData] = useState(initialLocationsNearbyData);
   const [currentCategoryLocationsNearbyData, setCurrentCategoryLocationsNearbyData] = useState(initialLocationsNearbyData);
   const [categoriesArray, setCategoriesArray] = useState(initialCategoriesArray);
@@ -352,6 +353,7 @@ const styles = StyleSheet.create({
   creationHeaderWrapper: {
     paddingHorizontal: padding.xl,
     height: 55,
+    // alignItems: "center",
     paddingTop: padding.xxs,
   },
   creationHeaderText: {
@@ -467,6 +469,7 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
   },
+
 });
 
 export default LocationsNearbyStack;
