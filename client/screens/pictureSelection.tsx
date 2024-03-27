@@ -9,6 +9,7 @@ import { Auth } from "firebase/auth";
 import AWS from 'aws-sdk';
 // import {  } from "module";
 // import { Amplify } from "";
+import { AuthContext } from "../AppAuthContext";
 
 import { RNS3 } from 'react-native-aws3';
 
@@ -16,6 +17,9 @@ import { RNS3 } from 'react-native-aws3';
 
 const PictureSelection = ({ route, navigation }) => {
   const [image, setImage] = React.useState(null);
+  const { signIn, signOut, signUp, getCreatingAccountData } = React.useContext(AuthContext)
+  const userID = route.params.userID;
+  console.log("picture selection userID " + userID);
 
   const uploadToS3 = async (result) => {
 
@@ -55,10 +59,10 @@ const PictureSelection = ({ route, navigation }) => {
   };
 
 const addProfilePicture = () => {
-    const { userID } = route.params;
     console.log(image);
     uploadToS3(image);
-    navigation.navigate("ProfilePage", {userID: userID})
+    signUp()
+    // navigation.navigate("ProfilePage")
 }
 
   return (

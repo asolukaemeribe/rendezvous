@@ -9,6 +9,8 @@ import {
   TextInput,
   Image,
   FlatList,
+  ScrollView,
+  ImageBackground
 } from "react-native";
 // import { Image } from "expo-image";
 import Feather from "react-native-vector-icons/Feather";
@@ -28,13 +30,20 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
+import { AuthContext } from "../AppAuthContext";
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
 const config = require('../config.json');
 
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
+  const { signOut, getUserID } = React.useContext(AuthContext)
+  const selfUserID = route.params.selfUserID;
+  const userIsSelf = route.params.userIsSelf;
+  const profileUserID = route.params.userID;
+  console.log("profile page test userid ", selfUserID);
+  console.log("userisself: ", route.params.userIsSelf)
+  console.log("profile page uid: ", profileUserID);
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const [profileData, setProfileData] = useState({
@@ -70,62 +79,78 @@ const ProfilePage = ({ route, navigation }) => {
       console.log(location.coords)
     })();
 
-    const { userID } = route.params;
-    console.log("PROFILE PAGE UID: " + userID)
+    console.log("PROFILE PAGE UID: " + profileUserID) //MATT: moved userID get to beginning of page
 
-    fetch(`http://${config.server_host}:${config.server_port}/user/${userID}`)
-    .then(res => res.json())
-    .then(resJson => {
-      console.log("resJson first name: " + resJson.first_name)
-      /*profileData.first_name = resJson.first_name;
-      profileData.last_name = resJson.last_name;
-      profileData.about_me = resJson.about_me;
-      profileData.pronouns = resJson.pronouns;
-      profileData.gender = resJson.gender;*/
-      //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
-    console.log(resJson);
-      setProfileData({
-        first_name: resJson.first_name,
-        last_name: resJson.last_name,
-        about_me: resJson.about_me,
-        pronouns: resJson.pronouns,
-        gender: resJson.gender,
-        image: resJson.image,
-        age: resJson.age,
-        school: "University of Pennsylvania",
-        looking_for: "Looking for long term"
-      })
-    });
+    fetch(`http://${config.server_host}:${config.server_port}/user/${profileUserID}`)
+      .then(res => res.json())
+      .then(resJson => {
+        console.log("resJson first name: " + resJson.first_name)
+        /*profileData.first_name = resJson.first_name;
+        profileData.last_name = resJson.last_name;
+        profileData.about_me = resJson.about_me;
+        profileData.pronouns = resJson.pronouns;
+        profileData.gender = resJson.gender;*/
+        //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
+        setProfileData({
+          first_name: resJson.first_name,
+          last_name: resJson.last_name,
+          about_me: resJson.about_me,
+          pronouns: resJson.pronouns,
+          gender: resJson.gender,
+          image: resJson.image,
+          age: resJson.age,
+          school: "University of Pennsylvania",
+          looking_for: "Looking for long term"
+        })
+      });
   }, []);
 
 
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 
-    signOut(auth).then(() => {
-      // Sign-out successful.
-          navigation.navigate("Login");
-          console.log("Signed out successfully")
-      }).catch((error) => {
-      // An error happened.
-      });
+    // signOut(auth).then(() => {
+    //   // Sign-out successful.
+    //       navigation.navigate("Login");
+    //       console.log("Signed out successfully")
+    //   }).catch((error) => {
+    //   // An error happened.
+    //   });
+    signOut(auth)
   }
 
   const viewPotentialMatches = async () => {
-    const { userID } = route.params;
+    // const { userID } = route.params;
     console.log("should navigate to viewPotentialMatches Page now")
-    navigation.navigate("ViewPotentialMatchesPage", {userID: userID,
+    navigation.navigate("ViewPotentialMatchesPage", {
+      userID: profileUserID,
       lat: location.coords.latitude,
       long: location.coords.longitude,
-      rad: 16094}) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
+      rad: 16094
+    }) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
   }
 
   const viewPeopleNearby = async () => {
-    const { userID } = route.params;
+    // const { userID } = route.params;
     console.log("should navigate to peopleNearby Page now")
-    navigation.navigate("PeopleNearby", {userID: userID,
+    navigation.navigate("PeopleNearby", {
+      userID: profileUserID,
       lat: location.coords.latitude,
       long: location.coords.longitude,
-      rad: 16094}) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
+      rad: 16094
+    }) // about 10 miles in meters. TODO: make this configureable and make a function to convert from miles to meters
+  }
+
+  const matchWithUser = async () => {
+    console.log("SELF USER ID: ")
+    console.log(selfUserID)
+    console.log("OTHER USERS ID: ")
+    console.log(profileUserID)
+
+    // send match to database!
+    fetch(`http://${config.server_host}:${config.server_port}/newmatch?uid1=${selfUserID}` +
+      `&uid2=${profileUserID}`)
+      .then(res => { console.log("success! check database") })
+
   }
 
   return (
@@ -144,81 +169,93 @@ const ProfilePage = ({ route, navigation }) => {
           {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
           </Pressable> */}
-          <Pressable onPress ={() => viewPeopleNearby()}>
-            <Feather name="chevron-left" size={32} color="white" />
-          </Pressable>
-          <Pressable onPress={() => viewPotentialMatches()}>
-            <Octicons style={styles.topNavigationBarSignOut} name="arrow-right" size={24} color="white" />
-          </Pressable>
+          {route.params.userIsSelf ?
+            (<Pressable onPress={() => logOut()}>
+              <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
+            </Pressable>) :
+            (<Pressable onPress={() => navigation.goBack()}>
+              <Feather name="chevron-left" size={32} color="white" />
+            </Pressable>)
+          }
           <Text style={styles.profilePageLogo}>Rendezvous</Text>
-          <View style={{width: 29}}></View>
+          <View style={{ width: 29 }}></View>
         </View>
-        <View style={styles.profilePhotoWrapper}>
-          <Image
-            style={styles.profilePhoto}
-            source={require("../assets/images/defaultProfilePic.png")}
-          />
-        </View>
-        <View style={styles.profileDataWrapper}>
-          <View style={styles.profileDataTextWrapper}>
-            <View style={styles.profileDataNamePronounWrapper}>
-              <Text style={styles.profileDataName}>{profileData.first_name} {profileData.last_name} </Text>
-              <Text style={styles.profilePronounsText}> {profileData.pronouns} </Text>
-            </View>
-            <View style={styles.profileDataAgeSchoolWrapper}>
-              <Text style={styles.profileDataAge}>{profileData.age}{" | "}</Text>
-              <Text style={styles.profileDataSchool}>
-                {profileData.school}
-              </Text>
-            </View>
+        <ScrollView>
+          <View style={styles.profilePhotoWrapper}>
+            <ImageBackground
+              style={styles.profilePhoto}
+              source={require("../assets/images/defaultProfilePic.png")}
+            >
+              <View style={styles.matchButtonWrapper}>
+                {(route.params.userIsSelf) ? (<View />) :
+                  (<Pressable style={styles.matchButton} onPress={() => matchWithUser()}>
+                    <Text style={styles.matchButtonText}>Send Match</Text>
+                  </Pressable>)
+                }
+              </View>
+            </ImageBackground>
           </View>
-          {/* <View style={styles.profileDataImageWrapper}>
+          <View style={styles.profileDataWrapper}>
+            <View style={styles.profileDataTextWrapper}>
+              <View style={styles.profileDataNamePronounWrapper}>
+                <Text style={styles.profileDataName}>{profileData.first_name} {profileData.last_name} </Text>
+                <Text style={styles.profilePronounsText}> {profileData.pronouns} </Text>
+              </View>
+              <View style={styles.profileDataAgeSchoolWrapper}>
+                <Text style={styles.profileDataAge}>{profileData.age}{" | "}</Text>
+                <Text style={styles.profileDataSchool}>
+                  {profileData.school}
+                </Text>
+              </View>
+            </View>
+            {/* <View style={styles.profileDataImageWrapper}>
             <Image
               style={styles.profileDataImage}
               source={require("../assets/images/maleSymbol.png")}
             />
           </View> */}
-        </View>
-        <View style={styles.profilePreferencesWrapper}>
-          <View style={styles.profilePreferencesDescriptionWrapper}>
-            <Image
-              style={styles.profileDataImage}
-              //source={require("../assets/images/handWave.png")}
-              source = {{uri: profileData.image}}
-            />
-            <Text style={styles.profilePreferencesDescriptionText}>
-              {profileData.about_me}
-            </Text>
           </View>
-          <View style={styles.profilePreferencesLookingForWrapper}>
-            <Image
-              style={styles.profileDataImage}
-              source={require("../assets/images/search.png")}
-            />
-            <Text style={styles.profilePreferencesLookingForText}>
-              {profileData.looking_for}
-            </Text>
-          </View>
-          <View style={styles.profilePreferencesInterestsWrapper}>
-            <View style={styles.profilePreferencesInterestsTitleWrapper}>
-              <Text style={styles.profilePreferencesInterestsTitleText}>
-                Interests
+          <View style={styles.profilePreferencesWrapper}>
+            <View style={styles.profilePreferencesDescriptionWrapper}>
+              <Image
+                style={styles.profileDataImage}
+                //source={require("../assets/images/handWave.png")}
+                source={{ uri: profileData.image }}
+              />
+              <Text style={styles.profilePreferencesDescriptionText}>
+                {profileData.about_me}
               </Text>
             </View>
-            <View style={styles.profilePreferencesInterestsListWrapper}>
-              {/* <ProfileTypesList profilePreferenceData={profilePreferenceData} />; */}
-              <Text style={styles.profilePreferencesInterestsListItem}>
-                • Teaching
-              </Text>
-              <Text style={styles.profilePreferencesInterestsListItem}>
-                • Technology
-              </Text>
-              <Text style={styles.profilePreferencesInterestsListItem}>
-                • Fun
+            <View style={styles.profilePreferencesLookingForWrapper}>
+              <Image
+                style={styles.profileDataImage}
+                source={require("../assets/images/search.png")}
+              />
+              <Text style={styles.profilePreferencesLookingForText}>
+                {profileData.looking_for}
               </Text>
             </View>
+            <View style={styles.profilePreferencesInterestsWrapper}>
+              <View style={styles.profilePreferencesInterestsTitleWrapper}>
+                <Text style={styles.profilePreferencesInterestsTitleText}>
+                  Interests
+                </Text>
+              </View>
+              <View style={styles.profilePreferencesInterestsListWrapper}>
+                {/* <ProfileTypesList profilePreferenceData={profilePreferenceData} />; */}
+                <Text style={styles.profilePreferencesInterestsListItem}>
+                  • Teaching
+                </Text>
+                <Text style={styles.profilePreferencesInterestsListItem}>
+                  • Technology
+                </Text>
+                <Text style={styles.profilePreferencesInterestsListItem}>
+                  • Fun
+                </Text>
+              </View>
+            </View>
           </View>
-        </View>
+        </ScrollView>
       </LinearGradient>
     </View>
   );
@@ -307,7 +344,7 @@ const styles = StyleSheet.create({
   profileDataImageWrapper: {},
   profileDataImage: {},
   profilePreferencesWrapper: {
-    height: 375,
+    height: 300,
   },
   profilePreferencesDescriptionWrapper: {
     height: 57,
@@ -339,6 +376,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 17,
     paddingVertical: 5,
     flexDirection: "column",
+    flex: 2
   },
   profilePreferencesInterestsTitleWrapper: {
     height: 30,
@@ -365,7 +403,35 @@ const styles = StyleSheet.create({
   profilePronounsText: {
     color: colors.white_75,
     fontSize: 18,
-  }
+  },
+  profilePreferencesInterestsMatchWrapper: {
+    flexDirection: "row",
+    height: 100
+  },
+  matchButtonWrapper: {
+    flex: 1,
+    height: 20,
+    paddingHorizontal: padding.xs + padding.xxs,
+    paddingVertical: 5,
+    paddingTop: 20,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "flex-end",
+  },
+  matchButton: {
+    backgroundColor: Color.colorWhite_2,
+    height: 35,
+    width: 83,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 10,
+    padding: 0,
+  },
+  matchButtonText: {
+    fontSize: 12,
+    color: Color.colorBlack,
+    fontWeight: "600",
+  },
 });
 
 export default ProfilePage;

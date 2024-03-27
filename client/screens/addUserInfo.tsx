@@ -13,11 +13,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
-import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list'
+import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
+const config = require('../config.json');
+import { AuthContext } from "../AppAuthContext";
 
 const AddUserInfo = ({ route, navigation }) => {
   const [selectedRaces, setSelectedRaces] = useState([]);
-  const { userID } = route.params; 
+  const { getCreatingAccountData } = React.useContext(AuthContext);
+  // const userID = getCreatingAccountData();
+  const userID = route.params.userID;
+  console.log("add user info userID " + userID);
   const [selectedLookingFor, setSelectedLookingFor] = React.useState(null);
   const [selectedReligion, setSelectedReligion] = React.useState("");
   const [selectedLanguages, setSelectedLanguage] = React.useState([]);
@@ -290,7 +295,11 @@ const AddUserInfo = ({ route, navigation }) => {
       "Discordianism"
   ];
 
-    const addInterests = () => {
+    const addExtraInfo = () => {
+      fetch(`http://${config.server_host}:${config.server_port}/updateuserinfo?uid=${userID}` + 
+      `&hometown=${hometown}` + `&lookingFor=${selectedLookingFor}` + `&race= ${selectedRaces}` +
+      `&religion=${selectedReligion}` + `&languages=${selectedLanguages}`)
+        .then(res => {console.log("info updated")})
       navigation.navigate("DatePreferencesPage", {userID: userID})
     }
   
@@ -361,7 +370,7 @@ const AddUserInfo = ({ route, navigation }) => {
                   boxStyles={styles.selectList}
                   dropdownStyles={styles.selectList}
                   />
-                  <Pressable style={styles.continueButton} onPress={() => addInterests()}>
+                  <Pressable style={styles.continueButton} onPress={() => addExtraInfo()}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </Pressable>
           

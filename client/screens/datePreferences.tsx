@@ -13,13 +13,18 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
-import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list'
-
+import { SelectList, MultipleSelectList } from 'react-native-dropdown-select-list';
+const config = require('../config.json');
+import { AuthContext } from "../AppAuthContext";
+ 
 const DatePreferencesPage = ({ route, navigation }) => {
   const [selectedTimes, setSelectedTimes] = useState([]);
-  const { userID } = route.params; 
   const [selectedPriceLevel, setSelectedPriceLevel] = React.useState("");
   const [isVegetarian, setIsVegetarian] = React.useState("");
+  const userID = route.params.userID;
+  console.log("date preference userID " + userID);
+  const { getCreatingAccountData } = React.useContext(AuthContext);
+  // const userID = getCreatingAccountData();
 
 
   const renderSelectMultipleButtonItem = (item) => {
@@ -47,26 +52,6 @@ const DatePreferencesPage = ({ route, navigation }) => {
         );
   }
 
-  const renderButtonItem = (item, setSelected) => {
-    const handleButtonPress = () => {
-        setSelected(item)
-    };
-    
-    return (
-        <Pressable
-          style={[
-            styles.listButtonItem,
-            item in [selectedTimes, ]
-              ? styles.listButtonItemSelected
-              : styles.listButtonItemUnselected,
-          ]}
-          onPress={() => handleButtonPress()}
-        >
-          <Text style={styles.listButtonItemText}>{item}</Text>
-        </Pressable>
-    );
-        }
-
     const timesOfDay = [
       "Morning",
       "Afternoon",
@@ -81,7 +66,7 @@ const DatePreferencesPage = ({ route, navigation }) => {
         "$$$$$"
     ];
 
-    const religions = [
+    const vegetarian = [
         "Yes",
         "No"
   ];
@@ -95,6 +80,12 @@ const DatePreferencesPage = ({ route, navigation }) => {
     };
 
     const addInterests = () => {
+      navigation.navigate("PictureSelection")
+    }
+    const addDatePreferences = () => {
+        fetch(`http://${config.server_host}:${config.server_port}/updatedatepreferences?uid=${userID}` + 
+        `&vegetarian=${isVegetarian}` + `&priceLevel=${selectedPriceLevel}` + `&timesOfDay= ${selectedTimes}`)
+          .then(res => {console.log("info updated")})
       navigation.navigate("PictureSelection", {userID: userID})
     }
   
@@ -139,12 +130,12 @@ const DatePreferencesPage = ({ route, navigation }) => {
                   </View>
                   <SelectList
                   setSelected={(val) => setIsVegetarian(val)} 
-                  data={religions} 
+                  data={vegetarian} 
                   save="value"
                   boxStyles={styles.selectList}
                   dropdownStyles={styles.selectList}
                   />
-                  <Pressable style={styles.continueButton} onPress={() => addInterests()}>
+                  <Pressable style={styles.continueButton} onPress={() => addDatePreferences()}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </Pressable>
           
@@ -152,6 +143,7 @@ const DatePreferencesPage = ({ route, navigation }) => {
       </View>
     );
 }
+
 
 const styles = StyleSheet.create({
   pageView: {
@@ -258,7 +250,7 @@ const styles = StyleSheet.create({
       color: colors.white,
       flexDirectioan: 'row',
       marginLeft: 35
-  }
-});
+    }
+  });
 
 export default DatePreferencesPage;

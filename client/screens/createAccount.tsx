@@ -20,6 +20,8 @@ import {
   signOut,
 } from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
+import { AuthContext } from "../AppAuthContext";
+
 
 
 const CreateAccount = ({ navigation }) => {
@@ -28,36 +30,44 @@ const CreateAccount = ({ navigation }) => {
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const auth = FIREBASE_AUTH;
+  const { signOut, setCreatingAccountData } = React.useContext(AuthContext)
 
-  const signUp = async () => {
-    setLoading(true);
-    try {
-      console.log("(" + email + ")");
-      console.log(password);
-      const response = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(response);
-      const user = auth.currentUser;
-      if (user) {
-        const uid = user.uid;
-        navigation.navigate("ProfileCreation", {userID: uid});
-      } else {
-        // user is not signed in for some reason
-        console.log("user is not signed in")
-      }
+
+  // const signUp = async () => {
+  //   setLoading(true);
+  //   try {
+  //     console.log("(" + email + ")");
+  //     console.log(password);
+  //     const response = await createUserWithEmailAndPassword(
+  //       auth,
+  //       email,
+  //       password
+  //     );
+  //     console.log(response);
+  //     const user = auth.currentUser;
+  //     if (user) {
+  //       const uid = user.uid;
+  //       navigation.navigate("ProfileCreation", {userID: uid});
+  //     } else {
+  //       // user is not signed in for some reason
+  //       console.log("user is not signed in")
+  //     }
 
       
-      // alert("Success!");
-    } catch (error: any) {
-      console.log(error);
-      alert("Sign Up Failed: " + error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     // alert("Success!");
+  //   } catch (error: any) {
+  //     console.log(error);
+  //     alert("Sign Up Failed: " + error.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const creatingAccount = () => {
+    setCreatingAccountData(auth, email, password);
+    // setCreatingAccountData({auth: auth, email: email, password: password})
+    // navigation.navigate("ProfileCreation");
+  }
 
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
@@ -82,7 +92,7 @@ const CreateAccount = ({ navigation }) => {
       <Text style={styles.createNewAccount}>Create New Account</Text>
       <Pressable
         style={[styles.signUpWrapper, styles.signWrapperFlexBox]}
-        onPress={() => signUp()}
+        onPress={() => creatingAccount()} // HERE------------------------------------------
       >
         <Text style={[styles.signUp, styles.signUpTypo]}>Sign Up</Text>
       </Pressable>

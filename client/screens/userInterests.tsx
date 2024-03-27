@@ -13,12 +13,17 @@ import { LinearGradient } from "expo-linear-gradient";
 import colors from "../assets/global_styles/color";
 import padding from "../assets/global_styles/padding";
 import { FontFamily, Color } from "../GlobalStyles";
+import { AuthContext } from "../AppAuthContext";
+const config = require('../config.json');
 
 const UserInterestsPage = ({ route, navigation }) => {
     const [selectedItems, setSelectedItems] = useState([]);
     const [searchText, setSearchText] = useState('');
-    const { userID } = route.params;
-
+    const { getCreatingAccountData } = React.useContext(AuthContext);
+    // const userID = getCreatingAccountData();
+  
+    const userID = route.params.userID;
+    console.log("user interests userID " + userID);
 
     const renderButtonItem = (item) => {
         const handleButtonPress = () => {
@@ -143,7 +148,11 @@ const UserInterestsPage = ({ route, navigation }) => {
       };
 
       const addInterests = () => {
-        navigation.navigate("AddUserInfoPage", {userID: userID})
+        navigation.navigate("AddUserInfoPage")
+        /*fetch(`http://${config.server_host}:${config.server_port}/updateimage?uid=${userID}` + 
+        `&interests=${selectedItems}`)
+          .then(res => {console.log("interests updated:" + `${selectedItems}`)})
+        navigation.navigate("AddUserInfoPage", {userID: userID})*/
       }
     
 

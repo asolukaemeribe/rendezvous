@@ -16,7 +16,7 @@ import Octicons from "react-native-vector-icons/Octicons";
 // import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation, ParamListBase } from "@react-navigation/native";
+import { useNavigation, ParamListBase, useIsFocused } from "@react-navigation/native";
 import { Padding, FontFamily, Color, FontSize, Border } from "../GlobalStyles";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -26,7 +26,9 @@ import padding from "../assets/global_styles/padding";
 import colors from "../assets/global_styles/color";
 import profileInfoData from "../assets/data/profileInfoData";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { TextInputMask } from "react-native-masked-text";
+import { TextInputMask } from "react-native-masked-text"
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import MessagePage from "./messagePage";
 import dayjs from "dayjs";
 import {
   createUserWithEmailAndPassword,
@@ -34,17 +36,22 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
+import { AuthContext } from "../AppAuthContext";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { useEffect, useState } from "react";
 
 const config = require('../config.json');
+const Stack = createNativeStackNavigator();
 
-const PeopleNearby = ({ route, navigation }) => {
+const MatchesListPage = ({ route, navigation }) => {
   //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-
+  const { signOut, getUserID } = React.useContext(AuthContext)
+  // const userID = getUserID();
+  const userID = route.params.userID;
+  console.log("Matches list userID " + userID);
   const [orientationTypesArray, setOrientationTypesArray] =
     React.useState(
       Object.entries(
@@ -56,51 +63,31 @@ const PeopleNearby = ({ route, navigation }) => {
       }))
     );
 
-    // const [nearbyUsersData, setNearbyUsersData] = useState([{id: ""}])
+  const [matchesData, setMatchesData] = useState([{ id: "", first_name: "", last_name: "" }])
+  const isFocused = useIsFocused();
 
-    // useEffect(() => {
-    //     const { userID, lat, long, rad } = route.params;
-    //     console.log("POT MATCHES PAGE UID: " + userID)
-    //     console.log("POT MATCHES PAGE LAT: " + lat)
-    //     console.log("POT MATCHES PAGE LONG: " + long)
-    //     console.log("POT MATCHES PAGE RAD: " + rad)
-    
-    //     fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${lat}&long=${long}&rad=${rad}`)
-    //     .then(res => res.json())
-    //     .then(resJson => {
-    //       console.log("POT MATCHES PAGE resJson: ")
-    //       console.log(resJson)
-    //       setNearbyUsersData(resJson);  
-    //     });
-    // }, []);
+  useEffect(() => {
+    const userID = route.params.userID;
+    console.log("Should fetch all matches now.")
+
+    if (isFocused) {
+      fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
+        .then(res => res.json())
+        .then(resJson => {
+          console.log("MATCHES resJson: ")
+          console.log(resJson)
+          setMatchesData(resJson);
+        });
+    }
+  }, [isFocused]);
 
 
   const renderButtonItem = (item) => {
-    // const handleButtonPress = () => {
-    //   const index = array.findIndex((type) => type.id === item.id);
-
-    //   // TODO: This can be used when multiple can be selected at once
-    //   // setGenderTypesArray((prevArray) => {
-    //   //   const newArray = [...prevArray];
-    //   //   newArray[index].isSelected = !newArray[index].isSelected;
-    //   //   return newArray;
-    //   // });
-    //   setArrayFunction((prevArray) => {
-    //     const newArray = prevArray.map((item) => ({
-    //       ...item,
-    //       isSelected: false,
-    //     }));
-
-    //     newArray[index].isSelected = true;
-
-    //     return newArray;
-    //   });
-    // };
-
     const handleButtonPress = () => {
-      navigation.push("ProfilePage", {userID: item.id})
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
     }
 
+    // TODO: Matches page makeover
     return (
       <Pressable
         style={[
@@ -108,13 +95,47 @@ const PeopleNearby = ({ route, navigation }) => {
         ]}
         onPress={() => handleButtonPress()}
       >
+        <ImageBackground
+          style={styles.nearbyUsersListPhoto}
+          imageStyle={styles.nearbyUsersListPhotoImageStyle}
+          source={require("../assets/images/defaultProfilePicDark.png")}
+        >
+          <Text style={styles.nearbyUsersListItemText}>{item.first_name}</Text>
+        </ImageBackground>
+      </Pressable>
+    );
+  };
+
+  const renderMessagesListItem = (item) => {
+    const handleButtonPress = () => {
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
+    }
+
+    // TODO: Matches page makeover
+    return (
+      <Pressable
+        style={[
+          styles.messagesListItem,
+        ]}
+        onPress={() => handleButtonPress()}
+      >
+        <View>
           <ImageBackground
-            style={styles.nearbyUsersListPhoto}
-            imageStyle={styles.nearbyUsersListPhotoImageStyle}
-            source={require("../assets/images/profilePhoto.png")}
-          > 
-            <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}, {item.age}</Text>
+            style={styles.messagesListPhoto}
+            imageStyle={styles.messagesListPhotoImageStyle}
+            source={require("../assets/images/defaultProfilePicDark.png")}
+          >
           </ImageBackground>
+        </View>
+        <View style={styles.messagesListTextWrapper}>
+          <View style={styles.messagesListItemHeadingWrapper}>
+            <Text style={styles.messagesListItemName}>{item.first_name}</Text>
+            <Text style={styles.messagesListItemTime}>{item.message_time}</Text>
+          </View>
+          <View style={styles.messagesListChatWrapper}>
+            <Text style={styles.messagesListChat}>{item.first_message}</Text>
+          </View>
+        </View>
       </Pressable>
     );
   };
@@ -126,13 +147,15 @@ const PeopleNearby = ({ route, navigation }) => {
 
   const logOut = async () => {
     // ---- Firebase Sign Out ---- 
-    signOut(auth).then(() => {
-      // Sign-out successful.
-          navigation.navigate("Login");
-          console.log("Signed out successfully")
-      }).catch((error) => {
-      // An error happened.
-      });
+    // signOut(auth).then(() => {
+    //   // Sign-out successful.
+    //       navigation.navigate("Login");
+    //       console.log("Signed out successfully")
+    //   }).catch((error) => {
+    //   // An error happened.
+    //   });
+    signOut(auth);
+
   }
   // TODO: Don't allow user to navigate back to home page from here
 
@@ -142,63 +165,63 @@ const PeopleNearby = ({ route, navigation }) => {
       first_name: "Boon",
       last_name: "Loo",
       pronouns: "he/him",
-      age: "21"
+      age: "21",
+      message_time: "2m",
+      first_message: "Hey wanna meet up for coffee and coding on Saturday?"
     },
     {
-      id: "boonloo2",
-      first_name: "Boon",
-      last_name: "Looo",
+      id: "lukaemeribe21",
+      first_name: "Luka",
+      last_name: "Emeribe",
       pronouns: "he/him",
-      age: "22"
+      age: "22",
+      message_time: "3d",
+      first_message: "Let's hoop!"
     },
     {
-      id: "boonloo3",
-      first_name: "Boon",
-      last_name: "Loooo",
+      id: "mattromage3",
+      first_name: "Matt",
+      last_name: "Romage",
       pronouns: "he/him",
-      age: "23"
+      age: "21",
+      message_time: "5d",
+      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr."
     },
     {
-      id: "boonloo4",
-      first_name: "Boon",
-      last_name: "Looooo",
+      id: "jasonli21123",
+      first_name: "Jason",
+      last_name: "Li",
       pronouns: "he/him",
-      age: "24"
+      age: "22",
+      message_time: "5d",
+      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!"
     },
     {
-      id: "boonloo5",
-      first_name: "Boon",
-      last_name: "Loooooo",
+      id: "craiglee",
+      first_name: "Craig",
+      last_name: "Lee",
       pronouns: "he/him",
-      age: "25"
+      age: "22",
+      message_time: "7d",
+      first_message: "Yo"
     },
     {
-      id: "boonloo6",
-      first_name: "Boon",
-      last_name: "Looooooo",
+      id: "venuc",
+      first_name: "Venu",
+      last_name: "Chillal",
       pronouns: "he/him",
-      age: "26"
+      age: "22",
+      message_time: "2w",
+      first_message: "I'll sing u a lullaby"
     },
     {
-      id: "boonloo7",
-      first_name: "Boon",
-      last_name: "Loooooooo",
-      pronouns: "he/him",
-      age: "27"
-    },
-    {
-      id: "boonloo8",
-      first_name: "Boon",
-      last_name: "Looooooooo",
-      pronouns: "he/him",
-      age: "28"
-    },
-    {
-      id: "boonloo9",
-      first_name: "Boon",
-      last_name: "Loooooooooo",
-      pronouns: "he/him",
-      age: "29"
+      id: "daisyt",
+      first_name: "Daisy",
+      last_name: "Teller",
+      pronouns: "she/her",
+      age: "22",
+      message_time: "2w",
+      first_message: "What's your favorite flower?"
     },
   ];
 
@@ -214,56 +237,77 @@ const PeopleNearby = ({ route, navigation }) => {
         <LinearGradient
           style={styles.pageGradient}
           locations={[0, 0.9]}
-          colors={["#ff0000", "#db17a4"]}
+          colors={["#ff0000EF", "#db176AEF"]}
         >
           <View style={[{ paddingTop: insets.top * 0.8 }]} />
           <View style={styles.topMenuWrapper}>
             {/* <Feather name="chevron-left" size={32} color="white" /> */}
-          <Pressable onPress={() => logOut()}>
-            <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
-          </Pressable>
+            <Pressable onPress={() => logOut()}>
+              <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
+            </Pressable>
+            
             {/* <View style={styles.topNavigationBarWrapper}>*/}
-          {/* <Pressable onPress={() => logOut()}>
+            {/* <Pressable onPress={() => logOut()}>
             <Octicons style={styles.topNavigationBarSignOut} name="sign-out" size={32} color="white" />
           </Pressable> */}
-          {/*<Text style={styles.profilePageLogo}>Rendezvous</Text>
+            {/*<Text style={styles.profilePageLogo}>Rendezvous</Text>
           <View style={{width: 29}}></View>
         </View> */}
-          </View>           
-           <View style={styles.creationHeaderWrapper}>
-              <Text style={styles.creationHeaderText}>People Nearby</Text>
-            </View>
+          </View>
+        </LinearGradient>
+          <ScrollView style={styles.pageContentWrapper}>
+          <View style={styles.creationHeaderWrapper}>
+            <Text style={styles.creationHeaderText}>Matches</Text>
+          </View>
           {/* <ScrollView contentContainerStyle={{ paddingTop: 5 }}> */}
 
-            {/* <View style={styles.headerWrapper}>
+          {/* <View style={styles.headerWrapper}>
               <Text style={styles.headerText}>Display Name</Text>
             </View> */}
-          <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
-                <View style={styles.nearbyUsersFirstWrapper}>
-                <FlatList
-                  data={profilesList}
-                  renderItem={({ item }) =>
-                    renderButtonItem(item)
-                  }
-                  keyExtractor={(item) => item.id}
-                />
-                </View>
-                <View style={styles.nearbyUsersSecondWrapper}>
-                <FlatList
-                  data={profilesList}
-                  renderItem={({ item }) =>
-                    renderButtonItem(item)
-                  }
-                  keyExtractor={(item) => item.id}
-                />
-                </View>
+
+          <View style={styles.nearbyUsersFirstWrapper}>
+            <FlatList
+              data={profilesList}
+              renderItem={({ item }) =>
+                renderButtonItem(item)
+              }
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.nearbyUsersViewWrapper}
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+          <View style={styles.messagesListVerticalViewWrapper}>
+            <Text style={styles.messagesHeaderText}>Messages</Text>
+            <FlatList
+              data={profilesList}
+              renderItem={({ item }) =>
+                renderMessagesListItem(item)
+              }
+              keyExtractor={(item) => item.id}
+              contentContainerStyle={styles.messagesListVerticalWrapper}
+              scrollEnabled={false}
+            // horizontal={true}
+            // showsHorizontalScrollIndicator={false}
+            />
+          </View>
           </ScrollView>
+
           {/* </ScrollView> */}
-        </LinearGradient>
       </View>
     </KeyboardAvoidingView>
   );
 };
+
+
+const MatchesListStack = ({ navigation }) => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MatchesList" component={MatchesListPage} />
+      <Stack.Screen name="MessagePage" component={MessagePage} />
+    </Stack.Navigator>
+  )
+}
 
 const styles = StyleSheet.create({
   pageView: {
@@ -272,7 +316,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   pageGradient: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: "transparent",
     width: "100%",
   },
@@ -289,7 +333,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   creationHeaderWrapper: {
-    paddingHorizontal: padding.xl,
+    paddingHorizontal: padding.lg,
     height: 55,
     paddingTop: padding.xxs,
   },
@@ -297,13 +341,14 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.interBold,
     fontSize: 30,
     fontWeight: "900",
-    color: Color.colorWhite,
+    color: Color.colorRed_3,
   },
   headerText: {
     fontFamily: FontFamily.interBold,
     fontSize: 23,
     fontWeight: "700",
-    color: Color.colorWhite,
+    // color: Color.colorWhite,
+    color: Color.colorRed,
     alignItems: "center",
   },
   keyboardView: {
@@ -326,8 +371,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   listButtonItemUnselected: {
-    backgroundColor: colors.white_55,
-    borderColor: colors.white_55,
+    backgroundColor: colors.black_55,
+    borderColor: colors.black_55,
   },
   listButtonItemSelected: {
     backgroundColor: colors.black,
@@ -336,33 +381,31 @@ const styles = StyleSheet.create({
   listButtonItemText: {
     fontSize: 11,
     textAlign: "center",
-    color: colors.white,
+    color: colors.black,
   },
   headerWrapper: {
-    paddingHorizontal: padding.xl,
+    paddingHorizontal: padding.lg,
     height: 37,
     justifyContent: "flex-start",
   },
   nearbyUsersViewWrapper: {
-    paddingHorizontal: padding.xl,
+    paddingHorizontal: padding.lg,
     paddingTop: padding.xxs,
     alignItems: "flex-start",
-    flexDirection: "row"
+    flexDirection: "row",
+    marginBottom: padding.md
   },
   nearbyUsersFirstWrapper: {
     alignItems: "flex-start",
-    flex: 1
-  },
-  nearbyUsersSecondWrapper: {
-    alignItems: "flex-end",
-    flex: 1
+    flexDirection: "row",
+    // flex: 1
   },
   nearbyUsersListItem: {
-    borderRadius: 10,
-    height: 150, 
-    width: 150,
+    borderRadius: 50,
+    height: 100,
+    width: 100,
     backgroundColor: Color.colorGray_100,
-    marginBottom: 15,
+    marginRight: 5,
     justifyContent: 'center',
     alignItems: 'center',
     // padding: 10
@@ -374,21 +417,101 @@ const styles = StyleSheet.create({
     color: colors.white,
   },
   nearbyUsersListPhoto: {
-    height: 150,
-    width: 150,
+    height: 100,
+    width: 100,
     justifyContent: "flex-end",
-    alignItems: "flex-start",
-    padding: 10,
+    alignItems: "center",
+    padding: 16,
     overflow: 'hidden',
-    borderRadius: 10,  
-    
+    borderRadius: 50,
+
   },
   nearbyUsersListPhotoImageStyle: {
 
   },
   topNavigationBarSignOut: {
     alignSelf: "flex-start",
+  },
+  messagesListVerticalViewWrapper: {
+    paddingHorizontal: padding.lg,
+  },
+  messagesListVerticalWrapper: {
+    paddingBottom: 100
+  },
+  messagesListItem: {
+    borderRadius: 50,
+    height: 70,
+    width: 300,
+    // backgroundColor: Color.colorGray_100,
+    marginBottom: 15,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexDirection: 'row'
+  },
+  messagesListPhoto: {
+    height: 70,
+    width: 70,
+    justifyContent: "flex-end",
+    alignItems: "center",
+    padding: 16,
+    overflow: 'hidden',
+    borderRadius: 50,
+  },
+  messagesListPhotoImageStyle: {
+
+  },
+  messagesListItemText: {
+    fontSize: 15,
+    fontFamily: FontFamily.interBold,
+    fontWeight: "900",
+    color: colors.black,
+  },
+  messagesHeaderText: {
+    fontFamily: FontFamily.interMedium,
+    fontSize: 25,
+    fontWeight: "900",
+    color: Color.colorRed_3,
+    marginBottom: padding.sm,
+    justifyContent: "flex-start"
+  },
+  messagesListItemHeadingWrapper: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    marginBottom: padding.xxs / 2,
+    // flex: 1
+  },
+  messagesListItemName: {
+    fontSize: 17,
+    fontFamily: FontFamily.interBold,
+    fontWeight: "900",
+    color: colors.black,
+  },
+  messagesListItemTime: {
+    fontSize: 12,
+    fontFamily: FontFamily.interRegular,
+    fontWeight: "900",
+    color: colors.black,
+    marginLeft: padding.xxs
+  },
+  messagesListChatWrapper: {
+    flex: 1
+  },
+  messagesListChat: {
+    fontSize: 12,
+    fontFamily: FontFamily.interRegular,
+    fontWeight: "900",
+    color: Color.colorGray_1000,
+  },
+  messagesListTextWrapper: {
+    paddingLeft: 10,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    flex: 1
+  },
+  pageContentWrapper: {
+    backgroundColor: Color.colorGray_300,
+    paddingTop: padding.md
   }
 });
 
-export default PeopleNearby;
+export default MatchesListPage;
