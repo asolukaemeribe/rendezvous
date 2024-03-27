@@ -87,6 +87,8 @@ const MatchesListPage = ({ route, navigation }) => {
       navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
     }
 
+    const source = item.photo_path;
+
     // TODO: Matches page makeover
     return (
       <Pressable
@@ -98,7 +100,7 @@ const MatchesListPage = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={require("../assets/images/defaultProfilePicDark.png")}
+          source={source}
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name}</Text>
         </ImageBackground>
@@ -110,6 +112,16 @@ const MatchesListPage = ({ route, navigation }) => {
     const handleButtonPress = () => {
       navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
     }
+
+    // const photoPath = item.photo_path ? item.photo_path : "../assets/images/defaultProfilePicDark.png";
+    // const photoPath = "../assets/images/defaultProfilePicDark.png";
+    // const source = { require: photoPath };
+    // const required = item.photo_path ? item.photo_path : "../assets/images/defaultProfilePicDark.png";
+    
+    const source = item.photo_path;
+    // ? require(item.photo_path)
+    // : require("../assets/images/defaultProfilePicDark.png");
+    // console.log(source);
 
     // TODO: Matches page makeover
     return (
@@ -123,7 +135,7 @@ const MatchesListPage = ({ route, navigation }) => {
           <ImageBackground
             style={styles.messagesListPhoto}
             imageStyle={styles.messagesListPhotoImageStyle}
-            source={require("../assets/images/defaultProfilePicDark.png")}
+            source={source}
           >
           </ImageBackground>
         </View>
@@ -167,7 +179,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "21",
       message_time: "2m",
-      first_message: "Hey wanna meet up for coffee and coding on Saturday?"
+      first_message: "Hey wanna meet up for coffee and coding on Saturday?",
+      photo_path: require("../assets/images/profilePhoto.png")
     },
     {
       id: "lukaemeribe21",
@@ -176,7 +189,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "3d",
-      first_message: "Let's hoop!"
+      first_message: "Let's hoop!",
+      photo_path: require("../assets/images/lukaemeribe.jpg")
     },
     {
       id: "mattromage3",
@@ -185,7 +199,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "21",
       message_time: "5d",
-      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr."
+      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr.",
+      photo_path: require("../assets/images/mattromage.jpg")
     },
     {
       id: "jasonli21123",
@@ -194,7 +209,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "5d",
-      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!"
+      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!",
+      photo_path: require("../assets/images/jasonli.png")
     },
     {
       id: "craiglee",
@@ -203,7 +219,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "7d",
-      first_message: "Yo"
+      first_message: "Yo",
+      photo_path: require("../assets/images/craiglee.jpg")
     },
     {
       id: "venuc",
@@ -212,7 +229,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "2w",
-      first_message: "I'll sing u a lullaby"
+      first_message: "I'll sing u a lullaby",
+      photo_path: require("../assets/images/venuchillal.png")
     },
     {
       id: "daisyt",
@@ -221,7 +239,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "she/her",
       age: "22",
       message_time: "2w",
-      first_message: "What's your favorite flower?"
+      first_message: "What's your favorite flower?",
+      photo_path: require("../assets/images/daisyteller.jpg")
     },
   ];
 
@@ -456,9 +475,11 @@ const styles = StyleSheet.create({
     padding: 16,
     overflow: 'hidden',
     borderRadius: 50,
+    resizeMode: "cover",
+
   },
   messagesListPhotoImageStyle: {
-
+    resizeMode: "cover",
   },
   messagesListItemText: {
     fontSize: 15,

@@ -59,7 +59,7 @@ const createuser = async function(req, res) {
 
     connection.query(`
         INSERT INTO PROFILES (id, first_name, last_name, about_me, pronouns, gender, orientation, birthday, age)
-        VALUES ('${uid}', '${first_name}', '${last_name}', '${about_me}', '${pronouns}', '${gender}', '${orientation}','${birthday}', '${age}')
+        VALUES ('${uid}', '${first_name}', '${last_name}', '${about_me}', '${pronouns}', '${gender}', '${orientation}', STR_TO_DATE('${birthday}', '%m/%d/%Y'), '${age}')
     `, (err, data) => {
         if (err) {
             console.log(err);
@@ -182,6 +182,25 @@ const getmessages = async function(req, res) {
     });
 }
 
+// get chat rooom name between two users
+const getroom = async function(req, res) {
+    const uid1 = req.query.uid1;
+    const uid2 = req.query.uid2;
+
+    connection.query(`
+    SELECT CONCAT(userOneID, '-', userTwoID) AS room FROM MATCHES
+    WHERE (userOneID = '${uid1}' AND userTwoID = '${uid2}')
+        OR (userOneID = '${uid2}' AND userTwoID = '${uid1}')
+    `, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data);
+        }
+    });
+}
+
 // pql user-location Routes
 
 // inserts user into table with a certain latitude and longitude
@@ -191,8 +210,11 @@ const createuserlocation = async function(req, res) {
     const long = req.query.long
 
     pql_db.none(`INSERT INTO users (id, location) VALUES ('${uid}', ST_GeomFromText('POINT(${long} ${lat})', 4326))`)
+    .then(() => {
+        console.log("New user location added to postgres with id: " + uid);
+    })
     .catch((error) => {
-    console.log('ERROR:', error)
+        console.log('ERROR:', error)
     })
 }
 
@@ -210,7 +232,6 @@ function convertIds(response) {
 
 // gets all users in a certain radius (in meters) from the inputted latitude and longitude (uses pql and mysql)
 const getusersinradius = async function(req, res) {
-
     const uid = req.query.uid
     const lat = req.query.lat
     const long = req.query.long
@@ -230,7 +251,7 @@ const getusersinradius = async function(req, res) {
 
         // mysql query to get the names of nearby users based on ids from earlier query
         connection.query(`
-        SELECT id, first_name, last_name
+        SELECT *
         FROM PROFILES
         WHERE id IN (${ids})
         `, (err, data) => {
@@ -328,6 +349,7 @@ module.exports = {
     getmatches,
     newmessage,
     getmessages,
+    getroom,
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,
