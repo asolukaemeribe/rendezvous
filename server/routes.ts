@@ -230,7 +230,7 @@ const getusersinradius = async function(req, res) {
 
         // mysql query to get the names of nearby users based on ids from earlier query
         connection.query(`
-        SELECT id, first_name, last_name
+        SELECT id, first_name, last_name, image
         FROM PROFILES
         WHERE id IN (${ids})
         `, (err, data) => {

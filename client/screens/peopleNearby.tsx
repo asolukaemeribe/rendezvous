@@ -80,14 +80,13 @@ const PeopleNearby = ({ route, navigation }) => {
       }))
     );
 
-  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: "", profilePic: null}])
+  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: "", image: null}])
 
   useEffect(() => {
       const { userID, lat, long, rad } = route.params;
 
       const getLocation = async () => {
         let location = await Location.getCurrentPositionAsync({});
-        //setLocation(location);
         getNearbyUsers(location);
       }
 
@@ -101,53 +100,56 @@ const PeopleNearby = ({ route, navigation }) => {
         fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${location.coords.latitude}&long=${location.coords.longitude}&rad=${16094}`)
         .then(res => res.json())
         .then(resJson => {
-          console.log("POT MATCHES PAGE resJson: ")
-          resJson = updateList(resJson);
-          setNearbyUsersData(resJson);  
-          for (let i = 0; i < resJson.length; i++) {
-            console.log(i + resJson[i]);
+          console.log("POT MATCHES PAGE resJson:  ");
+          console.log(resJson);
+          const getProfilePic = async (id) => {
+            console.log('id in profile pic: ' + id);
+            AWS.config.update({
+              region: process.env.AWS_REGION,
+              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            });
+            const s3 = new AWS.S3();
+            
+            try {
+              console.log("success w: " + id);
+              const downloadParams = {
+                Bucket: 'rendezvous-files',
+                Key: `${id}` + '.jpeg', // The name to use for the uploaded object
+              };
+              const response = await s3.getObject(downloadParams).promise();
+              if (response.Body) {
+                const imageBase64 = response.Body.toString('base64');
+                return `data:image/jpeg;base64,${imageBase64}`;
+              } else {
+                return "../assets/images/defaultProfilePicDark.png";
+              }
+            } catch (error) {
+              console.error('Error retrieving file:', error + ' id:' + id);
+              return "../assets/images/defaultProfilePicDark.png";
+            }
           }
+          const updateList = async(jsonList) => {
+            for (let i = 0; i < jsonList.length; i++) {
+              const image = await getProfilePic(jsonList[i].id);
+              jsonList[i]['image'] = image;
+              if (image == "../assets/images/defaultProfilePicDark.png") {
+                console.log('in update list:  ' + jsonList[i].image);
+              }
+              
+            }
+            setNearbyUsersData(jsonList); 
+          }
+          updateList(resJson);
         });
       }
 
       getLocation()
   }, []);
 
-  const updateList = async (jsonList) => {
-    for (let i = 0; i < jsonList.length; i++) {
-      const image = getProfilePic(jsonList[i].id);
-      jsonList[i]['picture'] = image;
-    }
-    return jsonList;
-  }
 
-  const getProfilePic = async (id) => {
-    console.log('id: ' + id);
-    AWS.config.update({
-      region: process.env.AWS_REGION,
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    });
-    const s3 = new AWS.S3();
-    
-    try {
-      const downloadParams = {
-        Bucket: 'rendezvous-files',
-        Key: `${id}` + '.jpeg', // The name to use for the uploaded object
-      };
-      const response = await s3.getObject(downloadParams).promise();
-      if (response.Body) {
-        const imageBase64 = response.Body.toString('base64');
-        return `data:image/jpeg;base64,${imageBase64}`;
-      } else {
-        return "../assets/images/defaultProfilePicDark.png";
-      }
-      //const fileData = response.Body.toString('base64');
-    } catch (error) {
-      console.error('Error retrieving file:', error);
-      return "../assets/images/defaultProfilePicDark.png";
-    }
-  }
+
+
 
   //set nearby users data is a list of every single user in radius
   // what i need to do is fetch the profile pciture for each of these users and append it to each item
@@ -157,26 +159,6 @@ const PeopleNearby = ({ route, navigation }) => {
 
 
   const renderButtonItem = (item) => {
-    // const handleButtonPress = () => {
-    //   const index = array.findIndex((type) => type.id === item.id);
-
-    //   // TODO: This can be used when multiple can be selected at once
-    //   // setGenderTypesArray((prevArray) => {
-    //   //   const newArray = [...prevArray];
-    //   //   newArray[index].isSelected = !newArray[index].isSelected;
-    //   //   return newArray;
-    //   // });
-    //   setArrayFunction((prevArray) => {
-    //     const newArray = prevArray.map((item) => ({
-    //       ...item,
-    //       isSelected: false,
-    //     }));
-
-    //     newArray[index].isSelected = true;
-
-    //     return newArray;
-    //   });
-    // };
 
     const handleButtonPress = () => {
       console.log("button test user id " + userID);
@@ -184,6 +166,10 @@ const PeopleNearby = ({ route, navigation }) => {
       navigation.push("ProfilePage", {userIsSelf: false, userID: item.id, selfUserID: userID})
       // navigation.push("ProfilePage")
     }
+
+    const imageSource = (item.image && item.image == "../assets/images/defaultProfilePicDark.png")
+      ? require("../assets/images/defaultProfilePicDark.png")
+      : { uri: item.image };
 
     return (
       <Pressable
@@ -195,7 +181,7 @@ const PeopleNearby = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={{ uri: item.image }} //IMPORTANT
+          source={imageSource} //IMPORTANT
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}</Text>
         </ImageBackground>

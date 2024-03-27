@@ -95,6 +95,7 @@ const ProfilePage = ({ route, navigation }) => {
             if (response.Body) {
               const imageBase64 = response.Body.toString('base64');
               setImageData(`data:image/jpeg;base64,${imageBase64}`);
+              //console.log('in profile page:   ' + `data:image/jpeg;base64,${imageBase64}`)
             }
           } catch (error) {
             console.error('Error retrieving file:', error);
