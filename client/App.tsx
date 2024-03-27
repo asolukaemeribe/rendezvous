@@ -12,6 +12,7 @@ import PeopleNearbyStack from "./screens/peopleNearby";
 import UserInterestsPage from "./screens/userInterests";
 import MessagePage from "./screens/messagePage";
 import MatchesListPage from "./screens/matchesListPage"
+import LocationsNearbyStack from "./screens/locationsNearby";
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from "react";
 import { AnimatedTabBarNavigator } from "react-native-animated-nav-tab-bar"
@@ -92,7 +93,7 @@ function AuthedTabs({ uid }) {
         inactiveTintColor: "#00000099",
         activeBackgroundColor: "#00000022",
         tabStyle: {
-          width: 270,
+          width: 350,
           alignSelf: "center"
         }
       }}
@@ -140,6 +141,24 @@ function AuthedTabs({ uid }) {
           tabBarIcon: ({ focused, color, size }) => (
             <Foundation
               name="home"
+              size={30}
+              color={focused ? color : "#222222"}
+              focused={focused}
+            // color={color}
+            />
+          )
+        }}
+        initialParams={{ userID: uid }}
+      />
+      <Tabs.Screen
+        name="LocationsNearbyStack"
+        component={LocationsNearbyStack}
+        // options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, color, size }) => (
+            <Ionicons
+              name="location-sharp"
               size={30}
               color={focused ? color : "#222222"}
               focused={focused}

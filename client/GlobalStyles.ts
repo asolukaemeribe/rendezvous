@@ -35,7 +35,8 @@ export const Color = {
   colorRed_2: "rgba(255, 0, 0, 0.5)",
   colorRed_3: "rgba(255, 0, 0, 0.85)",
   colorSnow: "#fbf5f5",
-  colorBlack: "#000000"
+  colorBlack: "#000000",
+  colorYellow: "#f7b500",
 };
 /* Paddings */
 export const Padding = {
