@@ -10,7 +10,8 @@ import {
   Image,
   FlatList,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  Modal
 } from "react-native";
 // import { Image } from "expo-image";
 import Feather from "react-native-vector-icons/Feather";
@@ -34,6 +35,7 @@ import { AuthContext } from "../AppAuthContext";
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
 const config = require('../config.json');
+// import Modal from "react-native-modal";
 
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -58,7 +60,8 @@ const ProfilePage = ({ route, navigation }) => {
     looking_for: "Looking for long term"
   })
   const [location, setLocation] = useState<Location.LocationObject>();
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [justMatched, setJustMatched] = useState(false);
   /*const profileData = {
     first_name: "Boon",
     last_name: "Loo",
@@ -151,10 +154,31 @@ const ProfilePage = ({ route, navigation }) => {
       `&uid2=${profileUserID}`)
       .then(res => { console.log("success! check database") })
 
+    setModalVisible(!modalVisible);
+    setJustMatched(true);
+    console.log( "modal visible: " + modalVisible);
   }
 
   return (
     <View style={styles.profilePageView}>
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredModalView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>You matched!</Text>
+            <Pressable
+              style={styles.modalButtonClose}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.modalButtonTextStyle}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <StatusBar style="auto" />
       <LinearGradient
         style={styles.profilePageGradient}
@@ -187,7 +211,7 @@ const ProfilePage = ({ route, navigation }) => {
               source={require("../assets/images/defaultProfilePic.png")}
             >
               <View style={styles.matchButtonWrapper}>
-                {(route.params.userIsSelf) ? (<View />) :
+                {(route.params.userIsSelf || justMatched ) ? (<View />) :
                   (<Pressable style={styles.matchButton} onPress={() => matchWithUser()}>
                     <Text style={styles.matchButtonText}>Send Match</Text>
                   </Pressable>)
@@ -432,6 +456,47 @@ const styles = StyleSheet.create({
     color: Color.colorBlack,
     fontWeight: "600",
   },
+  centeredModalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    fontFamily: FontFamily.interBold,
+    color: Color.colorGray_600,
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  modalButtonClose: {
+    backgroundColor: "#db17a4",
+    borderRadius: 20,
+    paddingVertical: 13,
+    paddingHorizontal: 25,
+    elevation: 2,
+  },
+  modalButtonTextStyle: {
+    color: 'white',
+    fontFamily: FontFamily.interMedium,
+    fontSize: 14,
+    textAlign: 'center',
+  }
 });
 
 export default ProfilePage;
