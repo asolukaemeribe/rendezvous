@@ -40,11 +40,17 @@ socketIO.on('connection', socket => { /* user is connected */
         socket.to(room).emit('receive-message', message)
     })
     socket.on('join-room', room => {
+        console.log("User " + socket.id + " has joined room " + room + ".")
         socket.join(room)
     })
     socket.on('leave-room', room => {
+        console.log("User " + socket.id + " has left room " + room + ".")
         socket.leave(room)
     })
+
+    socket.on('disconnect', () => {
+        console.log("User " + socket.id +" is disconnected.");
+    });
 });
 
 server.listen(serverConfig.server_port, () => {

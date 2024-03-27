@@ -91,6 +91,7 @@ const ProfilePage = ({ route, navigation }) => {
         profileData.pronouns = resJson.pronouns;
         profileData.gender = resJson.gender;*/
         //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
+        console.log(resJson)
         setProfileData({
           first_name: resJson.first_name,
           last_name: resJson.last_name,

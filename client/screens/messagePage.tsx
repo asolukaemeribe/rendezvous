@@ -129,16 +129,15 @@ const MessagePage = ({ route, navigation }) => {
 
             let newMessage = messagesList
             
-
-            newMessage.push({
+            messagesList.push({
               id: messageId.toString(),
-              sender_uid: receivingChatUserID,
-              receiver_uid: selfUserID,
+              sender_uid: receivingChatUserID as string,
+              receiver_uid: selfUserID as string,
               message: x,
               timestamp: "2/9/23 10:19 AM"
             })
 
-            setMessagesList(newMessage)
+            //setMessagesList(newMessage)
             setMessagesRefresh(!messagesRefresh)
 
             messageId++
@@ -242,10 +241,12 @@ const MessagePage = ({ route, navigation }) => {
             renderMessageItem(item)
           }
           extraData={messagesRefresh}
-          keyExtractor={(item) => item.id
+          keyExtractor={(item) => 
+            item.id
           }
           ref={messagesRef}
           onContentSizeChange={() => messagesRef.current.scrollToEnd()}
+          
         />
       </View>
       <KeyboardAvoidingView style={styles.messageEntryView} behavior="padding">

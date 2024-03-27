@@ -82,12 +82,14 @@ const PeopleNearby = ({ route, navigation }) => {
   useEffect(() => {
       const { userID, lat, long, rad } = route.params;
 
+      // get current user's location
       const getLocation = async () => {
         let location = await Location.getCurrentPositionAsync({});
         //setLocation(location);
         getNearbyUsers(location);
       }
 
+      // get nearby users' locations
       const getNearbyUsers = (location) => {
         console.log("POT MATCHES PAGE UID: " + userID)
         console.log("POT MATCHES PAGE LAT: " + location.coords.latitude)

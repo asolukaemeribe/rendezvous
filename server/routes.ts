@@ -59,7 +59,7 @@ const createuser = async function(req, res) {
 
     connection.query(`
         INSERT INTO PROFILES (id, first_name, last_name, about_me, pronouns, gender, orientation, birthday, age)
-        VALUES ('${uid}', '${first_name}', '${last_name}', '${about_me}', '${pronouns}', '${gender}', '${orientation}','${birthday}', '${age}')
+        VALUES ('${uid}', '${first_name}', '${last_name}', '${about_me}', '${pronouns}', '${gender}', '${orientation}', STR_TO_DATE('${birthday}', '%m/%d/%Y'), '${age}')
     `, (err, data) => {
         if (err) {
             console.log(err);
@@ -213,6 +213,7 @@ const createuserlocation = async function(req, res) {
     .catch((error) => {
     console.log('ERROR:', error)
     })
+    console.log("New user location added to postgres with id: " + uid);
 }
 
 function convertIds(response) {
@@ -229,6 +230,8 @@ function convertIds(response) {
 
 // gets all users in a certain radius (in meters) from the inputted latitude and longitude (uses pql and mysql)
 const getusersinradius = async function(req, res) {
+
+    console.log ("getusersinradius should be running")
 
     const uid = req.query.uid
     const lat = req.query.lat
@@ -249,7 +252,7 @@ const getusersinradius = async function(req, res) {
 
         // mysql query to get the names of nearby users based on ids from earlier query
         connection.query(`
-        SELECT id, first_name, last_name
+        SELECT *
         FROM PROFILES
         WHERE id IN (${ids})
         `, (err, data) => {
