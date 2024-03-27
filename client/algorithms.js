@@ -2,6 +2,7 @@ import * as Location from "expo-location";
 import profileLocationData from "../assets/data/profileLocationData.ts";
 import profilePreferenceData from "../assets/data/profilePreferenceData.ts";
 import dummyUserIds from "../assets/data/dummyUserIds.ts";
+import { fetchPlacesNearby } from "./api/places";
 
 const distanceWeight = .25;
 const sharedInterestsWeight = .25;
@@ -301,10 +302,127 @@ function userMatchmaking() {
         femaleUserPreferences.set(key, formUserPreferenceList(key, "heterosexual"));
     });
 
+    const maleProposals = {};
+    const femaleMatches = {};
 
+    // Initialize each participant's list of potential matches to be empty
+    Object.keys(malePreferences).forEach(male => {
+        maleProposals[male] = [];
+    });
+
+    // While there are unmatched males
+    while (Object.keys(maleProposals).length > 0) {
+        // Iterate through each male
+        for (const male in maleProposals) {
+            // Get the male's preference list
+            const preferences = malePreferences[male];
+
+            // Iterate through the male's preference list
+            for (let i = 0; i < preferences.length; i++) {
+                const female = preferences[i];
+
+                // If the female has not rejected the male
+                if (!femaleMatches.hasOwnProperty(female) || !femaleMatches[female].includes(male)) {
+                    // Propose to the female
+                    maleProposals[male].push(female);
+
+                    // If the female has not rejected the male previously
+                    if (!femaleMatches.hasOwnProperty(female)) {
+                        femaleMatches[female] = [];
+                    }
+
+                    // Add the male to the female's list of potential matches
+                    femaleMatches[female].push(male);
+                    break;
+                }
+            }
+
+            // Remove the male from the list of unmatched males if he has proposed to all females
+            if (maleProposals[male].length === preferences.length) {
+                delete maleProposals[male];
+            }
+        }
+    }
+
+    return femaleMatches;
 
 }
 
-function locationSuggestion() {
-    console.log("Hello from JavaScript");
+function locationSuggestion(neighborLocation, neighborPreferences) {
+    function filterPlacesByType(placesData, types) {
+        return placesData.filter(place => {
+            return place.types.some(placeType => types.includes(placeType));
+        });
+    }
+
+    const midWayLat = (userLat + neighborLocation.location.lat) / 2;
+    const midWayLong = (userLong + neighborLocation.location.lon) / 2;
+
+    const typesToFilter = ['amusement_park', //
+                            'aquarium', 
+                            'art_gallery', 
+                            'bakery', 
+                            'bar', 
+                            'beauty_salon',
+                            'book_store', 
+                            'bowling_alley', 
+                            'cafe', 
+                            'casino', 
+                            'campground',
+                            'city_hall', 
+                            'clothing_store',
+                            'florist',
+                            'gym',
+                            'library', 
+                            'movie_theater', 
+                            'museum', 
+                            'painter', 
+                            'night_club', 
+                            'park', 
+                            'restaurant', 
+                            'shopping_mall', 
+                            'spa', 
+                            'tourist_attraction', 
+                            'zoo', 
+                            'food'];
+
+    const preferenceToPlaceMap = {
+        "Movies" : ["movie_theater"],
+        "Books" :  ["book_store", "library"],
+        'Gambling' : ['casino'],
+        'Fashion' : ['shopping_mall'],
+        'Flora' : ['florist', 'park'],
+        'Animals' : ['aquarium', 'zoo', 'park'],
+        'Shopping' : ['clothing_store', 'shopping_mall'],
+        'History' : ['art_gallery', 'museum', 'tourist_attraction'],
+        'Art' : ['art_gallery', 'museum', 'tourist_attraction'],
+        'Nightlife' : ['bar', 'casino', 'night_club'],
+        'Outdoors' : ['campground', 'park', 'tourist_attraction', 'zoo'],
+        'Photography' : ['campground', 'park', 'tourist_attraction', 'art_gallery', 'museum', 'tourist_attraction'],
+        'Camping' : ['campground', 'park'],
+        'Bowling' : ['bowling_alley'],
+    };
+
+    
+    const placesData = fetchPlacesNearby(midWayLat, midWayLong, 35000);
+
+    const mutualInterestsSet = Set();
+    const neighborInterestSet = null;
+    const mutualInterests = Array.from(neighborInterestSet).filter(value => userInterests.has(value));
+
+    mutualInterests.forEach(interest => {
+        // Check if the interest is a key in preferenceToPlaceMap
+        if (preferenceToPlaceMap.hasOwnProperty(interest)) {
+            // Get the array of strings corresponding to the interest
+            const places = preferenceToPlaceMap[interest];
+            // Add each string from the array to the mutualInterestsSet
+            places.forEach(place => mutualInterestsSet.add(place));
+        }
+    });
+    
+    const mutualInterestsArray = [...mutualInterestsSet];
+    const filteredPlaces = filterPlacesByType(placesData, mutualInterestsArray);
+
+    return filteredPlaces;
+
 }
