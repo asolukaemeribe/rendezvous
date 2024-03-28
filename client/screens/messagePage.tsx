@@ -51,22 +51,7 @@ const MessagePage = ({ route, navigation }) => {
   const auth = FIREBASE_AUTH;
   const [messagesRefresh, setMessagesRefresh] = useState(true);
   const [room, setRoom] = useState("");
-  const [messagesList, setMessagesList] = useState([
-    {
-      id: "12746",
-      sender_uid: "boonloo1",
-      receiver_uid: "lukaemeribe2",
-      message: "Heyyyyyyy",
-      timestamp: "2/9/23 10:19 AM",
-    },
-    {
-      id: "158272",
-      sender_uid: "lukaemeribe2",
-      receiver_uid: "boonloo1",
-      message: "What's up?",
-      timestamp: "2/9/23 10:19 AM",
-    }
-  ]);
+  const [messagesList, setMessagesList] = useState([]);
   const messagesRef = useRef();
   const userID = route.params.userID;
   const selfUserID = userID;
@@ -74,8 +59,10 @@ const MessagePage = ({ route, navigation }) => {
   const suggestedLocationName = route.params.suggestedLocationName  
                     ? "Hey! Wanna meet up at " + route.params.suggestedLocationName + "?"
                     : "";
+  const receivingName = route.params.receivingName;
   console.log("Message page self userID: " + selfUserID);
   console.log("Message page receiving userID: " + receivingChatUserID);
+  console.log("Message page receiving Name: " + receivingName);
 
   const [currMessage, setCurrMessage] = React.useState(suggestedLocationName);
 
@@ -196,7 +183,7 @@ const MessagePage = ({ route, navigation }) => {
                 // imageStyle={styles.messagesListPhotoImageStyle}
                 source={require("../assets/images/defaultProfilePicDark.png")}
               />
-              <Text style={styles.profileNameTextStyle}>Boon</Text>
+              <Text style={styles.profileNameTextStyle}>{receivingName}</Text>
             </View>
             {/* <Text style={styles.profilePageLogo}>Rendezvous</Text> */}
             <View style={{ width: 29 }}></View>

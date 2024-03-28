@@ -133,7 +133,7 @@ const getmatches = async function(req, res) {
         relevantIds AS (
             SELECT id FROM allIds WHERE id != '${userID}'
         )
-        SELECT PROFILES.id, first_name, last_name FROM PROFILES JOIN relevantIds ON PROFILES.id = relevantIds.id;
+        SELECT PROFILES.id, first_name, last_name, image FROM PROFILES JOIN relevantIds ON PROFILES.id = relevantIds.id;
     `, (err, data) => {
         if (err || data.length === 0) {
             console.log(err);
