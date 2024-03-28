@@ -34,10 +34,13 @@ import {
 import { AuthContext } from "../AppAuthContext";
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
+import AWS from 'aws-sdk';
+
 import MessagePage from "./messagePage";
 const config = require('../config.json');
 import { locationSuggestion } from "../algorithms";
 // import Modal from "react-native-modal";
+
 
 const ProfilePage = ({ route, navigation }) => {
   // const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -45,6 +48,7 @@ const ProfilePage = ({ route, navigation }) => {
   const selfUserID = route.params.selfUserID;
   const userIsSelf = route.params.userIsSelf;
   const profileUserID = route.params.userID;
+  const receivingName = route.params.receivingName;
   console.log("profile page test userid ", selfUserID);
   console.log("userisself: ", route.params.userIsSelf)
   console.log("profile page uid: ", profileUserID);
@@ -77,7 +81,9 @@ const ProfilePage = ({ route, navigation }) => {
     personalityType: "INTJ"
   });
 
+  const [imageData, setImageData] = useState(null);
   const [location, setLocation] = useState<Location.LocationObject>();
+
   const [modalVisible, setModalVisible] = useState(false);
   const [justMatched, setJustMatched] = useState(false);
   /*const profileData = {
@@ -121,7 +127,6 @@ const ProfilePage = ({ route, navigation }) => {
     },
   ];
 
-
   useEffect(() => {
     // get location
     (async () => {
@@ -147,6 +152,32 @@ const ProfilePage = ({ route, navigation }) => {
         console.log("resJson looking for: " + resJson.looking_for);
         console.log("resJson interests: " + resJson.interests);
         console.log("resJson personalityType: " + resJson.personalityType);
+        const getProfilePic = async (id) => {
+          AWS.config.update({
+            region: process.env.AWS_REGION,
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+          });
+          const s3 = new AWS.S3();
+          
+          try {
+            const downloadParams = {
+              Bucket: 'rendezvous-files',
+              Key: `${id}` + '.jpeg', // The name to use for the uploaded object
+            };
+            const response = await s3.getObject(downloadParams).promise();
+            if (response.Body) {
+              const imageBase64 = response.Body.toString('base64');
+              const myData = { uri: `data:image/jpeg;base64,${imageBase64}`};
+              setImageData(myData);
+              //console.log('in profile page:   ' + `data:image/jpeg;base64,${imageBase64}`)
+            }
+          } catch (error) {
+            console.error('Error retrieving file:', error);
+            setImageData(require("../assets/images/defaultProfilePicDark.png"));
+          }
+        }
+        getProfilePic(profileUserID);
         setProfileData({
           first_name: resJson.first_name,
           last_name: resJson.last_name,
@@ -259,10 +290,12 @@ const ProfilePage = ({ route, navigation }) => {
   function handleButtonPress() {
     // todo: Need to navigate to the chat page with the user
     navigation.push("MessagePage", { receivingUserID: profileUserID, userID: selfUserID,
-                                     suggestedLocationName: item.location_name});
+                                     suggestedLocationName: item.location_name, receivingName: receivingName});
     setModalVisible(!modalVisible);
   }
 
+
+  
 
   const source = item.photo_path;
 
@@ -349,7 +382,8 @@ const ProfilePage = ({ route, navigation }) => {
           <View style={styles.profilePhotoWrapper}>
             <ImageBackground
               style={styles.profilePhoto}
-              source={require("../assets/images/defaultProfilePic.png")}
+              source={ imageData }
+              //source={require("../assets/images/defaultProfilePic.png")}
             >
               <View style={styles.matchButtonWrapper}>
                 {(route.params.userIsSelf || justMatched ) ? (<View />) :

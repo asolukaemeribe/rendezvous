@@ -58,8 +58,8 @@ const createuser = async function(req, res) {
     console.log("server side bday: " + birthday)
 
     connection.query(`
-        INSERT INTO PROFILES (id, first_name, last_name, about_me, pronouns, gender, orientation, birthday, age)
-        VALUES ('${uid}', '${first_name}', '${last_name}', '${about_me}', '${pronouns}', '${gender}', '${orientation}', STR_TO_DATE('${birthday}', '%m/%d/%Y'), '${age}')
+        INSERT INTO PROFILES (id, first_name, last_name, about_me, pronouns, gender, orientation, birthday, age, hometown, lookingFor, race, religion, languages, vegetarian, priceLevel, interests, timesOfDay)
+        VALUES ('${uid}', '${first_name}', '${last_name}', '${about_me}', '${pronouns}', '${gender}', '${orientation}','${birthday}', '${age}', '', '', '', '', '', '', '', '', '')
     `, (err, data) => {
         if (err) {
             console.log(err);
@@ -236,6 +236,9 @@ const getusersinradius = async function(req, res) {
     const lat = req.query.lat
     const long = req.query.long
     const rad = req.query.rad
+    const genders = req.query.genders
+
+    console.log(genders)
 
     // pql query to get the ids of all users in radius
     pql_db.any(`SELECT id
@@ -253,7 +256,7 @@ const getusersinradius = async function(req, res) {
         connection.query(`
         SELECT *
         FROM PROFILES
-        WHERE id IN (${ids})
+        WHERE id IN (${ids}) AND gender IN (${genders})
         `, (err, data) => {
             if (err || data.length === 0) {
                 console.log(err);
@@ -284,6 +287,21 @@ const updateuserlocation = async function(req, res) {
     })
 }
 
+const getuserinterests = async function(req, res) {
+    const uid = req.query.uid
+    //need to add age here
+    connection.query(`SELECT uid, first_name, last_name, hometown, lookingFor, race, religion, languages, vegetarian, priceLevel, interests, timesOfDay
+    FROM PROFILES
+    WHERE id = '${uid}'`, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data[0]);
+        }
+    });
+}
+
 const updateuserinfo = async function(req, res) {
     const uid = req.query.uid;
     const hometown = req.query.hometown ?? '';
@@ -307,15 +325,17 @@ const updateuserinfo = async function(req, res) {
     });
 }
 
+
+
 const updatedatepreferences = async function(req, res) {
     const uid = req.query.uid;
-    const vegetarian = req.query.uri ?? '';
+    const vegetarian = req.query.vegetarian ?? '';
     const priceLevel = req.query.priceLevel ?? '';
-    const timesOfDay = req.query ?? [];
+    const timesOfDay = req.query.timesOfDay ?? [];
     connection.query(`UPDATE PROFILES
     SET vegetarian = '${vegetarian}',
-        priceLevel =  '${priceLevel}'
-        timesOfDay = ${timesOfDay}
+        priceLevel =  '${priceLevel}',
+        timesOfDay = '${timesOfDay}'
     WHERE id = '${uid}'`,
     (err, data) => {
         if (err) {
@@ -328,7 +348,7 @@ const updatedatepreferences = async function(req, res) {
 
 const updateuserinterests = async function(req, res) {
     const uid = req.query.uid;
-    const interests = req.query.inserts ?? [];
+    const interests = req.query.interests ?? [];
     connection.query(`UPDATE PROFILES
     SET interests = '${interests}'
     WHERE id = '${uid}'`,
@@ -353,6 +373,9 @@ module.exports = {
     getusersinradius,
     updateuserlocation,
     updateuserprofilepic,
+    updateuserinfo,
+    updateuserinterests,
     getnameageimage,
-    updatedatepreferences
+    updatedatepreferences,
+    getuserinterests
 }

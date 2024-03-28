@@ -24,7 +24,9 @@ import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { AuthContext } from "../AppAuthContext";
 import { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ProfilePage from "./profilePage"
+import ProfilePage from "./profilePage";
+import AWS from 'aws-sdk';
+import { json } from "express";
 
 
 const config = require('../config.json');
@@ -33,11 +35,26 @@ const Stack = createNativeStackNavigator();
 
 
 const PeopleNearby = ({ route, navigation }) => {
+
+  //const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+  // const [userID, setUserID] = React.useState(null);
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
   const { signOut, getUserID } = React.useContext(AuthContext)
-  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: ""}])
+  //const [location, setLocation] = React.useState<Location.LocationObject>();
   const userID = route.params.userID;
+  console.log("test peopleNearby userid ", userID);
+  // const userIDs = React.useMemo((() => {
+  //   async function asyncGetUserID() {
+  //     await getUserID();
+  //   }
+  //  setUserID(asyncGetUserID())}),
+  //  [getUserID]
+  // );
+
+  // console.log("people nearby userid: ", userIDs);
+
+  const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: "", image: null}])
 
   useEffect(() => {
       const { userID, lat, long, rad } = route.params;
@@ -56,12 +73,50 @@ const PeopleNearby = ({ route, navigation }) => {
         console.log("POT MATCHES PAGE RAD: " + 16094)
 
         
-        fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${location.coords.latitude}&long=${location.coords.longitude}&rad=${16094}`)
+        fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${location.coords.latitude}&long=${location.coords.longitude}&rad=${16094}&genders='Male', 'Female', 'Non-Binary'`)
         .then(res => res.json())
         .then(resJson => {
-          console.log("POT MATCHES PAGE resJson: ")
-          console.log(resJson)
-          setNearbyUsersData(resJson); 
+          console.log("POT MATCHES PAGE resJson:  ");
+          console.log(resJson);
+          const getProfilePic = async (id) => {
+            console.log('id in profile pic: ' + id);
+            AWS.config.update({
+              region: process.env.AWS_REGION,
+              accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+              secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            });
+            const s3 = new AWS.S3();
+            
+            try {
+              console.log("success w: " + id);
+              const downloadParams = {
+                Bucket: 'rendezvous-files',
+                Key: `${id}` + '.jpeg', // The name to use for the uploaded object
+              };
+              const response = await s3.getObject(downloadParams).promise();
+              if (response.Body) {
+                const imageBase64 = response.Body.toString('base64');
+                return `data:image/jpeg;base64,${imageBase64}`;
+              } else {
+                return "../assets/images/defaultProfilePicDark.png";
+              }
+            } catch (error) {
+              console.error('Error retrieving file:', error + ' id:' + id);
+              return "../assets/images/defaultProfilePicDark.png";
+            }
+          }
+          const updateList = async(jsonList) => {
+            for (let i = 0; i < jsonList.length; i++) {
+              const image = await getProfilePic(jsonList[i].id);
+              jsonList[i]['image'] = image;
+              if (image == "../assets/images/defaultProfilePicDark.png") {
+                console.log('in update list:  ' + jsonList[i].image);
+              }
+              
+            }
+            setNearbyUsersData(jsonList); 
+          }
+          updateList(resJson);
         });
       }
 
@@ -69,16 +124,31 @@ const PeopleNearby = ({ route, navigation }) => {
   }, []);
 
 
+
+
+
+  //set nearby users data is a list of every single user in radius
+  // what i need to do is fetch the profile pciture for each of these users and append it to each item
+  // use effect is where users are fetched, it would make sense to also update pictures here since correct picture
+  // must be displayed when page is loaded
+  //maybe do this before SETNEARBYUSERSDATA
+
+
   const renderButtonItem = (item) => {
+
     const handleButtonPress = () => {
       console.log("button test user id " + userID);
       // FOR MATT: ----------item.id is the user id of the other person--------------
-      navigation.push("ProfilePage", {userIsSelf: false, userID: item.id, selfUserID: userID})
+      navigation.push("ProfilePage", {userIsSelf: false, userID: item.id, selfUserID: userID, receivingName: item.first_name })
       // navigation.push("ProfilePage")
     }
 
     const source = item.photo_path;
 
+
+    const imageSource = (item.image && item.image == "../assets/images/defaultProfilePicDark.png")
+      ? require("../assets/images/defaultProfilePicDark.png")
+      : { uri: item.image };
 
     return (
       <Pressable
@@ -90,7 +160,7 @@ const PeopleNearby = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={source}
+          source={imageSource} //IMPORTANT
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name} {item.last_name}</Text>
         </ImageBackground>

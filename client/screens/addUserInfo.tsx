@@ -25,7 +25,7 @@ const AddUserInfo = ({ route, navigation }) => {
   console.log("add user info userID " + userID);
   const [selectedLookingFor, setSelectedLookingFor] = React.useState(null);
   const [selectedReligion, setSelectedReligion] = React.useState("");
-  const [selectedLanguages, setSelectedLanguage] = React.useState([]);
+  const [selectedLanguages, setSelectedLanguage] = useState([]);
   const [hometown, setHometown] = React.useState("");
 
   const lookingForArray = 
@@ -296,6 +296,7 @@ const AddUserInfo = ({ route, navigation }) => {
   ];
 
     const addExtraInfo = () => {
+      console.log('selected languages: ' + selectedLanguages);
       fetch(`http://${config.server_host}:${config.server_port}/updateuserinfo?uid=${userID}` + 
       `&hometown=${hometown}` + `&lookingFor=${selectedLookingFor}` + `&race= ${selectedRaces}` +
       `&religion=${selectedReligion}` + `&languages=${selectedLanguages}`)
@@ -364,7 +365,7 @@ const AddUserInfo = ({ route, navigation }) => {
                     <Text style={styles.headerText}>Languages</Text>
                   </View>
                   <MultipleSelectList
-                  setSelected={(val) => setSelectedLanguage([...selectedLanguages, val])} 
+                  setSelected={(val) => setSelectedLanguage(val)}
                   data={spokenLanguages} 
                   save="value"
                   boxStyles={styles.selectList}
