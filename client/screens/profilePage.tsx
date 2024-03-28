@@ -47,6 +47,7 @@ const ProfilePage = ({ route, navigation }) => {
   const selfUserID = route.params.selfUserID;
   const userIsSelf = route.params.userIsSelf;
   const profileUserID = route.params.userID;
+  const receivingName = route.params.receivingName;
   console.log("profile page test userid ", selfUserID);
   console.log("userisself: ", route.params.userIsSelf)
   console.log("profile page uid: ", profileUserID);
@@ -221,7 +222,7 @@ const ProfilePage = ({ route, navigation }) => {
   function handleButtonPress() {
     // todo: Need to navigate to the chat page with the user
     navigation.push("MessagePage", { receivingUserID: profileUserID, userID: selfUserID,
-                                     suggestedLocationName: item.location_name});
+                                     suggestedLocationName: item.location_name, receivingName: receivingName});
     setModalVisible(!modalVisible);
   }
 
