@@ -348,7 +348,7 @@ function userMatchmaking() {
 
 }
 
-function locationSuggestion(neighborLocation, neighborPreferences) {
+function locationSuggestion(neighborLocation, neighborInterestSet) {
     function filterPlacesByType(placesData, types) {
         return placesData.filter(place => {
             return place.types.some(placeType => types.includes(placeType));
@@ -407,7 +407,7 @@ function locationSuggestion(neighborLocation, neighborPreferences) {
     const placesData = fetchPlacesNearby(midWayLat, midWayLong, 35000);
 
     const mutualInterestsSet = Set();
-    const neighborInterestSet = null;
+    // const neighborInterestSet = null;
     const mutualInterests = Array.from(neighborInterestSet).filter(value => userInterests.has(value));
 
     mutualInterests.forEach(interest => {

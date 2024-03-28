@@ -137,6 +137,9 @@ const ProfilePage = ({ route, navigation }) => {
           school: "University of Pennsylvania",
           looking_for: "Looking for long term"
         })
+        // userLookingFor = resJon.looking_for;
+        // userInterests = resJson.interests;
+        // userPersonalityType = resJson.personalityType;
       });
   }, []);
 

@@ -26,16 +26,3 @@ export async function fetchPlacesNearby(latitude = null, longitude = null, radiu
         throw error;
     }
 }
-
-// // Function to run fetchPlacesNearby and log the result
-// async function run() {
-//     try {
-//         const places = await fetchPlacesNearby();
-//         console.log('Places nearby:', places);
-//     } catch (error) {
-//         console.error('Error fetching places:', error);
-//     }
-// }
-
-// // Call run() to execute the function
-// run();
