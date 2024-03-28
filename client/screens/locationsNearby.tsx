@@ -82,6 +82,11 @@ const LocationsNearby = ({ route, navigation }) => {
       isSelected: true,
     },
     {
+      id: "Favorites",
+      name: "Favorites",
+      isSelected: false,
+    },
+    {
       id: "Restaurant",
       name: "Restaurant",
       isSelected: false,
@@ -174,11 +179,14 @@ const LocationsNearby = ({ route, navigation }) => {
 
         if (item.id === "All") {
           setCurrentCategoryLocationsNearbyData(locationsNearbyData);
-        } else {
+        } 
+        else if (item.id === "Favorites") {
+          setCurrentCategoryLocationsNearbyData(locationsNearbyData.filter((location) => (location.favorited === true)));
+        }
+        else {
           setCurrentCategoryLocationsNearbyData(
             locationsNearbyData.filter((location) => location.category === item.id)
           );
-          console.log(currentCategoryLocationsNearbyData)
         }
   
         return newArray;
