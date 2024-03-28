@@ -138,7 +138,7 @@ const ProfilePage = ({ route, navigation }) => {
 
     console.log("PROFILE PAGE UID: " + profileUserID) //MATT: moved userID get to beginning of page
 
-    fetch(`http://${config.server_host}:${config.server_port}/user/${profileUserID}`)
+    fetch(`http://${config.server_host}:${config.server_port}/getalluserdata?uid=${profileUserID}`)
       .then(res => res.json())
       .then(resJson => {
         console.log("resJson first name: " + resJson.first_name);
@@ -149,7 +149,7 @@ const ProfilePage = ({ route, navigation }) => {
         console.log("resJson image: " + resJson.image);
         console.log("resJson age: " + resJson.age);
         console.log("resJson school: " + resJson.school);
-        console.log("resJson looking for: " + resJson.looking_for);
+        console.log("resJson looking for: " + resJson.lookingFor);
         console.log("resJson interests: " + resJson.interests);
         console.log("resJson personalityType: " + resJson.personalityType);
         const getProfilePic = async (id) => {
@@ -178,6 +178,7 @@ const ProfilePage = ({ route, navigation }) => {
           }
         }
         getProfilePic(profileUserID);
+        const interests = resJson.interests.split(",");
         setProfileData({
           first_name: resJson.first_name,
           last_name: resJson.last_name,
@@ -187,8 +188,8 @@ const ProfilePage = ({ route, navigation }) => {
           image: resJson.image,
           age: resJson.age,
           school: "University of Pennsylvania",
-          looking_for: resJson.looking_for,
-          interests: resJson.interests,
+          looking_for: resJson.lookingFor,
+          interests: interests,
           personalityType: resJson.personalityType,
         });
       })
@@ -196,8 +197,12 @@ const ProfilePage = ({ route, navigation }) => {
         console.log("profileData: ");
         console.log(profileData);
       });
+      // fetch(`http://${config.server_host}:${config.server_port}/getuserinterests/${profileUserID}`)
+      // .then(res => res.json())
+      // .then(resJson => {
 
-      fetch(`http://${config.server_host}:${config.server_port}/user/${selfUserID}`)
+
+      fetch(`http://${config.server_host}:${config.server_port}/getalluserdata?uid=${selfUserID}`)
       .then(res => res.json())
       .then(resJson => {
         console.log("resJson first name: " + resJson.first_name);
@@ -211,6 +216,7 @@ const ProfilePage = ({ route, navigation }) => {
         console.log("resJson looking for: " + resJson.looking_for);
         console.log("resJson interests: " + resJson.interests);
         console.log("resJson personalityType: " + resJson.personalityType);
+        const interests = resJson.interests.split(",");
         setSelfProfileData({
           first_name: resJson.first_name,
           last_name: resJson.last_name,
@@ -221,7 +227,7 @@ const ProfilePage = ({ route, navigation }) => {
           age: resJson.age,
           school: "University of Pennsylvania",
           looking_for: resJson.looking_for,
-          interests: resJson.interests,
+          interests: interests,
           personalityType: resJson.personalityType,
         });
       })
@@ -442,15 +448,15 @@ const ProfilePage = ({ route, navigation }) => {
               </View>
               <View style={styles.profilePreferencesInterestsListWrapper}>
                 {/* <ProfileTypesList profilePreferenceData={profilePreferenceData} />; */}
-                <Text style={styles.profilePreferencesInterestsListItem}>
-                  • Teaching
-                </Text>
-                <Text style={styles.profilePreferencesInterestsListItem}>
-                  • Technology
-                </Text>
-                <Text style={styles.profilePreferencesInterestsListItem}>
-                  • Fun
-                </Text>
+                <FlatList 
+                  data={profileData.interests}
+                  renderItem={({ item }) => (
+                    <Text style={styles.profilePreferencesInterestsListItem}>
+                      • {item}
+                    </Text>
+                  )}
+                  keyExtractor={(item) => item} 
+                  />
               </View>
             </View>
           </View>

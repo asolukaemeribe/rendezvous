@@ -302,6 +302,21 @@ const getuserinterests = async function(req, res) {
     });
 }
 
+const getAllUserData = async function(req, res) {
+    const uid = req.query.uid
+    //need to add age here
+    connection.query(`SELECT *
+    FROM PROFILES
+    WHERE id = '${uid}'`, (err, data) => {
+        if (err || data.length === 0) {
+            console.log(err);
+            res.json({});
+        } else {
+            res.json(data[0]);
+        }
+    });
+}
+
 const updateuserinfo = async function(req, res) {
     const uid = req.query.uid;
     const hometown = req.query.hometown ?? '';
@@ -377,5 +392,6 @@ module.exports = {
     updateuserinterests,
     getnameageimage,
     updatedatepreferences,
-    getuserinterests
+    getuserinterests,
+    getAllUserData
 }

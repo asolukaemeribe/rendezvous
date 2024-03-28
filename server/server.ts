@@ -31,7 +31,8 @@ app.get('/getimage', routes.getnameageimage);
 app.get('/updateuserinfo', routes.updateuserinfo);
 app.get('/updatedatepreferences', routes.updatedatepreferences);
 app.get('/updateuserinterests', routes.updateuserinterests);
-app.get('getuserinterests', routes.getuserinterests);
+app.get('/getuserinterests', routes.getuserinterests);
+app.get('/getalluserdata', routes.getAllUserData);
 
 app.get('/', (req, res) => {
     res.send('Rendezvous Server made with Express');
