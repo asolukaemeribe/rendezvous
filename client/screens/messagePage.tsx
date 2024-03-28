@@ -52,28 +52,15 @@ const MessagePage = ({ route, navigation }) => {
   const [currMessage, onChangeMessage] = React.useState('');
   const [messagesRefresh, setMessagesRefresh] = useState(true);
   const [room, setRoom] = useState("");
-  const [messagesList, setMessagesList] = useState([
-    {
-      id: "12746",
-      sender_uid: "boonloo1",
-      receiver_uid: "lukaemeribe2",
-      message: "Heyyyyyyy",
-      timestamp: "2/9/23 10:19 AM",
-    },
-    {
-      id: "158272",
-      sender_uid: "lukaemeribe2",
-      receiver_uid: "boonloo1",
-      message: "What's up?",
-      timestamp: "2/9/23 10:19 AM",
-    }
-  ]);
+  const [messagesList, setMessagesList] = useState([]);
   const messagesRef = useRef();
   const userID = route.params.userID;
   const selfUserID = userID;
   const receivingChatUserID = route.params.receivingUserID;
+  const receivingName = route.params.receivingName;
   console.log("Message page self userID: " + selfUserID);
   console.log("Message page receiving userID: " + receivingChatUserID);
+  console.log("Message page receiving Name: " + receivingName);
 
   useEffect(() => {
 
@@ -192,7 +179,7 @@ const MessagePage = ({ route, navigation }) => {
                 // imageStyle={styles.messagesListPhotoImageStyle}
                 source={require("../assets/images/defaultProfilePicDark.png")}
               />
-              <Text style={styles.profileNameTextStyle}>Boon</Text>
+              <Text style={styles.profileNameTextStyle}>{receivingName}</Text>
             </View>
             {/* <Text style={styles.profilePageLogo}>Rendezvous</Text> */}
             <View style={{ width: 29 }}></View>

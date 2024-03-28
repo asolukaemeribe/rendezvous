@@ -63,7 +63,7 @@ const MatchesListPage = ({ route, navigation }) => {
       }))
     );
 
-  const [matchesData, setMatchesData] = useState([{ id: "", first_name: "", last_name: "" }])
+  const [matchesData, setMatchesData] = useState([{ id: "", first_name: "", last_name: "", image: "" }])
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -72,19 +72,19 @@ const MatchesListPage = ({ route, navigation }) => {
 
     if (isFocused) {
       fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
-        .then(res => res.json())
-        .then(resJson => {
-          console.log("MATCHES resJson: ")
-          console.log(resJson)
-          setMatchesData(resJson);
-        });
+      .then(res => res.json())
+      .then(resJson => {
+        console.log("MATCHES resJson: ")
+        console.log(resJson)
+        setMatchesData(resJson);  
+      });
     }
-  }, [isFocused]);
+}, [isFocused]);
 
 
   const renderButtonItem = (item) => {
     const handleButtonPress = () => {
-      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID, receivingName: item.first_name })
     }
 
     const source = item.photo_path;
@@ -110,7 +110,7 @@ const MatchesListPage = ({ route, navigation }) => {
 
   const renderMessagesListItem = (item) => {
     const handleButtonPress = () => {
-      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID, receivingName: item.first_name })
     }
 
     // const photoPath = item.photo_path ? item.photo_path : "../assets/images/defaultProfilePicDark.png";
@@ -142,10 +142,10 @@ const MatchesListPage = ({ route, navigation }) => {
         <View style={styles.messagesListTextWrapper}>
           <View style={styles.messagesListItemHeadingWrapper}>
             <Text style={styles.messagesListItemName}>{item.first_name}</Text>
-            <Text style={styles.messagesListItemTime}>{item.message_time}</Text>
+            {/*<Text style={styles.messagesListItemTime}>{item.message_time}</Text>*/}
           </View>
           <View style={styles.messagesListChatWrapper}>
-            <Text style={styles.messagesListChat}>{item.first_message}</Text>
+            {/*<Text style={styles.messagesListChat}>{item.first_message}</Text>*/}
           </View>
         </View>
       </Pressable>
@@ -286,7 +286,7 @@ const MatchesListPage = ({ route, navigation }) => {
 
           <View style={styles.nearbyUsersFirstWrapper}>
             <FlatList
-              data={profilesList}
+              data={matchesData}
               renderItem={({ item }) =>
                 renderButtonItem(item)
               }
@@ -299,7 +299,7 @@ const MatchesListPage = ({ route, navigation }) => {
           <View style={styles.messagesListVerticalViewWrapper}>
             <Text style={styles.messagesHeaderText}>Messages</Text>
             <FlatList
-              data={profilesList}
+              data={matchesData}
               renderItem={({ item }) =>
                 renderMessagesListItem(item)
               }
