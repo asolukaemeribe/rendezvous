@@ -56,7 +56,7 @@ const PeopleNearby = ({ route, navigation }) => {
         console.log("POT MATCHES PAGE RAD: " + 16094)
 
         
-        fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${location.coords.latitude}&long=${location.coords.longitude}&rad=${16094}`)
+        fetch(`http://${config.server_host}:${config.server_port}/getusersinradius?uid=${userID}&lat=${location.coords.latitude}&long=${location.coords.longitude}&rad=${16094}&genders='Male', 'Female', 'Non-Binary'`)
         .then(res => res.json())
         .then(resJson => {
           console.log("POT MATCHES PAGE resJson: ")
