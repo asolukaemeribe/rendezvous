@@ -236,6 +236,9 @@ const getusersinradius = async function(req, res) {
     const lat = req.query.lat
     const long = req.query.long
     const rad = req.query.rad
+    const genders = req.query.genders
+
+    console.log(genders)
 
     // pql query to get the ids of all users in radius
     pql_db.any(`SELECT id
@@ -253,7 +256,7 @@ const getusersinradius = async function(req, res) {
         connection.query(`
         SELECT *
         FROM PROFILES
-        WHERE id IN (${ids})
+        WHERE id IN (${ids}) AND gender IN (${genders})
         `, (err, data) => {
             if (err || data.length === 0) {
                 console.log(err);
