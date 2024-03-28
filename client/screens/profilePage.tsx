@@ -63,7 +63,7 @@ const ProfilePage = ({ route, navigation }) => {
     school: "University of Pennsylvania",
     looking_for: "Looking for long term"
   })
-  const [imageData, setImageData] = useState("");
+  const [imageData, setImageData] = useState(null);
   const [location, setLocation] = useState<Location.LocationObject>();
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -140,11 +140,13 @@ const ProfilePage = ({ route, navigation }) => {
             const response = await s3.getObject(downloadParams).promise();
             if (response.Body) {
               const imageBase64 = response.Body.toString('base64');
-              setImageData(`data:image/jpeg;base64,${imageBase64}`);
+              const myData = { uri: `data:image/jpeg;base64,${imageBase64}`};
+              setImageData(myData);
               //console.log('in profile page:   ' + `data:image/jpeg;base64,${imageBase64}`)
             }
           } catch (error) {
             console.error('Error retrieving file:', error);
+            setImageData(require("../assets/images/defaultProfilePicDark.png"));
           }
         }
         getProfilePic(profileUserID);
@@ -223,6 +225,8 @@ const ProfilePage = ({ route, navigation }) => {
     setModalVisible(!modalVisible);
   }
 
+
+  
 
   const source = item.photo_path;
 
@@ -309,7 +313,7 @@ const ProfilePage = ({ route, navigation }) => {
           <View style={styles.profilePhotoWrapper}>
             <ImageBackground
               style={styles.profilePhoto}
-              source={{ uri: imageData }}
+              source={ imageData }
               //source={require("../assets/images/defaultProfilePic.png")}
             >
               <View style={styles.matchButtonWrapper}>

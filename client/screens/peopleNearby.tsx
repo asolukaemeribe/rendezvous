@@ -54,17 +54,6 @@ const PeopleNearby = ({ route, navigation }) => {
 
   // console.log("people nearby userid: ", userIDs);
 
-  const [orientationTypesArray, setOrientationTypesArray] =
-    React.useState(
-      Object.entries(
-        profileInfoData.find((item) => item.category === "Sexual Orientation")
-          .types
-      ).map(([key, value]) => ({
-        id: key,
-        isSelected: value,
-      }))
-    );
-
   const [nearbyUsersData, setNearbyUsersData] = useState([{id: "", first_name: "", last_name: "", image: null}])
 
   useEffect(() => {
