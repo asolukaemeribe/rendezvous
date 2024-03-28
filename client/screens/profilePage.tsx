@@ -36,6 +36,7 @@ import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
 import MessagePage from "./messagePage";
 const config = require('../config.json');
+import { locationSuggestion } from "../algorithms";
 // import Modal from "react-native-modal";
 
 const ProfilePage = ({ route, navigation }) => {
@@ -58,8 +59,24 @@ const ProfilePage = ({ route, navigation }) => {
     age: "21",
     image: "",
     school: "University of Pennsylvania",
-    looking_for: "Looking for long term"
+    looking_for: "Looking for long term",
+    interests: ["Teaching", "Technology", "Fun"],
+    personalityType: "INTJ"
   })
+  const [selfProfileData, setSelfProfileData] = useState({
+    first_name: "Boon",
+    last_name: "Loo",
+    about_me: "If you love Computer Science, then you will love me!",
+    pronouns: "he/him",
+    gender: "Male",
+    age: "21",
+    image: "",
+    school: "University of Pennsylvania",
+    looking_for: "Looking for long term",
+    interests: ["Teaching", "Technology", "Fun"],
+    personalityType: "INTJ"
+  });
+
   const [location, setLocation] = useState<Location.LocationObject>();
   const [modalVisible, setModalVisible] = useState(false);
   const [justMatched, setJustMatched] = useState(false);
@@ -119,13 +136,17 @@ const ProfilePage = ({ route, navigation }) => {
     fetch(`http://${config.server_host}:${config.server_port}/user/${profileUserID}`)
       .then(res => res.json())
       .then(resJson => {
-        console.log("resJson first name: " + resJson.first_name)
-        /*profileData.first_name = resJson.first_name;
-        profileData.last_name = resJson.last_name;
-        profileData.about_me = resJson.about_me;
-        profileData.pronouns = resJson.pronouns;
-        profileData.gender = resJson.gender;*/
-        //const profile = resJson.map((user) => ({first_name: user.first_name, ...user}))
+        console.log("resJson first name: " + resJson.first_name);
+        console.log("resJson last name: " + resJson.last_name);
+        console.log("resJson about me: " + resJson.about_me);
+        console.log("resJson pronouns: " + resJson.pronouns);
+        console.log("resJson gender: " + resJson.gender);
+        console.log("resJson image: " + resJson.image);
+        console.log("resJson age: " + resJson.age);
+        console.log("resJson school: " + resJson.school);
+        console.log("resJson looking for: " + resJson.looking_for);
+        console.log("resJson interests: " + resJson.interests);
+        console.log("resJson personalityType: " + resJson.personalityType);
         setProfileData({
           first_name: resJson.first_name,
           last_name: resJson.last_name,
@@ -135,24 +156,53 @@ const ProfilePage = ({ route, navigation }) => {
           image: resJson.image,
           age: resJson.age,
           school: "University of Pennsylvania",
-          looking_for: "Looking for long term"
-        })
-        // userLookingFor = resJon.looking_for;
-        // userInterests = resJson.interests;
-        // userPersonalityType = resJson.personalityType;
+          looking_for: resJson.looking_for,
+          interests: resJson.interests,
+          personalityType: resJson.personalityType,
+        });
+      })
+      .then(() => {        
+        console.log("profileData: ");
+        console.log(profileData);
       });
+
+      fetch(`http://${config.server_host}:${config.server_port}/user/${selfUserID}`)
+      .then(res => res.json())
+      .then(resJson => {
+        console.log("resJson first name: " + resJson.first_name);
+        console.log("resJson last name: " + resJson.last_name);
+        console.log("resJson about me: " + resJson.about_me);
+        console.log("resJson pronouns: " + resJson.pronouns);
+        console.log("resJson gender: " + resJson.gender);
+        console.log("resJson image: " + resJson.image);
+        console.log("resJson age: " + resJson.age);
+        console.log("resJson school: " + resJson.school);
+        console.log("resJson looking for: " + resJson.looking_for);
+        console.log("resJson interests: " + resJson.interests);
+        console.log("resJson personalityType: " + resJson.personalityType);
+        setSelfProfileData({
+          first_name: resJson.first_name,
+          last_name: resJson.last_name,
+          about_me: resJson.about_me,
+          pronouns: resJson.pronouns,
+          gender: resJson.gender,
+          image: resJson.image,
+          age: resJson.age,
+          school: "University of Pennsylvania",
+          looking_for: resJson.looking_for,
+          interests: resJson.interests,
+          personalityType: resJson.personalityType,
+        });
+      })
+      .then(() => {        
+        console.log("selfProfileData: ");
+        console.log(selfProfileData);
+      });
+
   }, []);
 
 
   const logOut = async () => {
-    // ---- Firebase Sign Out ---- 
-    // signOut(auth).then(() => {
-    //   // Sign-out successful.
-    //       navigation.navigate("Login");
-    //       console.log("Signed out successfully")
-    //   }).catch((error) => {
-    //   // An error happened.
-    //   });
     signOut(auth)
   }
 
@@ -187,8 +237,17 @@ const ProfilePage = ({ route, navigation }) => {
     // send match to database!
     fetch(`http://${config.server_host}:${config.server_port}/newmatch?uid1=${selfUserID}` +
       `&uid2=${profileUserID}`)
-      .then(res => { console.log("success! check database") })
+      .then(res => { console.log("success! check database") });
 
+
+      
+    console.log("location suggestion result: ");
+    console.log("selfprofiledata interests: ");
+    console.log(selfProfileData.interests);
+    console.log("profiledata interests: ");
+    console.log(profileData.interests);
+    let locationSuggestionResult = locationSuggestion(location, selfProfileData.interests, profileData.interests);
+    console.log(locationSuggestionResult);
     setModalVisible(!modalVisible);
     setJustMatched(true);
     console.log( "modal visible: " + modalVisible);

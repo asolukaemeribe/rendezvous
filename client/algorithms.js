@@ -1,7 +1,7 @@
 import * as Location from "expo-location";
-import profileLocationData from "../assets/data/profileLocationData.ts";
-import profilePreferenceData from "../assets/data/profilePreferenceData.ts";
-import dummyUserIds from "../assets/data/dummyUserIds.ts";
+// import profileLocationData from "../assets/data/profileLocationData.ts";
+// import profilePreferenceData from "../assets/data/profilePreferenceData.ts";
+// import dummyUserIds from "../assets/data/dummyUserIds.ts";
 import { fetchPlacesNearby } from "./api/places";
 
 const distanceWeight = .25;
@@ -19,7 +19,7 @@ let distanceMap = new Map();
 let sharedInterestsMap = new Map();
 let personalityCompatibilityMap = new Map();
 
-const { userID } = route.params;
+// const { userID } = route.params;
 
 // Use `Location` directly without accessing `Location.LocationObject()`
 let locationObj;
@@ -29,13 +29,13 @@ let locationObj;
     userLong = locationObj.coords.longitude;
 })();
 
-fetch(`http://${config.server_host}:${config.server_port}/user/${userID}`)
-    .then(res => res.json())
-    .then(resJson => {
-        userLookingFor = resJon.looking_for;
-        userInterests = resJson.interests;
-        userPersonalityType = resJson.personalityType;
-    });
+// fetch(`http://${config.server_host}:${config.server_port}/user/${userID}`)
+//     .then(res => res.json())
+//     .then(resJson => {
+//         userLookingFor = resJon.looking_for;
+//         userInterests = resJson.interests;
+//         userPersonalityType = resJson.personalityType;
+//     });
 
 // 0.2 = Uh-Oh Think This One Through
 // 0.4 = It Could Work, But Not Ideal
@@ -348,15 +348,28 @@ function userMatchmaking() {
 
 }
 
-function locationSuggestion(neighborLocation, neighborInterestSet) {
+export function locationSuggestion(userLocation, selfUserInterests, neighborInterestSet) {
     function filterPlacesByType(placesData, types) {
         return placesData.filter(place => {
             return place.types.some(placeType => types.includes(placeType));
         });
     }
+    console.log("LOCATION SUGGESTION user location");
+    console.log(userLocation);
+    console.log("LOCATION SUGGESTION self interests");
+    console.log(selfUserInterests);
+    console.log("LOCATION SUGGESTION neighbor interests");
+    console.log(neighborInterestSet);
 
-    const midWayLat = (userLat + neighborLocation.location.lat) / 2;
-    const midWayLong = (userLong + neighborLocation.location.lon) / 2;
+    const userLat = userLocation.coords.latitude;
+    const userLong = userLocation.coords.longitude;
+    console.log("LOCATION SUGGESTION user lat");
+    console.log(userLat);
+    console.log("LOCATION SUGGESTION user long");
+    console.log(userLong);
+
+    // const userLat = (userLat + neighborLocation.location.lat) / 2;
+    // const userLong = (userLong + neighborLocation.location.lon) / 2;
 
     const typesToFilter = ['amusement_park', //
                             'aquarium', 
@@ -404,25 +417,41 @@ function locationSuggestion(neighborLocation, neighborInterestSet) {
     };
 
     
-    const placesData = fetchPlacesNearby(midWayLat, midWayLong, 35000);
+    const placesData = fetchPlacesNearby(userLat, userLong, 35000);
+    console.log("LOCATION SUGGESTION placesData");
+    console.log(placesData);
 
-    const mutualInterestsSet = Set();
+    const mutualInterestsSet = [];
+    console.log("LOCATION SUGGESTION mutualInterestsSet");
+    console.log(mutualInterestsSet);
+
     // const neighborInterestSet = null;
-    const mutualInterests = Array.from(neighborInterestSet).filter(value => userInterests.has(value));
-
+    const mutualInterests = Array.from(neighborInterestSet).filter(value => selfUserInterests.has(value));
+    console.log("LOCATION SUGGESTION mutualInterests");
+    console.log(mutualInterests);
+    
     mutualInterests.forEach(interest => {
+        console.log("LOCATION SUGGESTION interest");
+        console.log(interest);
         // Check if the interest is a key in preferenceToPlaceMap
         if (preferenceToPlaceMap.hasOwnProperty(interest)) {
             // Get the array of strings corresponding to the interest
             const places = preferenceToPlaceMap[interest];
             // Add each string from the array to the mutualInterestsSet
-            places.forEach(place => mutualInterestsSet.add(place));
+            places.forEach(place => mutualInterestsSet.concat(place));
         }
     });
+    console.log("LOCATION SUGGESTION mutualInterests after");
+    console.log(mutualInterests);
     
     const mutualInterestsArray = [...mutualInterestsSet];
-    const filteredPlaces = filterPlacesByType(placesData, mutualInterestsArray);
+    console.log("LOCATION SUGGESTION mutualInterestsArray");
+    console.log(mutualInterestsArray);
 
+    const filteredPlaces = filterPlacesByType(placesData, mutualInterestsArray);
+    console.log("LOCATION SUGGESTION filteredPlaces");
+    console.log(filteredPlaces);
+    
     return filteredPlaces;
 
 }

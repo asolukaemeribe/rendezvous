@@ -61,7 +61,7 @@ const PeopleNearby = ({ route, navigation }) => {
         .then(resJson => {
           console.log("POT MATCHES PAGE resJson: ")
           console.log(resJson)
-          setNearbyUsersData(resJson);  
+          setNearbyUsersData(resJson); 
         });
       }
 
@@ -108,9 +108,8 @@ const PeopleNearby = ({ route, navigation }) => {
   }
   // TODO: Don't allow user to navigate back to home page from here
 
-  const everySecondItem = nearbyUsersData.filter((_, index) => index % 2 !== 0);
-  const everyFirstItem = nearbyUsersData.filter((_, index) => index % 2 === 0);
-
+  const everySecondItem = nearbyUsersData ? nearbyUsersData.filter((_, index) => index % 2 !== 0) : [];
+  const everyFirstItem = nearbyUsersData ? nearbyUsersData.filter((_, index) => index % 2 === 0) : [];
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
