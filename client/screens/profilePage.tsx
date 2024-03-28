@@ -34,12 +34,9 @@ import {
 import { AuthContext } from "../AppAuthContext";
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
-<<<<<<< HEAD
 import AWS from 'aws-sdk';
 
-=======
 import MessagePage from "./messagePage";
->>>>>>> origin/semester-2-chat-page
 const config = require('../config.json');
 // import Modal from "react-native-modal";
 
@@ -68,8 +65,7 @@ const ProfilePage = ({ route, navigation }) => {
   })
   const [imageData, setImageData] = useState("");
   const [location, setLocation] = useState<Location.LocationObject>();
-<<<<<<< HEAD
-=======
+
   const [modalVisible, setModalVisible] = useState(false);
   const [justMatched, setJustMatched] = useState(false);
   /*const profileData = {
@@ -112,8 +108,6 @@ const ProfilePage = ({ route, navigation }) => {
       common_interest: "Italian food"
     },
   ];
-
->>>>>>> origin/semester-2-chat-page
 
   useEffect(() => {
     // get location
