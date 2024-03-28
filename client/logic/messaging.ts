@@ -3,6 +3,9 @@ import { io } from 'socket.io-client'
 
 const config = require('../config.json');
 const socket = io(`http://${config.server_host}:${config.server_port}`);
+socket.on('connect', () => {
+    console.log(`You are connected to a WebSocket with SocketID: ${socket.id}`)
+})
 
 
 function setUpRecieveMessage(displayMessageCallback: Function) {
@@ -22,13 +25,8 @@ export function leaveRoom(room: String) {
 }
 
 export function setUpSocketIO(displayMessageCallback: Function, room: String) {
-    console.log("setting up socket.io")
-
-    socket.on('connect', () => {
-        console.log(`You are connected to a WebSocket with SocketID: ${socket.id}`)
-    })
-    joinRoom(room)
-    setUpRecieveMessage(displayMessageCallback)
+    joinRoom(room);
+    setUpRecieveMessage(displayMessageCallback);
 }
 
 export function sendMessage(room: String, message: String) {

@@ -10,7 +10,8 @@ import {
   Image,
   FlatList,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  Modal
 } from "react-native";
 // import { Image } from "expo-image";
 import Feather from "react-native-vector-icons/Feather";
@@ -33,9 +34,14 @@ import {
 import { AuthContext } from "../AppAuthContext";
 import colors from "../assets/global_styles/color";
 import { useEffect, useState } from "react";
+<<<<<<< HEAD
 import AWS from 'aws-sdk';
 
+=======
+import MessagePage from "./messagePage";
+>>>>>>> origin/semester-2-chat-page
 const config = require('../config.json');
+// import Modal from "react-native-modal";
 
 
 const ProfilePage = ({ route, navigation }) => {
@@ -62,6 +68,52 @@ const ProfilePage = ({ route, navigation }) => {
   })
   const [imageData, setImageData] = useState("");
   const [location, setLocation] = useState<Location.LocationObject>();
+<<<<<<< HEAD
+=======
+  const [modalVisible, setModalVisible] = useState(false);
+  const [justMatched, setJustMatched] = useState(false);
+  /*const profileData = {
+    first_name: "Boon",
+    last_name: "Loo",
+    about_me: "If you love Computer Science, then you will love me!",
+    pronouns: "he/him",
+    gender: "Male",
+    age: "21",
+    school: "University of Pennsylvania",
+    looking_for: "Looking for long term"
+  };*/
+
+  const suggestedLocationsData = [
+    {
+      id: "location1",
+      location_name: "White Dog Cafe",
+      distance: "1.7 mi",
+      category: "Restaurant",
+      price: 2,
+      photo_path: require("../assets/images/white_dog.jpg"),
+      common_interest: "American food"
+    },
+    {
+      id: "location2",
+      location_name: "Cira Green",
+      distance: "2.5 mi",
+      category: "Park",
+      price: 0,
+      photo_path: require("../assets/images/cira_green.jpg"),
+      common_interest: "Nature"
+    },
+    {
+      id: "location3",
+      location_name: "Dante & Luigi's",
+      distance: "4.3 mi",
+      category: "Restaurant",
+      price: 3,
+      photo_path: require("../assets/images/dante_and_luigis.jpg"),
+      common_interest: "Italian food"
+    },
+  ];
+
+>>>>>>> origin/semester-2-chat-page
 
   useEffect(() => {
     // get location
@@ -162,10 +214,78 @@ const ProfilePage = ({ route, navigation }) => {
       `&uid2=${profileUserID}`)
       .then(res => { console.log("success! check database") })
 
+    setModalVisible(!modalVisible);
+    setJustMatched(true);
+    console.log( "modal visible: " + modalVisible);
   }
+
+ // THIS HANDLES RENDERING AND STATE CHANGE OF EACH LOCATION ITEM/BLOCK 
+ const renderLocationItem = (item) => {
+
+  function handleButtonPress() {
+    // todo: Need to navigate to the chat page with the user
+    navigation.push("MessagePage", { receivingUserID: profileUserID, userID: selfUserID,
+                                     suggestedLocationName: item.location_name});
+    setModalVisible(!modalVisible);
+  }
+
+
+  const source = item.photo_path;
+
+  return (
+    <Pressable
+      style={[
+        styles.suggestedLocationsListItem,
+      ]}
+      onPress={() => handleButtonPress()}
+    >
+      <ImageBackground
+        style={styles.suggestedLocationsListPhoto}
+        imageStyle={styles.suggestedLocationsListPhotoImageStyle}
+        source={source}
+      >
+        <Text style={styles.suggestedLocationsListItemText}>{item.location_name}</Text>
+        <Text style={styles.suggestedLocationsListItemInterestText}>You both like {item.common_interest}</Text>
+        <Text style={styles.suggestedLocationsListItemDistanceText}>{item.distance}  {Array(item.price).fill('$').join('')}</Text>
+        <Text style={styles.suggestedLocationsListItemCategoryText}>{item.category}</Text>
+      </ImageBackground>
+    </Pressable>
+  );
+};
+
+
 
   return (
     <View style={styles.profilePageView}>
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}>
+        <View style={styles.centeredModalView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>You matched!</Text>
+            <Text style={styles.modalDateText}>Pick a personalized date:</Text>
+            <View style={styles.suggestedLocationsWrapper}>
+                  <FlatList
+                    data={suggestedLocationsData}
+                    renderItem={({ item }) =>
+                      renderLocationItem(item)
+                    }
+                    scrollEnabled={false}
+                    keyExtractor={(item) => item.id}
+                  />
+              </View>
+            <Pressable
+              style={styles.modalButtonClose}
+              onPress={() => setModalVisible(!modalVisible)}>
+              <Text style={styles.modalButtonTextStyle}>Close</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
       <StatusBar style="auto" />
       <LinearGradient
         style={styles.profilePageGradient}
@@ -199,7 +319,7 @@ const ProfilePage = ({ route, navigation }) => {
               //source={require("../assets/images/defaultProfilePic.png")}
             >
               <View style={styles.matchButtonWrapper}>
-                {(route.params.userIsSelf) ? (<View />) :
+                {(route.params.userIsSelf || justMatched ) ? (<View />) :
                   (<Pressable style={styles.matchButton} onPress={() => matchWithUser()}>
                     <Text style={styles.matchButtonText}>Send Match</Text>
                   </Pressable>)
@@ -443,6 +563,110 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Color.colorBlack,
     fontWeight: "600",
+  },
+  centeredModalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    paddingHorizontal: 30,
+    paddingTop: 20,
+    paddingBottom: 20,
+    // paddingBottom: 100,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    fontFamily: FontFamily.interBold,
+    color: Color.colorGray_600,
+    fontSize: 20,
+    textAlign: 'center',
+  },
+  modalButtonClose: {
+    backgroundColor: "#db17a4",
+    borderRadius: 20,
+    paddingVertical: 13,
+    paddingHorizontal: 25,
+    elevation: 2,
+  },
+  modalButtonTextStyle: {
+    color: 'white',
+    fontFamily: FontFamily.interMedium,
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  modalDateText: {
+    marginBottom: 15,
+    fontFamily: FontFamily.interMedium,
+    color: Color.colorGray_600,
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  suggestedLocationsWrapper: {
+    // width: 250,
+    height: 500,
+    // padding: 10,
+    // backgroundColor: Color.colorBlue,
+  },
+  suggestedLocationsListItem: {
+    borderRadius: 10,
+    height: 150,
+    width: 290,
+    backgroundColor: Color.colorBlack,
+    marginBottom: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    // padding: 10
+  },
+  suggestedLocationsListPhoto: {
+    height: 150,
+    width: 290,
+    justifyContent: "flex-end",
+    alignItems: "flex-start",
+    padding: 10,
+    overflow: 'hidden',
+    borderRadius: 10,
+  },
+  suggestedLocationsListPhotoImageStyle: {
+    opacity: 0.6
+  },
+  suggestedLocationsListItemText: {
+    fontSize: 19,
+    fontFamily: FontFamily.interBold,
+    fontWeight: "900",
+    color: colors.white,
+    marginBottom: 3,
+  },
+  suggestedLocationsListItemDistanceText: {
+    fontSize: 11,
+    fontFamily: FontFamily.interMedium,
+    fontWeight: "900",
+    color: colors.white,
+  },
+  suggestedLocationsListItemCategoryText: {
+    fontSize: 11,
+    fontFamily: FontFamily.interMedium,
+    fontWeight: "900",
+    color: colors.white,
+  },
+  suggestedLocationsListItemInterestText: {
+    fontSize: 12,
+    fontFamily: FontFamily.interBold,
+    fontWeight: "900",
+    color: colors.white,
   },
 });
 

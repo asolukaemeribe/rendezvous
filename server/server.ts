@@ -24,6 +24,7 @@ app.get('/newmatch', routes.newmatch);
 app.get('/getmessages/:uid', routes.getmessages);
 app.get('/newmessage', routes.newmessage);
 app.get('/getroom', routes.getroom);
+app.get('/getroom', routes.getroom);
 app.get('/updateuserlocation', routes.updateuserlocation);
 app.get('/updateimage', routes.updateuserprofilepic);
 app.get('/getimage', routes.getnameageimage);
@@ -44,11 +45,17 @@ socketIO.on('connection', socket => { /* user is connected */
         socket.to(room).emit('receive-message', message)
     })
     socket.on('join-room', room => {
+        console.log("User " + socket.id + " has joined room " + room + ".")
         socket.join(room)
     })
     socket.on('leave-room', room => {
+        console.log("User " + socket.id + " has left room " + room + ".")
         socket.leave(room)
     })
+
+    socket.on('disconnect', () => {
+        console.log("User " + socket.id +" is disconnected.");
+    });
 });
 
 server.listen(serverConfig.server_port, () => {

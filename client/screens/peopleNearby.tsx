@@ -3,7 +3,6 @@ import * as Location from "expo-location";
 import {
   Pressable,
   StyleSheet,
-  TouchableOpacity,
   Text,
   View,
   TextInput,
@@ -14,27 +13,13 @@ import {
   ImageBackground
 } from "react-native";
 import Octicons from "react-native-vector-icons/Octicons";
-// import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useNavigation, ParamListBase } from "@react-navigation/native";
 import { Padding, FontFamily, Color, FontSize, Border } from "../GlobalStyles";
 import { StatusBar } from "expo-status-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import profilePreferenceData from "../assets/data/profilePreferenceData";
-import Feather from "react-native-vector-icons/Feather";
 import padding from "../assets/global_styles/padding";
 import colors from "../assets/global_styles/color";
-import profileInfoData from "../assets/data/profileInfoData";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import { TextInputMask } from "react-native-masked-text";
 import dayjs from "dayjs";
-import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged,
-  signOut,
-} from "firebase/auth";
 import { FIREBASE_AUTH } from "../FirebaseConfig";
 import { AuthContext } from "../AppAuthContext";
 import { useEffect, useState } from "react";
@@ -85,11 +70,13 @@ const PeopleNearby = ({ route, navigation }) => {
   useEffect(() => {
       const { userID, lat, long, rad } = route.params;
 
+      // get user's location
       const getLocation = async () => {
         let location = await Location.getCurrentPositionAsync({});
         getNearbyUsers(location);
       }
 
+      // get users who are nearby
       const getNearbyUsers = (location) => {
         console.log("POT MATCHES PAGE UID: " + userID)
         console.log("POT MATCHES PAGE LAT: " + location.coords.latitude)
@@ -167,6 +154,9 @@ const PeopleNearby = ({ route, navigation }) => {
       // navigation.push("ProfilePage")
     }
 
+    const source = item.photo_path;
+
+
     const imageSource = (item.image && item.image == "../assets/images/defaultProfilePicDark.png")
       ? require("../assets/images/defaultProfilePicDark.png")
       : { uri: item.image };
@@ -195,90 +185,17 @@ const PeopleNearby = ({ route, navigation }) => {
   }
 
   const logOut = async () => {
-
-    // // ---- Firebase Sign Out ---- 
-    // signOut(auth).then(() => {
-    //   // Sign-out successful.
-    //       navigation.navigate("Login");
-    //       console.log("Signed out successfully")
-    //   }).catch((error) => {
-    //   // An error happened.
-    //   });
     signOut(auth);
   }
   // TODO: Don't allow user to navigate back to home page from here
 
-  const profilesList = [
-    {
-      id: "boonloo1",
-      first_name: "Boon",
-      last_name: "Loo",
-      pronouns: "he/him",
-      age: "21"
-    },
-    {
-      id: "boonloo2",
-      first_name: "Boon",
-      last_name: "Looo",
-      pronouns: "he/him",
-      age: "22"
-    },
-    {
-      id: "boonloo3",
-      first_name: "Boon",
-      last_name: "Loooo",
-      pronouns: "he/him",
-      age: "23"
-    },
-    {
-      id: "boonloo4",
-      first_name: "Boon",
-      last_name: "Looooo",
-      pronouns: "he/him",
-      age: "24"
-    },
-    {
-      id: "boonloo5",
-      first_name: "Boon",
-      last_name: "Loooooo",
-      pronouns: "he/him",
-      age: "25"
-    },
-    {
-      id: "boonloo6",
-      first_name: "Boon",
-      last_name: "Looooooo",
-      pronouns: "he/him",
-      age: "26"
-    },
-    {
-      id: "boonloo7",
-      first_name: "Boon",
-      last_name: "Loooooooo",
-      pronouns: "he/him",
-      age: "27"
-    },
-    {
-      id: "boonloo8",
-      first_name: "Boon",
-      last_name: "Looooooooo",
-      pronouns: "he/him",
-      age: "28"
-    },
-    {
-      id: "boonloo9",
-      first_name: "Boon",
-      last_name: "Loooooooooo",
-      pronouns: "he/him",
-      age: "29"
-    },
-  ];
+  const everySecondItem = nearbyUsersData.filter((_, index) => index % 2 !== 0);
+  const everyFirstItem = nearbyUsersData.filter((_, index) => index % 2 === 0);
+
 
   var customParseFormat = require('dayjs/plugin/customParseFormat')
   dayjs.extend(customParseFormat);
   const mask = 'MM/DD/YYYY';
-  // const isValid = this.datetimeField.isValid()
-
   return (
         <KeyboardAvoidingView behavior="padding" style={styles.keyboardView}>
           <View style={styles.pageView}>
@@ -313,7 +230,7 @@ const PeopleNearby = ({ route, navigation }) => {
               <ScrollView contentContainerStyle={styles.nearbyUsersViewWrapper}>
                 <View style={styles.nearbyUsersFirstWrapper}>
                   <FlatList
-                    data={nearbyUsersData}
+                    data={everyFirstItem}
                     renderItem={({ item }) =>
                       renderButtonItem(item)
                     }
@@ -321,16 +238,16 @@ const PeopleNearby = ({ route, navigation }) => {
                     keyExtractor={(item) => item.id}
                   />
                 </View>
-                {/*<View style={styles.nearbyUsersSecondWrapper}>
+                <View style={styles.nearbyUsersSecondWrapper}>
                   <FlatList
-                    data={nearbyUsersData}
+                    data={everySecondItem}
                     renderItem={({ item }) =>
                       renderButtonItem(item)
                     }
                     scrollEnabled={false}
                     keyExtractor={(item) => item.id}
                   />
-                </View>*/}
+                </View>
               </ScrollView>
               {/* </ScrollView> */}
             </LinearGradient>
@@ -476,3 +393,77 @@ const styles = StyleSheet.create({
 });
 
 export default PeopleNearbyStack;
+
+// dummy data
+ /*const nearbyUsersData = [
+    {
+      id: "boonloo1",
+      first_name: "Boon",
+      last_name: "Loo",
+      pronouns: "he/him",
+      age: "21",
+      message_time: "2m",
+      first_message: "Hey wanna meet up for coffee and coding on Saturday?",
+      photo_path: require("../assets/images/profilePhoto.png")
+    },
+    {
+      id: "lukaemeribe21",
+      first_name: "Luka",
+      last_name: "Emeribe",
+      pronouns: "he/him",
+      age: "22",
+      message_time: "3d",
+      first_message: "Let's hoop!",
+      photo_path: require("../assets/images/lukaemeribe.jpg")
+    },
+    {
+      id: "mattromage3",
+      first_name: "Matt",
+      last_name: "Romage",
+      pronouns: "he/him",
+      age: "21",
+      message_time: "5d",
+      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr.",
+      photo_path: require("../assets/images/mattromage.jpg")
+    },
+    {
+      id: "jasonli21123",
+      first_name: "Jason",
+      last_name: "Li",
+      pronouns: "he/him",
+      age: "22",
+      message_time: "5d",
+      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!",
+      photo_path: require("../assets/images/jasonli.png")
+    },
+    {
+      id: "craiglee",
+      first_name: "Craig",
+      last_name: "Lee",
+      pronouns: "he/him",
+      age: "22",
+      message_time: "7d",
+      first_message: "Yo",
+      photo_path: require("../assets/images/craiglee.jpg")
+    },
+    {
+      id: "venuc",
+      first_name: "Venu",
+      last_name: "Chillal",
+      pronouns: "he/him",
+      age: "22",
+      message_time: "2w",
+      first_message: "I'll sing u a lullaby",
+      photo_path: require("../assets/images/venuchillal.png")
+    },
+    {
+      id: "daisyt",
+      first_name: "Daisy",
+      last_name: "Teller",
+      pronouns: "she/her",
+      age: "22",
+      message_time: "2w",
+      first_message: "What's your favorite flower?",
+      photo_path: require("../assets/images/daisyteller.jpg")
+    },
+  ]; */

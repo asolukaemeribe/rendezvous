@@ -133,7 +133,7 @@ const getmatches = async function(req, res) {
         relevantIds AS (
             SELECT id FROM allIds WHERE id != '${userID}'
         )
-        SELECT PROFILES.id, first_name, last_name FROM PROFILES JOIN relevantIds ON PROFILES.id = relevantIds.id;
+        SELECT PROFILES.id, first_name, last_name, image FROM PROFILES JOIN relevantIds ON PROFILES.id = relevantIds.id;
     `, (err, data) => {
         if (err || data.length === 0) {
             console.log(err);
@@ -210,8 +210,11 @@ const createuserlocation = async function(req, res) {
     const long = req.query.long
 
     pql_db.none(`INSERT INTO users (id, location) VALUES ('${uid}', ST_GeomFromText('POINT(${long} ${lat})', 4326))`)
+    .then(() => {
+        console.log("New user location added to postgres with id: " + uid);
+    })
     .catch((error) => {
-    console.log('ERROR:', error)
+        console.log('ERROR:', error)
     })
 }
 
@@ -229,7 +232,6 @@ function convertIds(response) {
 
 // gets all users in a certain radius (in meters) from the inputted latitude and longitude (uses pql and mysql)
 const getusersinradius = async function(req, res) {
-
     const uid = req.query.uid
     const lat = req.query.lat
     const long = req.query.long
@@ -249,7 +251,7 @@ const getusersinradius = async function(req, res) {
 
         // mysql query to get the names of nearby users based on ids from earlier query
         connection.query(`
-        SELECT id, first_name, last_name, image
+        SELECT *
         FROM PROFILES
         WHERE id IN (${ids})
         `, (err, data) => {

@@ -63,7 +63,7 @@ const MatchesListPage = ({ route, navigation }) => {
       }))
     );
 
-  const [matchesData, setMatchesData] = useState([{ id: "", first_name: "", last_name: "" }])
+  const [matchesData, setMatchesData] = useState([{ id: "", first_name: "", last_name: "", image: "" }])
   const isFocused = useIsFocused();
 
   useEffect(() => {
@@ -72,20 +72,22 @@ const MatchesListPage = ({ route, navigation }) => {
 
     if (isFocused) {
       fetch(`http://${config.server_host}:${config.server_port}/getmatches/${userID}`)
-        .then(res => res.json())
-        .then(resJson => {
-          console.log("MATCHES resJson: ")
-          console.log(resJson)
-          setMatchesData(resJson);
-        });
+      .then(res => res.json())
+      .then(resJson => {
+        console.log("MATCHES resJson: ")
+        console.log(resJson)
+        setMatchesData(resJson);  
+      });
     }
-  }, [isFocused]);
+}, [isFocused]);
 
 
   const renderButtonItem = (item) => {
     const handleButtonPress = () => {
-      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID, receivingName: item.first_name })
     }
+
+    const source = item.photo_path;
 
     // TODO: Matches page makeover
     return (
@@ -98,7 +100,7 @@ const MatchesListPage = ({ route, navigation }) => {
         <ImageBackground
           style={styles.nearbyUsersListPhoto}
           imageStyle={styles.nearbyUsersListPhotoImageStyle}
-          source={require("../assets/images/defaultProfilePicDark.png")}
+          source={source}
         >
           <Text style={styles.nearbyUsersListItemText}>{item.first_name}</Text>
         </ImageBackground>
@@ -108,8 +110,18 @@ const MatchesListPage = ({ route, navigation }) => {
 
   const renderMessagesListItem = (item) => {
     const handleButtonPress = () => {
-      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID })
+      navigation.push("MessagePage", { receivingUserID: item.id, userID: userID, receivingName: item.first_name })
     }
+
+    // const photoPath = item.photo_path ? item.photo_path : "../assets/images/defaultProfilePicDark.png";
+    // const photoPath = "../assets/images/defaultProfilePicDark.png";
+    // const source = { require: photoPath };
+    // const required = item.photo_path ? item.photo_path : "../assets/images/defaultProfilePicDark.png";
+    
+    const source = item.photo_path;
+    // ? require(item.photo_path)
+    // : require("../assets/images/defaultProfilePicDark.png");
+    // console.log(source);
 
     // TODO: Matches page makeover
     return (
@@ -123,17 +135,17 @@ const MatchesListPage = ({ route, navigation }) => {
           <ImageBackground
             style={styles.messagesListPhoto}
             imageStyle={styles.messagesListPhotoImageStyle}
-            source={require("../assets/images/defaultProfilePicDark.png")}
+            source={source}
           >
           </ImageBackground>
         </View>
         <View style={styles.messagesListTextWrapper}>
           <View style={styles.messagesListItemHeadingWrapper}>
             <Text style={styles.messagesListItemName}>{item.first_name}</Text>
-            <Text style={styles.messagesListItemTime}>{item.message_time}</Text>
+            {/*<Text style={styles.messagesListItemTime}>{item.message_time}</Text>*/}
           </View>
           <View style={styles.messagesListChatWrapper}>
-            <Text style={styles.messagesListChat}>{item.first_message}</Text>
+            {/*<Text style={styles.messagesListChat}>{item.first_message}</Text>*/}
           </View>
         </View>
       </Pressable>
@@ -167,7 +179,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "21",
       message_time: "2m",
-      first_message: "Hey wanna meet up for coffee and coding on Saturday?"
+      first_message: "Hey wanna meet up for coffee and coding on Saturday?",
+      photo_path: require("../assets/images/profilePhoto.png")
     },
     {
       id: "lukaemeribe21",
@@ -176,7 +189,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "3d",
-      first_message: "Let's hoop!"
+      first_message: "Let's hoop!",
+      photo_path: require("../assets/images/lukaemeribe.jpg")
     },
     {
       id: "mattromage3",
@@ -185,7 +199,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "21",
       message_time: "5d",
-      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr."
+      first_message: "Do you like dogs? I love dogs they are so cute and fluffy, here is a photo of my small dog Matt Jr.",
+      photo_path: require("../assets/images/mattromage.jpg")
     },
     {
       id: "jasonli21123",
@@ -194,7 +209,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "5d",
-      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!"
+      first_message: "Can't wait to rendezvous at Board and Brew on Sunday!",
+      photo_path: require("../assets/images/jasonli.png")
     },
     {
       id: "craiglee",
@@ -203,7 +219,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "7d",
-      first_message: "Yo"
+      first_message: "Yo",
+      photo_path: require("../assets/images/craiglee.jpg")
     },
     {
       id: "venuc",
@@ -212,7 +229,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "he/him",
       age: "22",
       message_time: "2w",
-      first_message: "I'll sing u a lullaby"
+      first_message: "I'll sing u a lullaby",
+      photo_path: require("../assets/images/venuchillal.png")
     },
     {
       id: "daisyt",
@@ -221,7 +239,8 @@ const MatchesListPage = ({ route, navigation }) => {
       pronouns: "she/her",
       age: "22",
       message_time: "2w",
-      first_message: "What's your favorite flower?"
+      first_message: "What's your favorite flower?",
+      photo_path: require("../assets/images/daisyteller.jpg")
     },
   ];
 
@@ -237,7 +256,7 @@ const MatchesListPage = ({ route, navigation }) => {
         <LinearGradient
           style={styles.pageGradient}
           locations={[0, 0.9]}
-          colors={["#ff0000D6", "#db176AD6"]}
+          colors={["#ff0000EF", "#db176AEF"]}
         >
           <View style={[{ paddingTop: insets.top * 0.8 }]} />
           <View style={styles.topMenuWrapper}>
@@ -267,7 +286,7 @@ const MatchesListPage = ({ route, navigation }) => {
 
           <View style={styles.nearbyUsersFirstWrapper}>
             <FlatList
-              data={profilesList}
+              data={matchesData}
               renderItem={({ item }) =>
                 renderButtonItem(item)
               }
@@ -280,7 +299,7 @@ const MatchesListPage = ({ route, navigation }) => {
           <View style={styles.messagesListVerticalViewWrapper}>
             <Text style={styles.messagesHeaderText}>Messages</Text>
             <FlatList
-              data={profilesList}
+              data={matchesData}
               renderItem={({ item }) =>
                 renderMessagesListItem(item)
               }
@@ -456,9 +475,11 @@ const styles = StyleSheet.create({
     padding: 16,
     overflow: 'hidden',
     borderRadius: 50,
+    resizeMode: "cover",
+
   },
   messagesListPhotoImageStyle: {
-
+    resizeMode: "cover",
   },
   messagesListItemText: {
     fontSize: 15,
@@ -500,7 +521,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: FontFamily.interRegular,
     fontWeight: "900",
-    color: colors.black,
+    color: Color.colorGray_1000,
   },
   messagesListTextWrapper: {
     paddingLeft: 10,
@@ -509,7 +530,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   pageContentWrapper: {
-    backgroundColor: Color.colorGray_900,
+    backgroundColor: Color.colorGray_300,
     paddingTop: padding.md
   }
 });
