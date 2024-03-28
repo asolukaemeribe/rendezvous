@@ -49,7 +49,6 @@ const MessagePage = ({ route, navigation }) => {
 
   const insets = useSafeAreaInsets();
   const auth = FIREBASE_AUTH;
-  const [currMessage, onChangeMessage] = React.useState('');
   const [messagesRefresh, setMessagesRefresh] = useState(true);
   const [room, setRoom] = useState("");
   const [messagesList, setMessagesList] = useState([
@@ -72,8 +71,13 @@ const MessagePage = ({ route, navigation }) => {
   const userID = route.params.userID;
   const selfUserID = userID;
   const receivingChatUserID = route.params.receivingUserID;
+  const suggestedLocationName = route.params.suggestedLocationName  
+                    ? "Hey! Wanna meet up at " + route.params.suggestedLocationName + "?"
+                    : "";
   console.log("Message page self userID: " + selfUserID);
   console.log("Message page receiving userID: " + receivingChatUserID);
+
+  const [currMessage, setCurrMessage] = React.useState(suggestedLocationName);
 
   useEffect(() => {
 
@@ -146,7 +150,6 @@ const MessagePage = ({ route, navigation }) => {
 
   const handleMessageSend = () => {
     sendMessage(room, currMessage)
-
     messagesList.push({
       id: messageId.toString(), //idk
       sender_uid: selfUserID,
@@ -156,6 +159,7 @@ const MessagePage = ({ route, navigation }) => {
     });
     setMessagesRefresh(!messagesRefresh);
     messageId += 1;
+    setCurrMessage("");
   }
 
   const getMessageHistory = () => {
@@ -219,7 +223,7 @@ const MessagePage = ({ route, navigation }) => {
         <View style={styles.messageTextInputWrapper}>
           <TextInput
             style={styles.messageTextInput}
-            onChangeText={onChangeMessage}
+            onChangeText={setCurrMessage}
             value={currMessage}
             placeholder="Type a message"
           />
